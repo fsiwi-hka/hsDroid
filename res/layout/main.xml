@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="wrap_content" android:layout_width="wrap_content"
+	android:baselineAligned="true" android:orientation="vertical"
+	android:layout_gravity="center">
+
+
+	<EditText android:id="@+id/username" android:layout_width="wrap_content"
+		android:layout_weight="1" android:hint="@string/username"
+		android:layout_gravity="center_horizontal" android:layout_height="wrap_content" />
+
+
+
+	<EditText android:id="@+id/password" android:layout_weight="1"
+		android:password="true" android:hint="@string/password"
+		android:layout_gravity="center_horizontal" android:layout_width="match_parent"
+		android:layout_height="wrap_content" />
+
+
+	<CheckBox android:text="@string/login_checkBox"
+		android:layout_height="wrap_content" android:id="@+id/login_checkBox" android:layout_gravity="center_horizontal"
+		android:layout_width="match_parent"></CheckBox>
+
+	<Button android:id="@+id/login" android:text="@string/login"
+		android:layout_width="match_parent" android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal" />
+	<Button android:id="@+id/cancel" android:text="@string/cancel"
+		android:layout_width="match_parent" android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal" />
+
+</LinearLayout>

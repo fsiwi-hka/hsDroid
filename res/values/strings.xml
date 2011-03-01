@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+	<string name="app_name">NotenApp - HSKA - beta</string>
+	<string name="username">HS-Benutzername</string>
+	<string name="password">Passwort</string>
+	<string name="login">Login</string>
+	<string name="cancel">Exit</string>
+	<string name="error">Fehler</string>
+	<string name="error_name_missing">Bitte HS-Benutzernamen angeben.</string>
+	<string name="error_name_incorrect">HS-Benutzername ist falsch. Bsp.: agag0001</string>
+	<string name="error_ok">OK</string>
+	<string name="error_password_missing">Bitte Passwort angeben.</string>
+	<string name="error_couldnt_connect">Verbindungsfehler</string>
+	<string name="error_site_down">Hochschulwebsite ist im Wartungsmodus.</string>
+	<string name="error_login_failed">Anmeldung fehlgeschlagen, bitte Logindaten überprüfen.</string>
+	<string name="progress_loading">Laden...</string>
+	<string name="progress_login">Login...</string>
+	<string name="progress_webcheck">Antwork checken...</string>
+	<string name="progress_cookie">Keks nehmen...</string>
+	<string name="progress_noten">Noten holen...</string>
+	<string name="progress_notenprepare">Noten zubereiten...</string>
+	<string name="title_view_marks">Notenspiegel</string>
+	<string name="title_head_exam">Prüfung</string>
+	<string name="title_head_mark">Note</string>
+	<string name="login_checkBox">Anmeldedaten Speichern</string>
+	
+	
+
+	
+
+</resources>
