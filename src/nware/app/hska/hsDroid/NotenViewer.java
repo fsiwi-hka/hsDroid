@@ -1,6 +1,8 @@
-package nware.app.hska.noten;
+package nware.app.hska.hsDroid;
 
 import java.util.Date;
+
+import nware.app.hska.hsDroid.R;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -9,7 +11,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;

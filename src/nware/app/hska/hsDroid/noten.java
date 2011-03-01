@@ -1,4 +1,4 @@
-package nware.app.hska.noten;
+package nware.app.hska.hsDroid;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -14,6 +14,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 
 import javax.xml.parsers.SAXParserFactory;
+
+import nware.app.hska.hsDroid.R;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -42,7 +44,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -206,7 +207,7 @@ public class noten extends Activity {
 		final String pw = pass;
 		Thread t = new Thread() {
 			public void run() {
-				Looper.prepare();
+				
 				client = new DefaultHttpClient();
 
 				HttpResponse response;
@@ -260,8 +261,6 @@ public class noten extends Activity {
 
 							e.getMessage());
 				}
-
-				Looper.loop();
 			}
 		};
 		t.start();

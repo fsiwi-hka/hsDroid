@@ -1,4 +1,4 @@
-package nware.app.hska.noten;
+package nware.app.hska.hsDroid;
 
 import android.os.Parcel;
 import android.os.Parcelable;

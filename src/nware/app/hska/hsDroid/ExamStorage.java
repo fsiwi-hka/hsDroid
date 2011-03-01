@@ -1,6 +1,6 @@
-package nware.app.hska.noten;
+package nware.app.hska.hsDroid;
 
-import nware.app.hska.noten.Exam;
+import nware.app.hska.hsDroid.Exam;
 
 import java.util.ArrayList;
 
