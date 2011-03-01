@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-	<string name="app_name">NotenApp - HSKA - beta</string>
+	<string name="app_name">hsDroid</string>
 	<string name="username">HS-Benutzername</string>
 	<string name="password">Passwort</string>
 	<string name="login">Login</string>
