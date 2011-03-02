@@ -59,6 +59,7 @@ public class noten extends Activity {
 	DefaultHttpClient client;
 	private String asiKey;
 
+	//storage public static, damit sie aus anderen activities verfügbar ist
 	public static ExamStorage examStorage;
 
 	public ProgressDialog progressDialog;
@@ -157,13 +158,13 @@ public class noten extends Activity {
 		});
 	}
 
+	/**
+	 * ProgresDialog Handler
+	 */
 	Handler progressHandle = new Handler() {
 
 		@Override
 		public void handleMessage(Message msg) {
-			// TODO Auto-generated method stub
-			// myProgress++;
-			// myProgressBar.setProgress(myProgress);
 			String message = mainContext.getString(R.string.progress_loading);
 			switch (msg.what) {
 			case 1:
@@ -192,6 +193,11 @@ public class noten extends Activity {
 		finish();
 	}
 
+	/**
+	 * Creates {@link AlertDialog}
+	 * @param title {@link String} dialog title
+	 * @param text {@link String} dialog text
+	 */
 	private void createDialog(String title, String text) {
 		AlertDialog ad = new AlertDialog.Builder(this)
 				.setPositiveButton(this.getString(R.string.error_ok), null)
@@ -203,6 +209,12 @@ public class noten extends Activity {
 	// /qisserver/rds?state=user&type=1&category=auth.login&startpage=portal.vm&breadCrumbSource=portal
 	// asdf=mami0011&fdsa=secretpw&submit=Anmelden
 
+
+	/**
+	 * Login into qis2 server 
+	 * @param login {@link String} Username
+	 * @param pass {@link String} Password
+	 */
 	private void doLogin(final String login, final String pass) {
 		final String pw = pass;
 		Thread t = new Thread() {
@@ -214,6 +226,8 @@ public class noten extends Activity {
 				HttpEntity entity;
 				try {
 					progressHandle.sendMessage(progressHandle.obtainMessage(1));
+					
+					//Post daten zusammen bauen
 					HttpPost post = new HttpPost(UPDATE_URL);
 					List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 					nvps.add(new BasicNameValuePair("asdf", login));
@@ -222,8 +236,11 @@ public class noten extends Activity {
 					post.setHeader("Content-Type",
 							"application/x-www-form-urlencoded");
 					post.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+					
+					//http anfrage starten
 					response = client.execute(post);
-
+					
+					
 					entity = response.getEntity();
 					InputStream is = entity.getContent();
 					BufferedReader rd = new BufferedReader(
@@ -231,6 +248,7 @@ public class noten extends Activity {
 					String line;
 					int count = 0;
 					progressHandle.sendMessage(progressHandle.obtainMessage(2));
+					//response auswerten
 					while ((line = rd.readLine()) != null) {
 						// TODO check login success
 						loginStringTest(line, count);
@@ -251,6 +269,12 @@ public class noten extends Activity {
 
 					progressHandle.sendMessage(progressHandle.obtainMessage(4));
 					getNotenspiegel();
+					
+					//progress dialog schließen
+					progressDialog.dismiss();
+					//start activity "NotenViewer"
+					Intent i = new Intent(mainContext, NotenViewer.class);
+					startActivity(i);
 
 					if (entity != null)
 						entity.consumeContent();
@@ -266,6 +290,12 @@ public class noten extends Activity {
 		t.start();
 	}
 
+	/**
+	 * Test for Login response Line
+	 * @param line {@link String} with a line from the login response
+	 * @param count {@link Integer} line count
+	 * @throws HSLoginException
+	 */
 	private void loginStringTest(String line, int count)
 			throws HSLoginException {
 
@@ -285,6 +315,7 @@ public class noten extends Activity {
 		}
 	}
 
+	//TODO auslagern in noten view
 	private void getNotenspiegel() {
 		// FIXME asi key könnte man auch mit get in den header einbauen bzw alle gets...
 		String notenSpiegelURL = "https://qis2.hs-karlsruhe.de/qisserver/rds?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
@@ -292,19 +323,18 @@ public class noten extends Activity {
 
 		HttpResponse response;
 		HttpEntity entity;
-		// progressDialog.setMessage("Noten holen...");
+		
 		try {
-			DefaultHttpClient client2 = new DefaultHttpClient();
-			// client = new DefaultHttpClient();
+			
+			client = new DefaultHttpClient();
 			HttpPost httpPost = new HttpPost(notenSpiegelURL);
 			CookieSpecBase cookieSpecBase = new BrowserCompatSpec();
 
 			List<Header> cookieHeader = cookieSpecBase.formatCookies(cookies);
-			// Setting the cookie
-			// System.out.println("set cookie header");
+			
 			httpPost.setHeader(cookieHeader.get(0));
-			// System.out.println("execute post");
-			response = client2.execute(httpPost);
+			
+			response = client.execute(httpPost);
 			entity = response.getEntity();
 			InputStream is = entity.getContent();
 
@@ -382,6 +412,11 @@ public class noten extends Activity {
 		}
 	}
 
+	/**
+	 * SAX2 event Handler for "Notenspiegel" html page
+	 * @author Oliver Eichner
+	 *
+	 */
 	private class LoginContentHandler extends DefaultHandler {
 
 		Boolean fetch = false;
@@ -432,7 +467,6 @@ public class noten extends Activity {
 		public void endElement(String n, String l, String q)
 				throws SAXException {
 			super.endElement(n, l, q);
-			// Log.d("hska saxparser end l:", l);
 			if (l == "tr" && fetch == true) {
 
 				examStorage.appendFach(pruefungsNr, pruefungsText, semester,
@@ -522,11 +556,11 @@ public class noten extends Activity {
 
 		public void endDocument() throws SAXException {
 			super.endDocument();
-			progressDialog.dismiss();
+			//progressDialog.dismiss();
 
 			// TODO aus dem handler rausholen
-			Intent i = new Intent(mainContext, NotenViewer.class);
-			startActivity(i);
+//			Intent i = new Intent(mainContext, NotenViewer.class);
+//			startActivity(i);
 		}
 	}
 }
