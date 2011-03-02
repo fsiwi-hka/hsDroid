@@ -8,7 +8,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-//import java.util.Collections;
 import java.util.Date;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -56,7 +55,7 @@ import android.widget.Toast;
  * 
  */
 public class GradesListView extends ListActivity implements Runnable {
-	private boolean showAllExams = false;
+
 	private ExamAdapter m_examAdapter;
 
 	// storage public static, damit sie aus anderen activities verfügbar ist
@@ -73,60 +72,71 @@ public class GradesListView extends ListActivity implements Runnable {
 		if (extras != null) {
 			asiKey = extras.getString("asiKey");
 		}
+		// progressDialog = new ProgressDialog(this);
+		// progressDialog.setMessage(this.getString(R.string.progress_loading));
+		// progressDialog.setIndeterminate(true);
+		// progressDialog.setCancelable(false);
 		getMarks();
+
 		// layout festlegen
 		setContentView(R.layout.grade_list_view);
-		// getNotenspiegel();
 
-		// this.examStorage = new ExamStorage();
-		// this.examStorage.appendFach("", "Aktualisieren", "", "", "", true,
-		// "",
-		// 0);
 		this.examsTest = new ArrayList<Exam>();
 		this.m_examAdapter = new ExamAdapter(GradesListView.this,
 				R.layout.grade_row_item, this.examsTest);
-		// FIXME test wegen size 0 index 0
 		m_examAdapter.notifyDataSetInvalidated();
 		setListAdapter(this.m_examAdapter);
 
-		// try {
-		// wait();
-		// m_examAdapter.notifyDataSetChanged();
-		// } catch (InterruptedException e) {
-		// // TODO Auto-generated catch block
-		// Log.e("gradeOnCreate wait()", e.getLocalizedMessage());
-		// e.printStackTrace();
-		// }
-		// getListView().setTextFilterEnabled(true);
 	}
 
 	public void getMarks() {
 
-		progressDialog = ProgressDialog.show(this,
-				this.getString(R.string.progress_noten),
-				this.getString(R.string.progress_notenprepare), true, false);
+		// new ProgressDialog(this);
+		progressDialog = ProgressDialog.show(this, "",
+				this.getString(R.string.progress_loading));
+
 		Thread thread = new Thread(this);
 		thread.start();
 	}
 
 	public void run() {
-		getNotenspiegel();
-		// notify();
+		// progressHandler.sendMessage(progressHandler.obtainMessage(1));
+		progressHandler.sendEmptyMessage(1);
+		getGradesFromWeb();
 		progressHandler.sendEmptyMessage(0);
 	}
 
 	private Handler progressHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
-			progressDialog.dismiss();
-			m_examAdapter.getFilter().filter("");
+			String message = "";
+			switch (msg.what) {
+			case 0:
+				m_examAdapter.getFilter().filter("actualexam");
+				progressDialog.dismiss();
+				return;
+			case 1:
+				message = GradesListView.this
+						.getString(R.string.progress_notenfetch);
+				break;
+			case 2:
+				message = GradesListView.this
+						.getString(R.string.progress_notencleanup);
+				break;
+			case 3:
+				message = GradesListView.this
+						.getString(R.string.progress_notenparse);
+			default:
+				break;
+			}
+			progressDialog.setMessage(message);
+
 		}
 	};
 
 	/**
 	 * Optionsmenü
 	 */
-
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.grade_menu, menu);
@@ -136,7 +146,6 @@ public class GradesListView extends ListActivity implements Runnable {
 	/**
 	 * Optionsmenü Callback
 	 */
-
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.view_menu_about:
@@ -144,25 +153,32 @@ public class GradesListView extends ListActivity implements Runnable {
 			Toast.makeText(this, "You pressed about!", Toast.LENGTH_LONG)
 					.show();
 			return true;
+		case R.id.view_menu_refresh:
+			// TODO add about dialog
+			getMarks();
+			return true;
 		case R.id.view_submenu_examViewAll:
-			showAllExams = true;
 			if (item.isChecked())
 				item.setChecked(false);
 			else
 				item.setChecked(true);
 
-			m_examAdapter.getFilter().filter(getLastExamSem());
-			// m_examAdapter.notifyDataSetChanged();
+			m_examAdapter.getFilter().filter("");
 			return true;
 		case R.id.view_submenu_examViewOnlyLast:
-			showAllExams = false;
-
 			if (item.isChecked())
 				item.setChecked(false);
 			else
 				item.setChecked(true);
-			m_examAdapter.getFilter().filter(getLastExamSem());
-			// m_examAdapter.notifyDataSetChanged();
+			m_examAdapter.getFilter().filter("actualexam");
+			return true;
+		case R.id.view_submenu_examViewOnlyLastFailed:
+			if (item.isChecked())
+				item.setChecked(false);
+			else
+				item.setChecked(true);
+
+			m_examAdapter.getFilter().filter("failed");
 			return true;
 		}
 		return false;
@@ -205,10 +221,6 @@ public class GradesListView extends ListActivity implements Runnable {
 				ArrayList<Exam> nExams) {
 			super(context, textViewResourceId, nExams);
 			this.examsList = nExams;
-
-			// reihenfolge umkehren
-
-			// Collections.reverse(this.exams);
 		}
 
 		@Override
@@ -283,12 +295,12 @@ public class GradesListView extends ListActivity implements Runnable {
 				// result objekt
 				FilterResults results = new FilterResults();
 
-				// wenn adapter array leer, hole original
-				if (examsList == null) {
-					synchronized (mLock) { // Notice the declaration above
-						examsList = new ArrayList<Exam>(examsTest);
-					}
-				}
+				// FIXME ...funzt nich..//wenn adapter array leer, hole original
+				// if (examsList == null) {
+				// synchronized (mLock) { // Notice the declaration above
+				// examsList = new ArrayList<Exam>(examsTest);
+				// }
+				// }
 
 				// kein prefix, also ganzes (altes) array übernehmen
 				if (prefix == null || prefix.length() == 0 || prefix == "") {
@@ -297,25 +309,30 @@ public class GradesListView extends ListActivity implements Runnable {
 						results.count = examsTest.size();
 					}
 				} else {
-					// lower case
-					String prefixString = prefix.toString().toLowerCase();
 
 					// array kopieren
-					final ArrayList<Exam> items = examsList;
+					final ArrayList<Exam> items = examsTest;
 					final int count = items.size();
 					final ArrayList<Exam> newItems = new ArrayList<Exam>(count);
 
-					for (int i = 0; i < count; i++) {
-						final Exam item = items.get(i);
-						final String itemName = item.getSemester()
-								.toLowerCase();
+					if (prefix.equals("failed")) {
+						for (int i = 0; i < count; i++) {
+							final Exam item = items.get(i);
 
-						// semester muss übereinstimmen
-						if (itemName.equals(prefixString)) {
-							newItems.add(item);
+							// semester muss übereinstimmen und nicht bestanden
+							if (isActualExam(item) && !item.isPassed()) {
+								newItems.add(item);
+							}
+						}
+					} else if (prefix.equals("actualexam")) {
+						for (int i = 0; i < count; i++) {
+							final Exam item = items.get(i);
+							// semester muss übereinstimmen
+							if (isActualExam(item)) {
+								newItems.add(item);
+							}
 						}
 					}
-
 					// Set and return
 					results.values = newItems;
 					results.count = newItems.size();
@@ -339,10 +356,19 @@ public class GradesListView extends ListActivity implements Runnable {
 		}
 	}
 
-	// TODO auslagern in noten view
-	private void getNotenspiegel() {
+	/**
+	 * 
+	 * @param nExam
+	 * @return
+	 */
+	private boolean isActualExam(Exam nExam) {
+		return nExam.getSemester().equals(getLastExamSem());
+	}
+
+	private void getGradesFromWeb() {
 		// FIXME asi key könnte man auch mit get in den header einbauen bzw alle
 		// gets...
+		progressHandler.sendMessage(progressHandler.obtainMessage(1));
 		String notenSpiegelURL = "https://qis2.hs-karlsruhe.de/qisserver/rds?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
 				+ asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";
 
@@ -367,7 +393,7 @@ public class GradesListView extends ListActivity implements Runnable {
 			BufferedReader rd = new BufferedReader(new InputStreamReader(is),
 					4096);
 			String line;
-
+			progressHandler.sendMessage(progressHandler.obtainMessage(2));
 			Boolean record = false;
 			StringBuilder sb = new StringBuilder();
 			while ((line = rd.readLine()) != null) {
@@ -404,7 +430,7 @@ public class GradesListView extends ListActivity implements Runnable {
 			String htmlContentString = sb.toString();
 
 			rd.close();
-			progressHandler.sendMessage(progressHandler.obtainMessage(5));
+			progressHandler.sendMessage(progressHandler.obtainMessage(3));
 			read(htmlContentString);
 
 		} catch (ClientProtocolException e) {
@@ -583,7 +609,7 @@ public class GradesListView extends ListActivity implements Runnable {
 
 		public void endDocument() throws SAXException {
 			super.endDocument();
-			//array umdrehen
+			// array umdrehen
 			Collections.reverse(examsTest);
 		}
 	}

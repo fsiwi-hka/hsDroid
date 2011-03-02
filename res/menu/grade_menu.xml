@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:title="@string/menu_view" 
-		android:id="@+id/menu_view"
-		android:icon="@android:drawable/ic_menu_view">
+	<item android:title="@string/menu_view" android:id="@+id/menu_view"
+		android:icon="@drawable/view">
 		<menu>
 			<group android:checkableBehavior="single">
 				<item android:id="@+id/view_submenu_examViewAll" 
 					android:title="@string/submenu_examViewAll" />
 				<item android:id="@+id/view_submenu_examViewOnlyLast"
 					android:title="@string/submenu_examViewOnlyLast" />
+				<item android:id="@+id/view_submenu_examViewOnlyLastFailed"
+					android:title="@string/submenu_examViewOnlyLastFailed" />
 			</group>
 		</menu>
 	</item>
-	<item android:id="@+id/view_menu_about" 
-		android:title="@string/menu_about"
-		android:icon="@android:drawable/ic_menu_info_details"></item>
+	<item android:id="@+id/view_menu_refresh" android:title="@string/menu_refresh"
+		android:icon="@drawable/refresh"></item>
+	<item android:id="@+id/view_menu_about" android:title="@string/menu_about"
+		android:icon="@drawable/about"></item>
 </menu>

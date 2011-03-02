@@ -38,6 +38,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -201,12 +202,6 @@ public class noten extends Activity {
 				break;
 			case 3:
 				message = noten.this.getString(R.string.progress_cookie);
-				break;
-			case 4:
-				message = noten.this.getString(R.string.progress_noten);
-				break;
-			case 5:
-				message = noten.this.getString(R.string.progress_notenprepare);
 			default:
 				break;
 			}
@@ -257,7 +252,7 @@ public class noten extends Activity {
 				HttpEntity entity;
 				try {
 					progressHandle.sendMessage(progressHandle.obtainMessage(1));
-
+					Looper.prepare();
 					// Post daten zusammen bauen
 					HttpPost post = new HttpPost(UPDATE_URL);
 					List<NameValuePair> nvps = new ArrayList<NameValuePair>();
@@ -303,6 +298,7 @@ public class noten extends Activity {
 					progressDialog.dismiss();
 					// start activity "NotenViewer"
 					// finalize();
+					
 					Intent i = new Intent(noten.this, GradesListView.class);
 					i.putExtra("asiKey", asiKey);
 					startActivity(i);
@@ -319,6 +315,7 @@ public class noten extends Activity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				Looper.loop();
 			}
 		};
 		t.start();
