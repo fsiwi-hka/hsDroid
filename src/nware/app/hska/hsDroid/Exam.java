@@ -14,7 +14,7 @@ public class Exam implements Parcelable {
 	private String examName="";
 	private String semester="";
 	private String examDate="";
-	private String mark="";
+	private String grade="";
 	private boolean passed =false;
 	private String notation="";
 	private int attempts=0;
@@ -32,20 +32,20 @@ public class Exam implements Parcelable {
 	 * @param examName Der name der Prüfung
 	 * @param semester Das Semester in dem geschrieben wurde
 	 * @param examDate Das Prüfungs Datum
-	 * @param mark Die erzielte Note
+	 * @param grade Die erzielte Note
 	 * @param passed Bestanden Status
 	 * @param notation Vermerk zur Prüfung
 	 * @param attempts Versuche bis jetzt
 	 */
 	public Exam(String examNr, String examName, String semester,
-			String examDate, String mark, boolean passed, String notation,
+			String examDate, String grade, boolean passed, String notation,
 			int attempts) {
 		super();
 		this.examNr = examNr;
 		this.examName = examName;
 		this.semester = semester;
 		this.examDate = examDate;
-		this.mark = mark;
+		this.grade = grade;
 		this.passed = passed;
 		this.notation = notation;
 		this.attempts = attempts;
@@ -67,8 +67,8 @@ public class Exam implements Parcelable {
 		return examDate;
 	}
 
-	public String getMark() {
-		return mark;
+	public String getGrade() {
+		return grade;
 	}
 
 	public boolean isPassed() {
@@ -96,7 +96,7 @@ public class Exam implements Parcelable {
 		dest.writeString(examNr);
 		dest.writeString(examName);
 		dest.writeString(semester);
-		dest.writeString(mark);
+		dest.writeString(grade);
 		dest.writeInt(passed ? 1 : 0);
 		dest.writeString(notation);
 		dest.writeInt(attempts);
@@ -119,7 +119,7 @@ public class Exam implements Parcelable {
 		this.examName = in.readString();
 		this.semester = in.readString();
 		this.examDate = in.readString();
-		this.mark = in.readString();
+		this.grade = in.readString();
 		this.passed = in.readInt() == 1 ? true : false;
 		this.notation = in.readString();
 		this.attempts = in.readInt();

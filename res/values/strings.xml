@@ -19,11 +19,12 @@
 	<string name="progress_webcheck">Antwork checken...</string>
 	<string name="progress_cookie">Keks nehmen...</string>
 	<string name="progress_noten">Noten holen...</string>
-	<string name="progress_notenprepare">Noten zubereiten...</string>
+	<string name="progress_notenprepare">Noten aufbereiten...</string>
 	<string name="title_view_marks">Notenspiegel</string>
 	<string name="title_head_exam">Prüfung</string>
 	<string name="title_head_mark">Note</string>
 	<string name="login_checkBox">Anmeldedaten Speichern</string>
+	<string name="grades_view">hsDroid - Notenspiegel</string>
 	
 	
 

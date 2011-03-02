@@ -50,16 +50,16 @@ public class ExamStorage implements Parcelable {
 	 * @param examName {@link String} mit dem Prüfungsnamen
 	 * @param semester {@link String} mit dem Prüfungs Semester
 	 * @param examDate {@link String} mit dem Prüfungsdatum
-	 * @param mark {@link String} mit der erzielten Note
+	 * @param grade {@link String} mit der erzielten Note
 	 * @param passed {@link Boolean} Bestanden Status
 	 * @param notation {@link String} Vermerk
 	 * @param attempts {@link integer} bisher benötigte Versuche
 	 */
 	public void appendFach(String examNr, String examName,
-			String semester, String examDate, String mark,
+			String semester, String examDate, String grade,
 			Boolean passed, String notation, int attempts) {
 		Exam tmpExam = new Exam(examNr, examName, semester,
-				examDate, mark, passed, notation, attempts);
+				examDate, grade, passed, notation, attempts);
 		exams.add(tmpExam);
 	}
 

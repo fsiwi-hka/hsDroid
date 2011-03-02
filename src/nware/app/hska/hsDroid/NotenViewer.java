@@ -96,7 +96,7 @@ public class NotenViewer extends Activity {
 				examMark[i] = new TextView(this);
 				// lectureNote[i].setText(lecStore.getLecture(i).getNote());
 				examMark[i].setMinimumWidth(100);
-				examMark[i].setText(noten.examStorage.getExam(i).getMark());
+				examMark[i].setText(noten.examStorage.getExam(i).getGrade());
 				examMark[i].setTypeface(Typeface.DEFAULT, Typeface.NORMAL);
 				// examMark[i].set Padding(0, 2, 2, 2);
 				// examMark[i].setBackgroundColor(Color.GREEN);

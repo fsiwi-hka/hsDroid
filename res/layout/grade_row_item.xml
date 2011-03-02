@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="wrap_content"
+	android:orientation="horizontal" android:baselineAligned="true">
+	<LinearLayout android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:orientation="vertical">
+
+		<TextView android:id="@+id/examName" 
+			android:textSize="12sp"
+			android:textStyle="bold" 
+			android:text="test Prüfung" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+			
+		<LinearLayout android:layout_width="wrap_content"
+			android:layout_height="wrap_content" 
+			android:orientation="horizontal">
+			
+			<TextView android:id="@+id/examNr" 
+				android:textSize="12sp"
+				android:layout_width="wrap_content" 
+				android:layout_height="wrap_content" 
+				android:text="IB111"
+				/>
+			<TextView android:id="@+id/examAttempts" 
+				android:textSize="12sp"
+				android:layout_width="wrap_content" 
+				android:layout_height="wrap_content" 
+				android:text="Versuch: asdasd99"
+				android:layout_marginLeft="5dp"
+				/>
+				
+		</LinearLayout>
+		
+	</LinearLayout>
+<LinearLayout android:layout_width="fill_parent"
+		android:layout_height="fill_parent" android:orientation="vertical">
+	<TextView android:id="@+id/examGrade" 
+		android:textSize="18px"
+		android:textStyle="bold" 
+		android:layout_height="fill_parent" 
+		android:text="1,0"
+		 android:layout_width="wrap_content" 
+		 android:layout_gravity="right" 
+		 android:layout_marginRight="5dp"/>
+</LinearLayout>
+</LinearLayout>

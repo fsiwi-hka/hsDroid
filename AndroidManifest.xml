@@ -9,7 +9,7 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".NotenViewer" android:label="@string/app_name"></activity>
+		<activity android:name=".GradesListView" android:label="@string/grades_view"></activity>
 
 	</application>
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>

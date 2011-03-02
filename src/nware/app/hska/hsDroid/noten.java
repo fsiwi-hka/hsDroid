@@ -273,7 +273,7 @@ public class noten extends Activity {
 					//progress dialog schließen
 					progressDialog.dismiss();
 					//start activity "NotenViewer"
-					Intent i = new Intent(mainContext, NotenViewer.class);
+					Intent i = new Intent(mainContext, GradesListView.class);
 					startActivity(i);
 
 					if (entity != null)
@@ -422,24 +422,24 @@ public class noten extends Activity {
 		Boolean fetch = false;
 		Boolean waitForTd = false;
 		int elementCount = 0; // 0-7
-		private String pruefungsNr;
-		private String pruefungsText;
+		private String examNr;
+		private String examName;
 		private String semester;
-		private String pruefungsDatum;
-		private String note;
-		private boolean status;
-		private String vermerk;
-		private int versuch;
+		private String examDate;
+		private String grade;
+		private boolean passed;
+		private String notation;
+		private int attempts;
 
 		private void resetLectureVars() {
-			this.pruefungsNr = "";
-			this.pruefungsText = "";
+			this.examNr = "";
+			this.examName = "";
 			this.semester = "";
-			this.pruefungsDatum = "";
-			this.note = "";
-			this.status = false;
-			this.vermerk = "";
-			this.versuch = 0;
+			this.examDate = "";
+			this.grade = "";
+			this.passed = false;
+			this.notation = "";
+			this.attempts = 0;
 		}
 
 		@Override
@@ -469,8 +469,8 @@ public class noten extends Activity {
 			super.endElement(n, l, q);
 			if (l == "tr" && fetch == true) {
 
-				examStorage.appendFach(pruefungsNr, pruefungsText, semester,
-						pruefungsDatum, note, status, vermerk, versuch);
+				examStorage.appendFach(examNr, examName, semester,
+						examDate, grade, passed, notation, attempts);
 
 				waitForTd = false;
 				fetch = false;
@@ -496,14 +496,14 @@ public class noten extends Activity {
 				switch (elementCount) {
 				case 0:
 					// Log.d("PruefNr:", text);
-					pruefungsNr += text;
-					// System.out.println("pnr  ["+pruefungsNr+"]");
+					examNr += text;
+					// System.out.println("pnr  ["+examNr+"]");
 
 					break;
 				case 1:
 					// Log.d("PruefName:", text);
-					pruefungsText += text;
-					// System.out.println("ptxt  ["+pruefungsText+"]");
+					examName += text;
+					// System.out.println("ptxt  ["+examName+"]");
 
 					break;
 				case 2:
@@ -512,11 +512,11 @@ public class noten extends Activity {
 					break;
 				case 3:
 					// Log.d("Datum:", text);
-					pruefungsDatum += text;
+					examDate += text;
 					// SimpleDateFormat sdfToDate = new SimpleDateFormat(
 					// "dd.MM.yyyy");
 					// try {
-					// pruefungsDatum = sdfToDate.parse(text);
+					// examDate = sdfToDate.parse(text);
 					// } catch (ParseException e) {
 					// // Log.d("read:: date parser: ", e.getMessage());
 					// e.printStackTrace();
@@ -524,21 +524,21 @@ public class noten extends Activity {
 					break;
 				case 4:
 					// Log.d("Note:", text);
-					note += text;
+					grade += text;
 					break;
 				case 5:
 					// Log.d("Status:", text);
 					if (text.equals("bestanden")) {
-						status = true;
+						passed = true;
 					}
 					break;
 				case 6:
 					// Log.d("Vermerk:", text);
-					vermerk += text;
+					notation += text;
 					break;
 				case 7:
 					// Log.d("Versuch:", text);
-					versuch = Integer.valueOf(text);
+					attempts = Integer.valueOf(text);
 					break;
 
 				default:
