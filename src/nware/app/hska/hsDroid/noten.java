@@ -39,7 +39,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -66,7 +65,7 @@ public class noten extends Activity {
 	private EditText UserEditText;
 	private EditText PassEditText;
 	private CheckBox LoginCheckBox;
-	private Context mainContext;
+	//private Context mainContext;
 
 	private boolean checkBoxChecked;
 	private SharedPreferences notenapp_preferences;
@@ -75,7 +74,7 @@ public class noten extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		mainContext = this;
+		//mainContext = this;
 		progressDialog = new ProgressDialog(this);
 		progressDialog.setMessage(this.getString(R.string.progress_loading));
 		progressDialog.setIndeterminate(true);
@@ -125,21 +124,22 @@ public class noten extends Activity {
 				}
 
 				if (username.length() == 0) {
-					createDialog(mainContext.getString(R.string.error),
-							mainContext.getString(R.string.error_name_missing));
+					
+					createDialog(v.getContext().getString(R.string.error),
+							v.getContext().getString(R.string.error_name_missing));
 					return;
 				} else
 				// FIXME bessere RegExp
 				if (!username.matches("^[a-z]{4}[0-9]{4}")) {
-					createDialog(mainContext.getString(R.string.error),
-							mainContext
+					createDialog(v.getContext().getString(R.string.error),
+							v.getContext()
 									.getString(R.string.error_name_incorrect));
 					return;
 				} else
 
 				if (password.length() == 0) {
-					createDialog(mainContext.getString(R.string.error),
-							mainContext
+					createDialog(v.getContext().getString(R.string.error),
+							v.getContext()
 									.getString(R.string.error_password_missing));
 					return;
 				} else {
@@ -165,22 +165,22 @@ public class noten extends Activity {
 
 		@Override
 		public void handleMessage(Message msg) {
-			String message = mainContext.getString(R.string.progress_loading);
+			String message = noten.this.getString(R.string.progress_loading);
 			switch (msg.what) {
 			case 1:
-				message = mainContext.getString(R.string.progress_login);
+				message = noten.this.getString(R.string.progress_login);
 				break;
 			case 2:
-				message = mainContext.getString(R.string.progress_webcheck);
+				message = noten.this.getString(R.string.progress_webcheck);
 				break;
 			case 3:
-				message = mainContext.getString(R.string.progress_cookie);
+				message = noten.this.getString(R.string.progress_cookie);
 				break;
 			case 4:
-				message = mainContext.getString(R.string.progress_noten);
+				message = noten.this.getString(R.string.progress_noten);
 				break;
 			case 5:
-				message = mainContext.getString(R.string.progress_notenprepare);
+				message = noten.this.getString(R.string.progress_notenprepare);
 			default:
 				break;
 			}
@@ -273,7 +273,7 @@ public class noten extends Activity {
 					//progress dialog schließen
 					progressDialog.dismiss();
 					//start activity "NotenViewer"
-					Intent i = new Intent(mainContext, GradesListView.class);
+					Intent i = new Intent(noten.this, GradesListView.class);
 					startActivity(i);
 
 					if (entity != null)
@@ -281,7 +281,7 @@ public class noten extends Activity {
 				} catch (Exception e) {
 					progressDialog.dismiss();
 					createDialog(
-							mainContext.getString(R.string.error_couldnt_connect),
+							noten.this.getString(R.string.error_couldnt_connect),
 
 							e.getMessage());
 				}
@@ -302,7 +302,7 @@ public class noten extends Activity {
 		if (count < 10) { // sollte inerhalb der ersten 10 zeilen stehen..
 			if (line.contains("System nicht verf")) {
 				throw new HSLoginException(
-						mainContext.getString(R.string.error_site_down));
+						this.getString(R.string.error_site_down));
 			}
 		}
 		// A</u>nmelden
@@ -310,7 +310,7 @@ public class noten extends Activity {
 		if (count < 50 && count > 30) {
 			if (line.contains("A</u>nmelden")) {
 				throw new HSLoginException(
-						mainContext.getString(R.string.error_login_failed));
+						this.getString(R.string.error_login_failed));
 			}
 		}
 	}
@@ -382,10 +382,10 @@ public class noten extends Activity {
 			read(htmlContentString);
 
 		} catch (ClientProtocolException e) {
-			Log.d("Notenspiegel::client exception:", e.getMessage());
+			Log.e("Notenspiegel::client exception:", e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
-			Log.d("Notenspiegel::io exception:", e.getMessage());
+			Log.e("Notenspiegel::io exception:", e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -401,13 +401,13 @@ public class noten extends Activity {
 
 			xr.parse(new InputSource(new StringReader(test)));
 		} catch (ParserConfigurationException e) {
-			Log.d("read:ParserConfException:", e.getMessage());
+			Log.e("read:ParserConfException:", e.getMessage());
 			e.printStackTrace();
 		} catch (SAXException e) {
-			Log.d("read:SAXException:", e.getMessage());
+			Log.e("read:SAXException:", e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
-			Log.d("read:IOException:", e.getMessage());
+			Log.e("read:IOException:", e.getMessage());
 			e.printStackTrace();
 		}
 	}

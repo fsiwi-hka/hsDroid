@@ -3,7 +3,8 @@
 	android:layout_width="fill_parent" android:layout_height="wrap_content"
 	android:orientation="horizontal" android:baselineAligned="true">
 	<LinearLayout android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:orientation="vertical">
+		android:layout_height="wrap_content" 
+		android:orientation="vertical">
 
 		<TextView android:id="@+id/examName" 
 			android:textSize="12sp"
@@ -32,14 +33,13 @@
 		
 	</LinearLayout>
 <LinearLayout android:layout_width="fill_parent"
-		android:layout_height="fill_parent" android:orientation="vertical">
+		android:orientation="vertical" android:layout_height="wrap_content" android:layout_gravity="center_vertical">
 	<TextView android:id="@+id/examGrade" 
 		android:textSize="18px"
 		android:textStyle="bold" 
-		android:layout_height="fill_parent" 
 		android:text="1,0"
 		 android:layout_width="wrap_content" 
 		 android:layout_gravity="right" 
-		 android:layout_marginRight="5dp"/>
+		 android:layout_marginRight="5dp" android:layout_height="match_parent"/>
 </LinearLayout>
 </LinearLayout>

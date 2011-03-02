@@ -78,6 +78,10 @@ public class ExamStorage implements Parcelable {
 		return exams.size();
 	}
 
+	public ArrayList<Exam> getList(){
+		return this.exams;
+	}
+	
 	/**
 	 * Gibt eine Prüfung anhand eines Indexes zurück
 	 * @param index {@link integer} Index der gewünschten Prüfung
