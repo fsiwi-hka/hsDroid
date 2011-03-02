@@ -1,21 +1,16 @@
 package nware.app.hska.hsDroid;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-
-import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
-
 import javax.xml.parsers.SAXParserFactory;
-
-import nware.app.hska.hsDroid.R;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -46,10 +41,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class noten extends Activity {
 
@@ -157,6 +156,30 @@ public class noten extends Activity {
 			}
 		});
 	}
+	
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.menu, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    switch (item.getItemId()) {
+	        case R.id.preferences:     Toast.makeText(this, "You pressed preferences!", Toast.LENGTH_LONG).show();
+	                            break;
+	        case R.id.about:     Toast.makeText(this, "You pressed about!", Toast.LENGTH_LONG).show();
+	                            break;
+	        case R.id.examViewAll:     Toast.makeText(this, "You pressed all!", Toast.LENGTH_LONG).show();
+            break;
+	        case R.id.examViewOnlyLast:     Toast.makeText(this, "You pressed last!", Toast.LENGTH_LONG).show();
+            break;
+	    }
+	    return true;
+	}
+	
 
 	/**
 	 * ProgresDialog Handler
