@@ -53,18 +53,16 @@ import android.widget.Toast;
 public class noten extends Activity {
 
 	private static final String UPDATE_URL = "https://qis2.hs-karlsruhe.de/qisserver/rds?state=user&type=1&category=auth.login&startpage=portal.vm&breadCrumbSource=portal";
-	List<Cookie> cookies;
+	public static List<Cookie> cookies;
 	DefaultHttpClient client;
 	private String asiKey;
-
-	//storage public static, damit sie aus anderen activities verfügbar ist
-	public static ExamStorage examStorage;
+	boolean loggedIn = false;
 
 	public ProgressDialog progressDialog;
 	private EditText UserEditText;
 	private EditText PassEditText;
 	private CheckBox LoginCheckBox;
-	//private Context mainContext;
+	// private Context mainContext;
 
 	private boolean checkBoxChecked;
 	private SharedPreferences notenapp_preferences;
@@ -73,7 +71,7 @@ public class noten extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		//mainContext = this;
+		// mainContext = this;
 		progressDialog = new ProgressDialog(this);
 		progressDialog.setMessage(this.getString(R.string.progress_loading));
 		progressDialog.setIndeterminate(true);
@@ -123,28 +121,32 @@ public class noten extends Activity {
 				}
 
 				if (username.length() == 0) {
-					
-					createDialog(v.getContext().getString(R.string.error),
-							v.getContext().getString(R.string.error_name_missing));
+
+					createDialog(v.getContext().getString(R.string.error), v
+							.getContext()
+							.getString(R.string.error_name_missing));
 					return;
 				} else
 				// FIXME bessere RegExp
 				if (!username.matches("^[a-z]{4}[0-9]{4}")) {
-					createDialog(v.getContext().getString(R.string.error),
-							v.getContext()
-									.getString(R.string.error_name_incorrect));
+					createDialog(
+							v.getContext().getString(R.string.error),
+							v.getContext().getString(
+									R.string.error_name_incorrect));
 					return;
 				} else
 
 				if (password.length() == 0) {
-					createDialog(v.getContext().getString(R.string.error),
-							v.getContext()
-									.getString(R.string.error_password_missing));
+					createDialog(
+							v.getContext().getString(R.string.error),
+							v.getContext().getString(
+									R.string.error_password_missing));
 					return;
 				} else {
 					progressDialog.show();
 
 					doLogin(username, password);
+
 				}
 			}
 		});
@@ -156,30 +158,31 @@ public class noten extends Activity {
 			}
 		});
 	}
-	
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.menu, menu);
-	    return true;
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu, menu);
+		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-	        case R.id.preferences:     Toast.makeText(this, "You pressed preferences!", Toast.LENGTH_LONG).show();
-	                            break;
-	        case R.id.about:     Toast.makeText(this, "You pressed about!", Toast.LENGTH_LONG).show();
-	                            break;
-	        case R.id.examViewAll:     Toast.makeText(this, "You pressed all!", Toast.LENGTH_LONG).show();
-            break;
-	        case R.id.examViewOnlyLast:     Toast.makeText(this, "You pressed last!", Toast.LENGTH_LONG).show();
-            break;
-	    }
-	    return true;
+		switch (item.getItemId()) {
+		case R.id.menu_preferences:
+			Toast.makeText(this, "You pressed preferences!", Toast.LENGTH_LONG)
+					.show();
+			return true;
+		case R.id.menu_about:
+			Toast.makeText(this, "You pressed about!", Toast.LENGTH_LONG)
+					.show();
+
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+
 	}
-	
 
 	/**
 	 * ProgresDialog Handler
@@ -218,8 +221,11 @@ public class noten extends Activity {
 
 	/**
 	 * Creates {@link AlertDialog}
-	 * @param title {@link String} dialog title
-	 * @param text {@link String} dialog text
+	 * 
+	 * @param title
+	 *            {@link String} dialog title
+	 * @param text
+	 *            {@link String} dialog text
 	 */
 	private void createDialog(String title, String text) {
 		AlertDialog ad = new AlertDialog.Builder(this)
@@ -232,25 +238,27 @@ public class noten extends Activity {
 	// /qisserver/rds?state=user&type=1&category=auth.login&startpage=portal.vm&breadCrumbSource=portal
 	// asdf=mami0011&fdsa=secretpw&submit=Anmelden
 
-
 	/**
-	 * Login into qis2 server 
-	 * @param login {@link String} Username
-	 * @param pass {@link String} Password
+	 * Login into qis2 server
+	 * 
+	 * @param login
+	 *            {@link String} Username
+	 * @param pass
+	 *            {@link String} Password
 	 */
 	private void doLogin(final String login, final String pass) {
 		final String pw = pass;
 		Thread t = new Thread() {
 			public void run() {
-				
+
 				client = new DefaultHttpClient();
 
 				HttpResponse response;
 				HttpEntity entity;
 				try {
 					progressHandle.sendMessage(progressHandle.obtainMessage(1));
-					
-					//Post daten zusammen bauen
+
+					// Post daten zusammen bauen
 					HttpPost post = new HttpPost(UPDATE_URL);
 					List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 					nvps.add(new BasicNameValuePair("asdf", login));
@@ -259,11 +267,10 @@ public class noten extends Activity {
 					post.setHeader("Content-Type",
 							"application/x-www-form-urlencoded");
 					post.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-					
-					//http anfrage starten
+
+					// http anfrage starten
 					response = client.execute(post);
-					
-					
+
 					entity = response.getEntity();
 					InputStream is = entity.getContent();
 					BufferedReader rd = new BufferedReader(
@@ -271,7 +278,7 @@ public class noten extends Activity {
 					String line;
 					int count = 0;
 					progressHandle.sendMessage(progressHandle.obtainMessage(2));
-					//response auswerten
+					// response auswerten
 					while ((line = rd.readLine()) != null) {
 						// TODO check login success
 						loginStringTest(line, count);
@@ -288,15 +295,16 @@ public class noten extends Activity {
 					is.close();
 
 					progressHandle.sendMessage(progressHandle.obtainMessage(3));
-					cookies = client.getCookieStore().getCookies();
+					noten.cookies = client.getCookieStore().getCookies();
 
-					progressHandle.sendMessage(progressHandle.obtainMessage(4));
-					getNotenspiegel();
-					
-					//progress dialog schließen
+					loggedIn = true;
+
+					// progress dialog schließen
 					progressDialog.dismiss();
-					//start activity "NotenViewer"
+					// start activity "NotenViewer"
+					// finalize();
 					Intent i = new Intent(noten.this, GradesListView.class);
+					i.putExtra("asiKey", asiKey);
 					startActivity(i);
 
 					if (entity != null)
@@ -307,6 +315,9 @@ public class noten extends Activity {
 							noten.this.getString(R.string.error_couldnt_connect),
 
 							e.getMessage());
+				} catch (Throwable e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 		};
@@ -315,8 +326,11 @@ public class noten extends Activity {
 
 	/**
 	 * Test for Login response Line
-	 * @param line {@link String} with a line from the login response
-	 * @param count {@link Integer} line count
+	 * 
+	 * @param line
+	 *            {@link String} with a line from the login response
+	 * @param count
+	 *            {@link Integer} line count
 	 * @throws HSLoginException
 	 */
 	private void loginStringTest(String line, int count)
@@ -338,252 +352,4 @@ public class noten extends Activity {
 		}
 	}
 
-	//TODO auslagern in noten view
-	private void getNotenspiegel() {
-		// FIXME asi key könnte man auch mit get in den header einbauen bzw alle gets...
-		String notenSpiegelURL = "https://qis2.hs-karlsruhe.de/qisserver/rds?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
-				+ asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";
-
-		HttpResponse response;
-		HttpEntity entity;
-		
-		try {
-			
-			client = new DefaultHttpClient();
-			HttpPost httpPost = new HttpPost(notenSpiegelURL);
-			CookieSpecBase cookieSpecBase = new BrowserCompatSpec();
-
-			List<Header> cookieHeader = cookieSpecBase.formatCookies(cookies);
-			
-			httpPost.setHeader(cookieHeader.get(0));
-			
-			response = client.execute(httpPost);
-			entity = response.getEntity();
-			InputStream is = entity.getContent();
-
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is),
-					4096);
-			String line;
-
-			Boolean record = false;
-			StringBuilder sb = new StringBuilder();
-			while ((line = rd.readLine()) != null) {
-				if (!record && line.contains("<table border=\"0\">")) {
-					record = true;
-				}
-				if (record && line.contains("</table>")) {
-					sb.append(line);
-					// System.out.println("last line: " + line);
-					record = false;
-					break;
-				}
-				if (record) {
-					// alle nicht anzeigbaren zeichen entfernen (\n,\t,\s...)
-					line = line.trim();
-
-					// alle html leerzeichen müssen raus, da der xml reader nix
-					// mit anfangen kann
-					line = line.replaceAll("&nbsp;", "");
-
-					// da die <img ..> tags nicht xml like "well formed" sind,
-					// muss man sie ein bissel anpassen ;)
-					if (line.contains("<img")) {
-						line = line.substring(0, line.indexOf(">") + 1)
-								+ "</a>";
-					}
-					sb.append(line);
-					// System.out.println("line: " + line);
-				}
-			}
-			if (entity != null)
-				entity.consumeContent();
-			is.close();
-			String htmlContentString = sb.toString();
-
-			rd.close();
-			progressHandle.sendMessage(progressHandle.obtainMessage(5));
-			read(htmlContentString);
-
-		} catch (ClientProtocolException e) {
-			Log.e("Notenspiegel::client exception:", e.getMessage());
-			e.printStackTrace();
-		} catch (IOException e) {
-			Log.e("Notenspiegel::io exception:", e.getMessage());
-			e.printStackTrace();
-		}
-
-	}
-
-	private void read(String test) {
-		SAXParser sp;
-		try {
-			sp = SAXParserFactory.newInstance().newSAXParser();
-			XMLReader xr = sp.getXMLReader();
-			LoginContentHandler uch = new LoginContentHandler();
-			xr.setContentHandler(uch);
-
-			xr.parse(new InputSource(new StringReader(test)));
-		} catch (ParserConfigurationException e) {
-			Log.e("read:ParserConfException:", e.getMessage());
-			e.printStackTrace();
-		} catch (SAXException e) {
-			Log.e("read:SAXException:", e.getMessage());
-			e.printStackTrace();
-		} catch (IOException e) {
-			Log.e("read:IOException:", e.getMessage());
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * SAX2 event Handler for "Notenspiegel" html page
-	 * @author Oliver Eichner
-	 *
-	 */
-	private class LoginContentHandler extends DefaultHandler {
-
-		Boolean fetch = false;
-		Boolean waitForTd = false;
-		int elementCount = 0; // 0-7
-		private String examNr;
-		private String examName;
-		private String semester;
-		private String examDate;
-		private String grade;
-		private boolean passed;
-		private String notation;
-		private int attempts;
-
-		private void resetLectureVars() {
-			this.examNr = "";
-			this.examName = "";
-			this.semester = "";
-			this.examDate = "";
-			this.grade = "";
-			this.passed = false;
-			this.notation = "";
-			this.attempts = 0;
-		}
-
-		@Override
-		public void startElement(String n, String l, String q, Attributes a)
-				throws SAXException {
-			super.startElement(n, l, q, a);
-			// Log.d("hska saxparser start l:", l);
-			if (l == "tr") {
-				waitForTd = true;
-			}
-			if (waitForTd && l == "th") {
-				waitForTd = false;
-			}
-			if (fetch && l == "td") {
-				elementCount++;
-			}
-			if (waitForTd && l == "td") {
-				fetch = true;
-				waitForTd = false;
-			}
-
-		}
-
-		@Override
-		public void endElement(String n, String l, String q)
-				throws SAXException {
-			super.endElement(n, l, q);
-			if (l == "tr" && fetch == true) {
-
-				examStorage.appendFach(examNr, examName, semester,
-						examDate, grade, passed, notation, attempts);
-
-				waitForTd = false;
-				fetch = false;
-				elementCount = 0;
-				resetLectureVars();
-
-			}
-
-		}
-
-		@Override
-		public void characters(char ch[], int start, int length) {
-			try {
-				super.characters(ch, start, length);
-			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			String text = new String(ch, start, length);
-			// FIXME test
-			text = text.trim();
-			if (fetch) {
-				switch (elementCount) {
-				case 0:
-					// Log.d("PruefNr:", text);
-					examNr += text;
-					// System.out.println("pnr  ["+examNr+"]");
-
-					break;
-				case 1:
-					// Log.d("PruefName:", text);
-					examName += text;
-					// System.out.println("ptxt  ["+examName+"]");
-
-					break;
-				case 2:
-					// Log.d("Semester:", text);
-					semester += text;
-					break;
-				case 3:
-					// Log.d("Datum:", text);
-					examDate += text;
-					// SimpleDateFormat sdfToDate = new SimpleDateFormat(
-					// "dd.MM.yyyy");
-					// try {
-					// examDate = sdfToDate.parse(text);
-					// } catch (ParseException e) {
-					// // Log.d("read:: date parser: ", e.getMessage());
-					// e.printStackTrace();
-					// }
-					break;
-				case 4:
-					// Log.d("Note:", text);
-					grade += text;
-					break;
-				case 5:
-					// Log.d("Status:", text);
-					if (text.equals("bestanden")) {
-						passed = true;
-					}
-					break;
-				case 6:
-					// Log.d("Vermerk:", text);
-					notation += text;
-					break;
-				case 7:
-					// Log.d("Versuch:", text);
-					attempts = Integer.valueOf(text);
-					break;
-
-				default:
-					break;
-				}
-			}
-
-		}
-
-		public void startDocument() throws SAXException {
-			super.startDocument();
-			examStorage = new ExamStorage();
-			resetLectureVars();
-		}
-
-		public void endDocument() throws SAXException {
-			super.endDocument();
-			//progressDialog.dismiss();
-
-			// TODO aus dem handler rausholen
-//			Intent i = new Intent(mainContext, NotenViewer.class);
-//			startActivity(i);
-		}
-	}
 }

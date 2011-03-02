@@ -8,8 +8,9 @@
 
 		<TextView android:id="@+id/examName" 
 			android:textSize="12sp"
-			android:textStyle="bold" 
-			android:text="test Prüfung" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+			android:textStyle="bold"  
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content"/>
 			
 		<LinearLayout android:layout_width="wrap_content"
 			android:layout_height="wrap_content" 
@@ -18,14 +19,12 @@
 			<TextView android:id="@+id/examNr" 
 				android:textSize="12sp"
 				android:layout_width="wrap_content" 
-				android:layout_height="wrap_content" 
-				android:text="IB111"
+				android:layout_height="wrap_content"
 				/>
 			<TextView android:id="@+id/examAttempts" 
 				android:textSize="12sp"
 				android:layout_width="wrap_content" 
-				android:layout_height="wrap_content" 
-				android:text="Versuch: asdasd99"
+				android:layout_height="wrap_content"
 				android:layout_marginLeft="5dp"
 				/>
 				
@@ -36,8 +35,7 @@
 		android:orientation="vertical" android:layout_height="wrap_content" android:layout_gravity="center_vertical">
 	<TextView android:id="@+id/examGrade" 
 		android:textSize="18px"
-		android:textStyle="bold" 
-		android:text="1,0"
+		android:textStyle="bold"
 		 android:layout_width="wrap_content" 
 		 android:layout_gravity="right" 
 		 android:layout_marginRight="5dp" android:layout_height="match_parent"/>

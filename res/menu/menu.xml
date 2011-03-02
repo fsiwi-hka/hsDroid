@@ -1,20 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 	<item android:title="@string/menu_preferences" 
-		android:id="@+id/preferences"
+		android:id="@+id/menu_preferences"
 		android:icon="@android:drawable/ic_menu_preferences">
-
-		<menu>
-			<group android:checkableBehavior="single">
-				<item android:id="@+id/examViewAll" 
-					android:title="@string/examViewAll" />
-				<item android:id="@+id/examViewOnlyLast"
-					android:title="@string/examViewOnlyLast" />
-			</group>
-
-		</menu>
 	</item>
-	<item android:id="@+id/about" 
+	<item android:id="@+id/menu_about" 
 		android:title="@string/menu_about"
 		android:icon="@android:drawable/ic_menu_info_details"></item>
 </menu>

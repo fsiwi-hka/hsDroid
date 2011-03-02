@@ -28,8 +28,10 @@
 	<string name="grades_view_attempt">&quot;Versuch: &quot;</string>
 	<string name="menu_preferences">Einstellungen</string>
 	<string name="menu_about">Über</string>
-	<string name="examViewAll">Alle Prüfungen</string>
-	<string name="examViewOnlyLast">Nur Aktuelle</string>
+	<string name="submenu_examViewAll">Alle Prüfungen</string>
+	<string name="submenu_examViewOnlyLast">Nur Aktuelle</string>
+	<string name="menu_view">Ansicht</string>
+	<string name="empty_list_view">Keine Daten vorhanden</string>
 	
 	
 

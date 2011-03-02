@@ -3,10 +3,12 @@ package nware.app.hska.hsDroid;
 import nware.app.hska.hsDroid.Exam;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import android.R.integer;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 /**
  * Speicher zur Verwaltung von {@link Exam} Objekten
@@ -44,6 +46,13 @@ public class ExamStorage implements Parcelable {
 		return exams;
 	}
 	
+	public ArrayList<Exam> getArrayListReverse() {
+		// TODO Auto-generated method stub
+		ArrayList<Exam> reverseList = this.exams;
+		Collections.reverse(reverseList);
+		Log.d("List test:", reverseList.get(0).getExamName());
+		return reverseList;
+	}
 	/**
 	 * Fügt eine Prüfung hinzu.
 	 * @param examNr {@link String} mit der Prüfungsnummer
@@ -76,10 +85,6 @@ public class ExamStorage implements Parcelable {
 	 */
 	public int getSize() {
 		return exams.size();
-	}
-
-	public ArrayList<Exam> getList(){
-		return this.exams;
 	}
 	
 	/**
@@ -120,5 +125,7 @@ public class ExamStorage implements Parcelable {
 		this.exams = new ArrayList<Exam>();
 		in.readTypedList(exams, Exam.CREATOR);
 	}
+
+
 
 }
