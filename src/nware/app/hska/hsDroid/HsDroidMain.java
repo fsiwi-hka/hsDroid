@@ -1,38 +1,24 @@
 package nware.app.hska.hsDroid;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BrowserCompatSpec;
-import org.apache.http.impl.cookie.CookieSpecBase;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -41,17 +27,19 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class noten extends Activity {
+public class HsDroidMain extends Activity {
 
 	private static final String UPDATE_URL = "https://qis2.hs-karlsruhe.de/qisserver/rds?state=user&type=1&category=auth.login&startpage=portal.vm&breadCrumbSource=portal";
 	public static List<Cookie> cookies;
@@ -175,14 +163,50 @@ public class noten extends Activity {
 					.show();
 			return true;
 		case R.id.menu_about:
-			Toast.makeText(this, "You pressed about!", Toast.LENGTH_LONG)
-					.show();
+//			Toast.makeText(this, "You pressed about!", Toast.LENGTH_LONG)
+//					.show();
+			aboutDialog();
 
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 
+	}
+
+	private void aboutDialog() {
+		//TODO xml bauen
+//		final Dialog dialog = new Dialog(HsDroidMain.this);
+//		dialog.setContentView(R.layout.about);
+//		dialog.setTitle("About"); // TODO -> strings.xml
+//		dialog.setCancelable(true);
+//		TextView mainText = (TextView) dialog.findViewById(R.id.about_maintext);
+//		mainText.setText("testText");
+//
+//		// set up image view
+//
+//		ImageView img = (ImageView) dialog.findViewById(R.id.about_image);
+//
+//		img.setImageResource(R.drawable.icon);
+//
+//		// set up button
+//
+//		Button button = (Button) dialog.findViewById(R.id.about_button);
+//
+//		button.setOnClickListener(new OnClickListener() {
+//
+//			@Override
+//			public void onClick(View v) {
+//
+//				dialog.cancel();
+//
+//			}
+//
+//		});
+//
+//		// now that the dialog is set up, it's time to show it
+//
+//		dialog.show();
 	}
 
 	/**
@@ -192,16 +216,18 @@ public class noten extends Activity {
 
 		@Override
 		public void handleMessage(Message msg) {
-			String message = noten.this.getString(R.string.progress_loading);
+			String message = HsDroidMain.this
+					.getString(R.string.progress_loading);
 			switch (msg.what) {
 			case 1:
-				message = noten.this.getString(R.string.progress_login);
+				message = HsDroidMain.this.getString(R.string.progress_login);
 				break;
 			case 2:
-				message = noten.this.getString(R.string.progress_webcheck);
+				message = HsDroidMain.this
+						.getString(R.string.progress_webcheck);
 				break;
 			case 3:
-				message = noten.this.getString(R.string.progress_cookie);
+				message = HsDroidMain.this.getString(R.string.progress_cookie);
 			default:
 				break;
 			}
@@ -290,7 +316,7 @@ public class noten extends Activity {
 					is.close();
 
 					progressHandle.sendMessage(progressHandle.obtainMessage(3));
-					noten.cookies = client.getCookieStore().getCookies();
+					HsDroidMain.cookies = client.getCookieStore().getCookies();
 
 					loggedIn = true;
 
@@ -298,8 +324,9 @@ public class noten extends Activity {
 					progressDialog.dismiss();
 					// start activity "NotenViewer"
 					// finalize();
-					
-					Intent i = new Intent(noten.this, GradesListView.class);
+
+					Intent i = new Intent(HsDroidMain.this,
+							GradesListView.class);
 					i.putExtra("asiKey", asiKey);
 					startActivity(i);
 
@@ -308,7 +335,7 @@ public class noten extends Activity {
 				} catch (Exception e) {
 					progressDialog.dismiss();
 					createDialog(
-							noten.this.getString(R.string.error_couldnt_connect),
+							HsDroidMain.this.getString(R.string.error_couldnt_connect),
 
 							e.getMessage());
 				} catch (Throwable e) {

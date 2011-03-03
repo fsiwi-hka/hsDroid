@@ -382,7 +382,7 @@ public class GradesListView extends ListActivity implements Runnable {
 			CookieSpecBase cookieSpecBase = new BrowserCompatSpec();
 
 			List<Header> cookieHeader = cookieSpecBase
-					.formatCookies(noten.cookies);
+					.formatCookies(HsDroidMain.cookies);
 
 			httpPost.setHeader(cookieHeader.get(0));
 
