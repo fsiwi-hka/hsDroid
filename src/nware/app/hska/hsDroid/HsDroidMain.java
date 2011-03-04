@@ -71,8 +71,7 @@ public class HsDroidMain extends Activity {
 
 		LoginCheckBox = (CheckBox) findViewById(R.id.login_checkBox);
 
-		notenapp_preferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
+		notenapp_preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		String savedUser = notenapp_preferences.getString("UserSave", "");
 		String savedPass = notenapp_preferences.getString("PassSave", "");
 		checkBoxChecked = notenapp_preferences.getBoolean("CheckBox", false);
@@ -87,9 +86,13 @@ public class HsDroidMain extends Activity {
 
 		button.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-
-				String username = UserEditText.getText().toString().trim();
-				String password = PassEditText.getText().toString();
+				// Benutzernamen: nicht anzeigbare Zeichen entfernen, alles
+				// klein schreiben
+				// (leerzeichen killen und erster Buchstabe klein, wenn über
+				// android autoverfolständigung eingefügt...)
+				String username = UserEditText.getText().toString().trim().toLowerCase();
+				// Password: nicht anzeigbare Zeichen entfernen
+				String password = PassEditText.getText().toString().trim();
 
 				// FIXME zu unsicher.. wird alles im plaintext gespeichert..
 				// eventuell sqlite mit encryption..
@@ -111,29 +114,23 @@ public class HsDroidMain extends Activity {
 
 				if (username.length() == 0) {
 
-					createDialog(v.getContext().getString(R.string.error), v
-							.getContext()
-							.getString(R.string.error_name_missing));
+					createDialog(v.getContext().getString(R.string.error),
+							v.getContext().getString(R.string.error_name_missing));
 					return;
 				} else
 				// FIXME bessere RegExp
-				if (!username.matches("^[a-z]{4}[0-9]{4}")) {
-					createDialog(
-							v.getContext().getString(R.string.error),
-							v.getContext().getString(
-									R.string.error_name_incorrect));
+				if (!username.matches("^[a-zA-Z]{4}[0-9]{4}")) {
+					createDialog(v.getContext().getString(R.string.error),
+							v.getContext().getString(R.string.error_name_incorrect));
 					return;
 				} else
 
 				if (password.length() == 0) {
-					createDialog(
-							v.getContext().getString(R.string.error),
-							v.getContext().getString(
-									R.string.error_password_missing));
+					createDialog(v.getContext().getString(R.string.error),
+							v.getContext().getString(R.string.error_password_missing));
 					return;
 				} else {
 					progressDialog.show();
-
 					doLogin(username, password);
 
 				}
@@ -159,12 +156,11 @@ public class HsDroidMain extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_preferences:
-			Toast.makeText(this, "You pressed preferences!", Toast.LENGTH_LONG)
-					.show();
+			Toast.makeText(this, "You pressed preferences!", Toast.LENGTH_LONG).show();
 			return true;
 		case R.id.menu_about:
-//			Toast.makeText(this, "You pressed about!", Toast.LENGTH_LONG)
-//					.show();
+			// Toast.makeText(this, "You pressed about!", Toast.LENGTH_LONG)
+			// .show();
 			aboutDialog();
 
 			return true;
@@ -175,38 +171,45 @@ public class HsDroidMain extends Activity {
 	}
 
 	private void aboutDialog() {
-		//TODO xml bauen
-//		final Dialog dialog = new Dialog(HsDroidMain.this);
-//		dialog.setContentView(R.layout.about);
-//		dialog.setTitle("About"); // TODO -> strings.xml
-//		dialog.setCancelable(true);
-//		TextView mainText = (TextView) dialog.findViewById(R.id.about_maintext);
-//		mainText.setText("testText");
-//
-//		// set up image view
-//
-//		ImageView img = (ImageView) dialog.findViewById(R.id.about_image);
-//
-//		img.setImageResource(R.drawable.icon);
-//
-//		// set up button
-//
-//		Button button = (Button) dialog.findViewById(R.id.about_button);
-//
-//		button.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//
-//				dialog.cancel();
-//
-//			}
-//
-//		});
-//
-//		// now that the dialog is set up, it's time to show it
-//
-//		dialog.show();
+
+		final Dialog dialog = new Dialog(HsDroidMain.this);
+		dialog.setContentView(R.layout.about);
+		dialog.setTitle(this.getString(R.string.menu_about));
+		dialog.setCancelable(true);
+		dialog.setCanceledOnTouchOutside(true);
+
+		TextView aboutTitle = (TextView) dialog.findViewById(R.id.about_title);
+		aboutTitle.setText(this.getString(R.string.app_name) + " - " + this.getString(R.string.app_version));
+		TextView aboutSubTitle = (TextView) dialog.findViewById(R.id.about_SubTitle);
+		aboutSubTitle.setText(this.getString(R.string.about_subtitle));
+
+		TextView mainText = (TextView) dialog.findViewById(R.id.about_maintext);
+		mainText.setText(this.getString(R.string.about_maintext));
+		// mainText.setMovementMethod(LinkMovementMethod.getInstance());
+
+		// set up image view
+
+		ImageView img = (ImageView) dialog.findViewById(R.id.about_image);
+
+		img.setImageResource(R.drawable.icon);
+		// set up button
+
+		Button button = (Button) dialog.findViewById(R.id.about_cancel);
+
+		button.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+				dialog.cancel();
+
+			}
+
+		});
+
+		// now that the dialog is set up, it's time to show it
+
+		dialog.show();
 	}
 
 	/**
@@ -216,15 +219,13 @@ public class HsDroidMain extends Activity {
 
 		@Override
 		public void handleMessage(Message msg) {
-			String message = HsDroidMain.this
-					.getString(R.string.progress_loading);
+			String message = HsDroidMain.this.getString(R.string.progress_loading);
 			switch (msg.what) {
 			case 1:
 				message = HsDroidMain.this.getString(R.string.progress_login);
 				break;
 			case 2:
-				message = HsDroidMain.this
-						.getString(R.string.progress_webcheck);
+				message = HsDroidMain.this.getString(R.string.progress_webcheck);
 				break;
 			case 3:
 				message = HsDroidMain.this.getString(R.string.progress_cookie);
@@ -249,8 +250,7 @@ public class HsDroidMain extends Activity {
 	 *            {@link String} dialog text
 	 */
 	private void createDialog(String title, String text) {
-		AlertDialog ad = new AlertDialog.Builder(this)
-				.setPositiveButton(this.getString(R.string.error_ok), null)
+		AlertDialog ad = new AlertDialog.Builder(this).setPositiveButton(this.getString(R.string.error_ok), null)
 				.setTitle(title).setMessage(text).create();
 		ad.show();
 	}
@@ -279,23 +279,25 @@ public class HsDroidMain extends Activity {
 				try {
 					progressHandle.sendMessage(progressHandle.obtainMessage(1));
 					Looper.prepare();
-					// Post daten zusammen bauen
+					// Post Daten zusammen bauen
 					HttpPost post = new HttpPost(UPDATE_URL);
 					List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+
+					// bessere namen als "asdf" und "fdsa" für die post daten
+					// sind ihnen beim basteln der Seite nicht eingefallen xD
+					// ganz nach dem motto "security by obscurity" ;)
 					nvps.add(new BasicNameValuePair("asdf", login));
 					nvps.add(new BasicNameValuePair("fdsa", pw));
 					nvps.add(new BasicNameValuePair("submit", "Anmelden"));
-					post.setHeader("Content-Type",
-							"application/x-www-form-urlencoded");
+					post.setHeader("Content-Type", "application/x-www-form-urlencoded");
 					post.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
 
-					// http anfrage starten
+					// http Anfrage starten
 					response = client.execute(post);
 
 					entity = response.getEntity();
 					InputStream is = entity.getContent();
-					BufferedReader rd = new BufferedReader(
-							new InputStreamReader(is), 4096);
+					BufferedReader rd = new BufferedReader(new InputStreamReader(is), 4096);
 					String line;
 					int count = 0;
 					progressHandle.sendMessage(progressHandle.obtainMessage(2));
@@ -305,7 +307,8 @@ public class HsDroidMain extends Activity {
 						loginStringTest(line, count);
 
 						if (line.contains("asi=")) {
-
+							// wenn ein asi Key gefunden wird, kann man davon
+							// ausgehen, dass man angemeldet is ;)
 							int begin = line.indexOf("asi=");
 							asiKey = line.substring(begin + 4, begin + 24);
 							break;
@@ -317,16 +320,15 @@ public class HsDroidMain extends Activity {
 
 					progressHandle.sendMessage(progressHandle.obtainMessage(3));
 					HsDroidMain.cookies = client.getCookieStore().getCookies();
-
-					loggedIn = true;
+					// cookies darf nicht leer sein
+					if (cookies.size() == 0)
+						throw new HSLoginException(HsDroidMain.this.getString(R.string.error_cookie_empty));
 
 					// progress dialog schließen
 					progressDialog.dismiss();
-					// start activity "NotenViewer"
-					// finalize();
 
-					Intent i = new Intent(HsDroidMain.this,
-							GradesListView.class);
+					// start activity "NotenViewer"
+					Intent i = new Intent(HsDroidMain.this, GradesListView.class);
 					i.putExtra("asiKey", asiKey);
 					startActivity(i);
 
@@ -334,10 +336,9 @@ public class HsDroidMain extends Activity {
 						entity.consumeContent();
 				} catch (Exception e) {
 					progressDialog.dismiss();
-					createDialog(
-							HsDroidMain.this.getString(R.string.error_couldnt_connect),
+					createDialog(HsDroidMain.this.getString(R.string.error_couldnt_connect),
 
-							e.getMessage());
+					e.getMessage());
 				} catch (Throwable e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -349,7 +350,7 @@ public class HsDroidMain extends Activity {
 	}
 
 	/**
-	 * Test for Login response Line
+	 * Quick'n'Dirty Test for Login response Lines
 	 * 
 	 * @param line
 	 *            {@link String} with a line from the login response
@@ -357,21 +358,19 @@ public class HsDroidMain extends Activity {
 	 *            {@link Integer} line count
 	 * @throws HSLoginException
 	 */
-	private void loginStringTest(String line, int count)
-			throws HSLoginException {
+	private void loginStringTest(String line, int count) throws HSLoginException {
+		// TODO geht bestimmt schöner, aber funktioniert ;)
 
-		if (count < 10) { // sollte inerhalb der ersten 10 zeilen stehen..
-			if (line.contains("System nicht verf")) {
-				throw new HSLoginException(
-						this.getString(R.string.error_site_down));
+		if (count < 10) { // sollte innerhalb der ersten 10 Zeilen stehen..
+			if (line.contains("System nicht verf")) {// blöööde Umlaute...
+				throw new HSLoginException(this.getString(R.string.error_site_down));
 			}
 		}
 		// A</u>nmelden
 		// if (line.contains("Anmeldung fehlgeschlagen")) {
 		if (count < 50 && count > 30) {
 			if (line.contains("A</u>nmelden")) {
-				throw new HSLoginException(
-						this.getString(R.string.error_login_failed));
+				throw new HSLoginException(this.getString(R.string.error_login_failed));
 			}
 		}
 	}

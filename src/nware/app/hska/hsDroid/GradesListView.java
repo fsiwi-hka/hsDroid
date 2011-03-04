@@ -61,6 +61,9 @@ public class GradesListView extends ListActivity implements Runnable {
 	// storage public static, damit sie aus anderen activities verfügbar ist
 	private String asiKey;
 	// private static ExamStorage examStorage;
+	
+	// FIXME eigene Activity für das holen der Noten? per bundle übergeben, da beim wechsel von Portrait zu Landscape und
+	// vice versa die noten neu abgerufen werden
 	private ArrayList<Exam> examsTest;
 
 	public ProgressDialog progressDialog;
@@ -72,6 +75,8 @@ public class GradesListView extends ListActivity implements Runnable {
 		if (extras != null) {
 			asiKey = extras.getString("asiKey");
 		}
+		//TODO //FIXME aiskey und cookies darf nicht leer sein!!!!!!
+		
 		// progressDialog = new ProgressDialog(this);
 		// progressDialog.setMessage(this.getString(R.string.progress_loading));
 		// progressDialog.setIndeterminate(true);
@@ -237,11 +242,17 @@ public class GradesListView extends ListActivity implements Runnable {
 				TextView exNr = (TextView) v.findViewById(R.id.examNr);
 				TextView exAtt = (TextView) v.findViewById(R.id.examAttempts);
 				TextView exGrade = (TextView) v.findViewById(R.id.examGrade);
+				TextView exSemester = (TextView) v.findViewById(R.id.examSemester);
 				if (exName != null) {
 					exName.setText(ex.getExamName());
 				}
 				if (exNr != null) {
 					exNr.setText(ex.getExamNr());
+				}
+				if (exSemester != null) {
+					exSemester.setText(this.getContext().getString(
+							R.string.grades_view_semester)
+							+ ex.getSemester());
 				}
 				if (exAtt != null && ex.getAttempts() != 0) {
 					exAtt.setText(this.getContext().getString(
@@ -268,7 +279,14 @@ public class GradesListView extends ListActivity implements Runnable {
 						// # C1FF00 # AEE500
 						// gingerbread ähnlich, bissel heller.. BEEB0C
 					}
+					if(ex.getGrade() != "") {
 					exGrade.setText(ex.getGrade());
+					} else {
+						if(ex.isPassed())
+							exGrade.setText("B");
+						else
+							exGrade.setText("N");
+					}
 				}
 
 			}
