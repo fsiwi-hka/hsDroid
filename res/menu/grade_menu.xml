@@ -15,6 +15,6 @@
 	</item>
 	<item android:id="@+id/view_menu_refresh" android:title="@string/menu_refresh"
 		android:icon="@drawable/refresh"></item>
-	<item android:id="@+id/view_menu_about" android:title="@string/menu_about"
+	<item android:id="@+id/menu_about" android:title="@string/menu_about"
 		android:icon="@drawable/about"></item>
 </menu>

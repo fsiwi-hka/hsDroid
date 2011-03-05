@@ -18,7 +18,6 @@ import org.apache.http.protocol.HTTP;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,16 +26,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class HsDroidMain extends Activity {
@@ -161,55 +158,20 @@ public class HsDroidMain extends Activity {
 		case R.id.menu_about:
 			// Toast.makeText(this, "You pressed about!", Toast.LENGTH_LONG)
 			// .show();
+			Log.d("Main menu:", "about");
 			aboutDialog();
 
 			return true;
 		default:
+			Log.d("Main menu:", "default");
+			System.out.println("id:" + item.getItemId() + " about: " + R.id.menu_about);
 			return super.onOptionsItemSelected(item);
 		}
 
 	}
 
-	private void aboutDialog() {
-
-		final Dialog dialog = new Dialog(HsDroidMain.this);
-		dialog.setContentView(R.layout.about);
-		dialog.setTitle(this.getString(R.string.menu_about));
-		dialog.setCancelable(true);
-		dialog.setCanceledOnTouchOutside(true);
-
-		TextView aboutTitle = (TextView) dialog.findViewById(R.id.about_title);
-		aboutTitle.setText(this.getString(R.string.app_name) + " - " + this.getString(R.string.app_version));
-		TextView aboutSubTitle = (TextView) dialog.findViewById(R.id.about_SubTitle);
-		aboutSubTitle.setText(this.getString(R.string.about_subtitle));
-
-		TextView mainText = (TextView) dialog.findViewById(R.id.about_maintext);
-		mainText.setText(this.getString(R.string.about_maintext));
-		// mainText.setMovementMethod(LinkMovementMethod.getInstance());
-
-		// set up image view
-
-		ImageView img = (ImageView) dialog.findViewById(R.id.about_image);
-
-		img.setImageResource(R.drawable.icon);
-		// set up button
-
-		Button button = (Button) dialog.findViewById(R.id.about_cancel);
-
-		button.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-
-				dialog.cancel();
-
-			}
-
-		});
-
-		// now that the dialog is set up, it's time to show it
-
-		dialog.show();
+	public void aboutDialog() {
+		new AboutDialog(this);
 	}
 
 	/**

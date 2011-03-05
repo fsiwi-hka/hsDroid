@@ -7,8 +7,8 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -46,7 +46,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * {@link ListActivity} zum anzeigen der Prüfungen
@@ -61,9 +60,10 @@ public class GradesListView extends ListActivity implements Runnable {
 	// storage public static, damit sie aus anderen activities verfügbar ist
 	private String asiKey;
 	// private static ExamStorage examStorage;
-	
-	// FIXME eigene Activity für das holen der Noten? per bundle übergeben, da beim wechsel von Portrait zu Landscape und
-	// vice versa die noten neu abgerufen werden
+
+	// FIXME eigene Klasse die vor dem Laden des View geladen wird, für
+	// das holen der Noten? per bundle übergeben, da beim Wechsel von Portrait
+	// zu Landscape und vice versa die noten neu abgerufen werden
 	private ArrayList<Exam> examsTest;
 
 	public ProgressDialog progressDialog;
@@ -75,20 +75,15 @@ public class GradesListView extends ListActivity implements Runnable {
 		if (extras != null) {
 			asiKey = extras.getString("asiKey");
 		}
-		//TODO //FIXME aiskey und cookies darf nicht leer sein!!!!!!
-		
-		// progressDialog = new ProgressDialog(this);
-		// progressDialog.setMessage(this.getString(R.string.progress_loading));
-		// progressDialog.setIndeterminate(true);
-		// progressDialog.setCancelable(false);
+		// TODO //FIXME aiskey und cookies darf nicht leer sein!!!!!!
+
 		getMarks();
 
 		// layout festlegen
 		setContentView(R.layout.grade_list_view);
 
 		this.examsTest = new ArrayList<Exam>();
-		this.m_examAdapter = new ExamAdapter(GradesListView.this,
-				R.layout.grade_row_item, this.examsTest);
+		this.m_examAdapter = new ExamAdapter(GradesListView.this, R.layout.grade_row_item, this.examsTest);
 		m_examAdapter.notifyDataSetInvalidated();
 		setListAdapter(this.m_examAdapter);
 
@@ -97,8 +92,7 @@ public class GradesListView extends ListActivity implements Runnable {
 	public void getMarks() {
 
 		// new ProgressDialog(this);
-		progressDialog = ProgressDialog.show(this, "",
-				this.getString(R.string.progress_loading));
+		progressDialog = ProgressDialog.show(this, "", this.getString(R.string.progress_loading));
 
 		Thread thread = new Thread(this);
 		thread.start();
@@ -121,16 +115,13 @@ public class GradesListView extends ListActivity implements Runnable {
 				progressDialog.dismiss();
 				return;
 			case 1:
-				message = GradesListView.this
-						.getString(R.string.progress_notenfetch);
+				message = GradesListView.this.getString(R.string.progress_notenfetch);
 				break;
 			case 2:
-				message = GradesListView.this
-						.getString(R.string.progress_notencleanup);
+				message = GradesListView.this.getString(R.string.progress_notencleanup);
 				break;
 			case 3:
-				message = GradesListView.this
-						.getString(R.string.progress_notenparse);
+				message = GradesListView.this.getString(R.string.progress_notenparse);
 			default:
 				break;
 			}
@@ -142,6 +133,7 @@ public class GradesListView extends ListActivity implements Runnable {
 	/**
 	 * Optionsmenü
 	 */
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.grade_menu, menu);
@@ -151,15 +143,18 @@ public class GradesListView extends ListActivity implements Runnable {
 	/**
 	 * Optionsmenü Callback
 	 */
+
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.view_menu_about:
+		case R.id.menu_about:
 			// TODO add about dialog
-			Toast.makeText(this, "You pressed about!", Toast.LENGTH_LONG)
-					.show();
+			new AboutDialog(this);
+			// Toast.makeText(this, "You pressed about!",
+			// Toast.LENGTH_LONG).show();
 			return true;
 		case R.id.view_menu_refresh:
 			// TODO add about dialog
+
 			getMarks();
 			return true;
 		case R.id.view_submenu_examViewAll:
@@ -186,7 +181,8 @@ public class GradesListView extends ListActivity implements Runnable {
 			m_examAdapter.getFilter().filter("failed");
 			return true;
 		}
-		return false;
+		Log.d("GradeView menu:", "default");
+		return super.onOptionsItemSelected(item);
 	}
 
 	/**
@@ -222,8 +218,7 @@ public class GradesListView extends ListActivity implements Runnable {
 		private final Object mLock = new Object(); // FIXME ??
 		private ExamFilter mFilter;
 
-		public ExamAdapter(Context context, int textViewResourceId,
-				ArrayList<Exam> nExams) {
+		public ExamAdapter(Context context, int textViewResourceId, ArrayList<Exam> nExams) {
 			super(context, textViewResourceId, nExams);
 			this.examsList = nExams;
 		}
@@ -231,6 +226,7 @@ public class GradesListView extends ListActivity implements Runnable {
 		@Override
 		public View getView(int position, View convertView, ViewGroup parents) {
 			View v = convertView;
+
 			if (v == null) {
 				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				v = vi.inflate(R.layout.grade_row_item, null);
@@ -250,14 +246,10 @@ public class GradesListView extends ListActivity implements Runnable {
 					exNr.setText(ex.getExamNr());
 				}
 				if (exSemester != null) {
-					exSemester.setText(this.getContext().getString(
-							R.string.grades_view_semester)
-							+ ex.getSemester());
+					exSemester.setText(this.getContext().getString(R.string.grades_view_semester) + ex.getSemester());
 				}
 				if (exAtt != null && ex.getAttempts() != 0) {
-					exAtt.setText(this.getContext().getString(
-							R.string.grades_view_attempt)
-							+ ex.getAttempts());
+					exAtt.setText(this.getContext().getString(R.string.grades_view_attempt) + ex.getAttempts());
 				}
 				if (exGrade != null) {
 					if (!ex.isPassed()) {
@@ -279,10 +271,10 @@ public class GradesListView extends ListActivity implements Runnable {
 						// # C1FF00 # AEE500
 						// gingerbread ähnlich, bissel heller.. BEEB0C
 					}
-					if(ex.getGrade() != "") {
-					exGrade.setText(ex.getGrade());
+					if (ex.getGrade() != "") {
+						exGrade.setText(ex.getGrade());
 					} else {
-						if(ex.isPassed())
+						if (ex.isPassed())
 							exGrade.setText("B");
 						else
 							exGrade.setText("N");
@@ -360,8 +352,7 @@ public class GradesListView extends ListActivity implements Runnable {
 			}
 
 			@SuppressWarnings("unchecked")
-			protected void publishResults(CharSequence prefix,
-					FilterResults results) {
+			protected void publishResults(CharSequence prefix, FilterResults results) {
 				// noinspection unchecked
 				examsList = (ArrayList<Exam>) results.values;
 				// Let the adapter know about the updated list
@@ -394,13 +385,11 @@ public class GradesListView extends ListActivity implements Runnable {
 		HttpEntity entity;
 
 		try {
-
 			DefaultHttpClient client = new DefaultHttpClient();
 			HttpPost httpPost = new HttpPost(notenSpiegelURL);
 			CookieSpecBase cookieSpecBase = new BrowserCompatSpec();
 
-			List<Header> cookieHeader = cookieSpecBase
-					.formatCookies(HsDroidMain.cookies);
+			List<Header> cookieHeader = cookieSpecBase.formatCookies(HsDroidMain.cookies);
 
 			httpPost.setHeader(cookieHeader.get(0));
 
@@ -408,8 +397,7 @@ public class GradesListView extends ListActivity implements Runnable {
 			entity = response.getEntity();
 			InputStream is = entity.getContent();
 
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is),
-					4096);
+			BufferedReader rd = new BufferedReader(new InputStreamReader(is), 4096);
 			String line;
 			progressHandler.sendMessage(progressHandler.obtainMessage(2));
 			Boolean record = false;
@@ -435,8 +423,7 @@ public class GradesListView extends ListActivity implements Runnable {
 					// da die <img ..> tags nicht xml like "well formed" sind,
 					// muss man sie ein bissel anpassen ;)
 					if (line.contains("<img")) {
-						line = line.substring(0, line.indexOf(">") + 1)
-								+ "</a>";
+						line = line.substring(0, line.indexOf(">") + 1) + "</a>";
 					}
 					sb.append(line);
 					// System.out.println("line: " + line);
@@ -514,8 +501,7 @@ public class GradesListView extends ListActivity implements Runnable {
 		}
 
 		@Override
-		public void startElement(String n, String l, String q, Attributes a)
-				throws SAXException {
+		public void startElement(String n, String l, String q, Attributes a) throws SAXException {
 			super.startElement(n, l, q, a);
 			// Log.d("hska saxparser start l:", l);
 			if (l == "tr") {
@@ -535,13 +521,11 @@ public class GradesListView extends ListActivity implements Runnable {
 		}
 
 		@Override
-		public void endElement(String n, String l, String q)
-				throws SAXException {
+		public void endElement(String n, String l, String q) throws SAXException {
 			super.endElement(n, l, q);
 			if (l == "tr" && fetch == true) {
 
-				examsTest.add(new Exam(examNr, examName, semester, examDate,
-						grade, passed, notation, attempts));
+				examsTest.add(new Exam(examNr, examName, semester, examDate, grade, passed, notation, attempts));
 
 				waitForTd = false;
 				fetch = false;
