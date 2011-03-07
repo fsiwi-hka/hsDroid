@@ -1,29 +1,13 @@
 package nware.app.hska.hsDroid;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -37,14 +21,20 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class HsDroidMain extends Activity {
+	// public static GradeParser gParser;
 
-	private static final String UPDATE_URL = "https://qis2.hs-karlsruhe.de/qisserver/rds?state=user&type=1&category=auth.login&startpage=portal.vm&breadCrumbSource=portal";
-	public static List<Cookie> cookies;
-	DefaultHttpClient client;
-	private String asiKey;
-	boolean loggedIn = false;
+	// private final String UPDATE_URL =
+	// "https://qis2.hs-karlsruhe.de/qisserver/rds?state=user&type=1&category=auth.login&startpage=portal.vm&breadCrumbSource=portal";
+	// public static List<Cookie> cookies;
+	// DefaultHttpClient client;
+	// private String asiKey;
+	// boolean loggedIn = false;
 
-	public ProgressDialog progressDialog;
+	private LoginThread mLoginThread = null;
+
+	private ProgressDialog mProgressDialog = null;
+	private static final int DIALOG_PROGRESS = 1;
+
 	private EditText UserEditText;
 	private EditText PassEditText;
 	private CheckBox LoginCheckBox;
@@ -58,10 +48,10 @@ public class HsDroidMain extends Activity {
 		setContentView(R.layout.main);
 
 		// mainContext = this;
-		progressDialog = new ProgressDialog(this);
-		progressDialog.setMessage(this.getString(R.string.progress_loading));
-		progressDialog.setIndeterminate(true);
-		progressDialog.setCancelable(false);
+		// progressDialog = new ProgressDialog(this);
+		// progressDialog.setMessage(this.getString(R.string.progress_loading));
+		// progressDialog.setIndeterminate(true);
+		// progressDialog.setCancelable(false);
 
 		UserEditText = (EditText) findViewById(R.id.username);
 		PassEditText = (EditText) findViewById(R.id.password);
@@ -127,8 +117,13 @@ public class HsDroidMain extends Activity {
 							v.getContext().getString(R.string.error_password_missing));
 					return;
 				} else {
-					progressDialog.show();
-					doLogin(username, password);
+					//
+					// mProgressDialog.show();
+					showDialog(DIALOG_PROGRESS);
+					mLoginThread = new LoginThread(mProgressHandle, username, password);
+					mLoginThread.start();
+
+					// doLogin(username, password);
 
 				}
 			}
@@ -140,6 +135,63 @@ public class HsDroidMain extends Activity {
 				quit(false, null);
 			}
 		});
+
+		// lezten thread holen, wenn er noch nicht fertig ist
+		if (getLastNonConfigurationInstance() != null) {
+
+			mLoginThread = (LoginThread) getLastNonConfigurationInstance();
+			mLoginThread.HandlerOfCaller = mProgressHandle;
+
+			// Prüfen ob der thread noch läuft
+			switch (mLoginThread.getStatus()) {
+			case LoginThread.STATE_RUNNING:
+				// progress dialog wieder anzeigen
+				showDialog(DIALOG_PROGRESS);
+				break;
+			case LoginThread.STATE_NOT_STARTED:
+				// progress dialog schließen, falls er noch offen ist
+				dismissDialog(DIALOG_PROGRESS);
+				break;
+			case LoginThread.STATE_ERROR:
+				// progress dialog schließen, falls er noch offen ist
+				dismissDialog(DIALOG_PROGRESS);
+				break;
+			case LoginThread.STATE_DONE:
+				mLoginThread = null;
+				// progress dialog schließen, falls er noch offen ist
+				dismissDialog(DIALOG_PROGRESS);
+				// activity starten
+				Intent i = new Intent(HsDroidMain.this, GradesListView.class);
+				startActivity(i);
+				break;
+			default:
+				// sollte nicht vorkommen ;)
+				Log.d("onCreate should not happen", String.valueOf(mLoginThread.getStatus()));
+
+				dismissDialog(DIALOG_PROGRESS);
+				// thread killen
+				mLoginThread.stopThread();
+				mLoginThread = null;
+				break;
+			}
+		}
+
+	}
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case DIALOG_PROGRESS:
+			mProgressDialog = new ProgressDialog(this);
+			// mProgressDialog.setMessage(this.getString(R.string.progress_connect));
+			mProgressDialog.setIndeterminate(true);
+			mProgressDialog.setCancelable(false);
+			return mProgressDialog;
+			// progressDialog.setProgressStyle() //TODO in sdk nachschauen was
+			// es noch für optionen gibt
+		default:
+			return null;
+		}
 	}
 
 	@Override
@@ -177,26 +229,71 @@ public class HsDroidMain extends Activity {
 	/**
 	 * ProgresDialog Handler
 	 */
-	Handler progressHandle = new Handler() {
+	final Handler mProgressHandle = new Handler() {
 
 		@Override
 		public void handleMessage(Message msg) {
-			String message = HsDroidMain.this.getString(R.string.progress_loading);
+			Log.d("handler msg.what:", String.valueOf(msg.what));
+			// String message =
+			// HsDroidMain.this.getString(R.string.progress_loading);
 			switch (msg.what) {
-			case 1:
-				message = HsDroidMain.this.getString(R.string.progress_login);
+			case LoginThread.MESSAGE_COMPLETE:
+				Log.d("handler", "Login_complete");
+				mLoginThread = null;
+				dismissDialog(DIALOG_PROGRESS);
+				Intent i = new Intent(HsDroidMain.this, GradesListView.class);
+				// // i.putExtra("asiKey", asiKey);
+				startActivity(i);
 				break;
-			case 2:
-				message = HsDroidMain.this.getString(R.string.progress_webcheck);
+			case LoginThread.MESSAGE_ERROR:
+				Log.d("handler login error", msg.getData().getString("Message"));
+				dismissDialog(DIALOG_PROGRESS);
+				String errorMessage = msg.getData().getString("Message");
+				if (errorMessage.equals(LoginThread.ERROR_MSG_SITE_MAINTENANCE)) {
+					errorMessage = HsDroidMain.this.getString(R.string.error_site_down);
+				} else if (errorMessage.equals(LoginThread.ERROR_MSG_LOGIN_FAILED)) {
+					errorMessage = HsDroidMain.this.getString(R.string.error_login_failed);
+				} else if (errorMessage.equals(LoginThread.ERROR_MSG_COOKIE_MISSING)) {
+					errorMessage = HsDroidMain.this.getString(R.string.error_cookie_empty);
+				}
+				createDialog(HsDroidMain.this.getString(R.string.error_couldnt_connect), errorMessage);
+				// TODO alert dialog auch mit showDialog???
+
+				mLoginThread.stopThread();
+				mLoginThread = null;
 				break;
-			case 3:
-				message = HsDroidMain.this.getString(R.string.progress_cookie);
+			case LoginThread.MESSAGE_PROGRESS_CONNECT:
+				mProgressDialog.setMessage(HsDroidMain.this.getString(R.string.progress_connect));
+				break;
+			case LoginThread.MESSAGE_PROGRESS_PARSE:
+				mProgressDialog.setMessage(HsDroidMain.this.getString(R.string.progress_parse));
+				break;
+			case LoginThread.MESSAGE_PROGRESS_COOKIE:
+				mProgressDialog.setMessage(HsDroidMain.this.getString(R.string.progress_cookie));
+				break;
 			default:
+				Log.d("progressHandler Main", "unknown message");
+				dismissDialog(DIALOG_PROGRESS);
+				// Get rid of the sending thread
+				mLoginThread.stopThread();
+				mLoginThread = null;
 				break;
 			}
-			progressDialog.setMessage(message);
 		}
 	};
+
+	@Override
+	public Object onRetainNonConfigurationInstance() {
+		removeDialog(DIALOG_PROGRESS);
+		// prüfen on der login thread noch läuft
+		if (mLoginThread != null) {
+			// referenz zur aktivity entfernen (memory leak)
+			mLoginThread.HandlerOfCaller = null;
+			// instanz die erhalten werden soll zurückgeben
+			return (mLoginThread);
+		}
+		return super.onRetainNonConfigurationInstance();
+	}
 
 	private void quit(boolean success, Intent i) {
 		setResult((success) ? -1 : 0, i);
@@ -215,126 +312,6 @@ public class HsDroidMain extends Activity {
 		AlertDialog ad = new AlertDialog.Builder(this).setPositiveButton(this.getString(R.string.error_ok), null)
 				.setTitle(title).setMessage(text).create();
 		ad.show();
-	}
-
-	// POST
-	// /qisserver/rds?state=user&type=1&category=auth.login&startpage=portal.vm&breadCrumbSource=portal
-	// asdf=mami0011&fdsa=secretpw&submit=Anmelden
-
-	/**
-	 * Login into qis2 server
-	 * 
-	 * @param login
-	 *            {@link String} Username
-	 * @param pass
-	 *            {@link String} Password
-	 */
-	private void doLogin(final String login, final String pass) {
-		final String pw = pass;
-		Thread t = new Thread() {
-			public void run() {
-
-				client = new DefaultHttpClient();
-
-				HttpResponse response;
-				HttpEntity entity;
-				try {
-					progressHandle.sendMessage(progressHandle.obtainMessage(1));
-					Looper.prepare();
-					// Post Daten zusammen bauen
-					HttpPost post = new HttpPost(UPDATE_URL);
-					List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-
-					// bessere namen als "asdf" und "fdsa" für die post daten
-					// sind ihnen beim basteln der Seite nicht eingefallen xD
-					// ganz nach dem motto "security by obscurity" ;)
-					nvps.add(new BasicNameValuePair("asdf", login));
-					nvps.add(new BasicNameValuePair("fdsa", pw));
-					nvps.add(new BasicNameValuePair("submit", "Anmelden"));
-					post.setHeader("Content-Type", "application/x-www-form-urlencoded");
-					post.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-
-					// http Anfrage starten
-					response = client.execute(post);
-
-					entity = response.getEntity();
-					InputStream is = entity.getContent();
-					BufferedReader rd = new BufferedReader(new InputStreamReader(is), 4096);
-					String line;
-					int count = 0;
-					progressHandle.sendMessage(progressHandle.obtainMessage(2));
-					// response auswerten
-					while ((line = rd.readLine()) != null) {
-						// TODO check login success
-						loginStringTest(line, count);
-
-						if (line.contains("asi=")) {
-							// wenn ein asi Key gefunden wird, kann man davon
-							// ausgehen, dass man angemeldet is ;)
-							int begin = line.indexOf("asi=");
-							asiKey = line.substring(begin + 4, begin + 24);
-							break;
-						}
-						count++;
-					}
-					rd.close();
-					is.close();
-
-					progressHandle.sendMessage(progressHandle.obtainMessage(3));
-					HsDroidMain.cookies = client.getCookieStore().getCookies();
-					// cookies darf nicht leer sein
-					if (cookies.size() == 0)
-						throw new HSLoginException(HsDroidMain.this.getString(R.string.error_cookie_empty));
-
-					// progress dialog schließen
-					progressDialog.dismiss();
-
-					// start activity "NotenViewer"
-					Intent i = new Intent(HsDroidMain.this, GradesListView.class);
-					i.putExtra("asiKey", asiKey);
-					startActivity(i);
-
-					if (entity != null)
-						entity.consumeContent();
-				} catch (Exception e) {
-					progressDialog.dismiss();
-					createDialog(HsDroidMain.this.getString(R.string.error_couldnt_connect),
-
-					e.getMessage());
-				} catch (Throwable e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				Looper.loop();
-			}
-		};
-		t.start();
-	}
-
-	/**
-	 * Quick'n'Dirty Test for Login response Lines
-	 * 
-	 * @param line
-	 *            {@link String} with a line from the login response
-	 * @param count
-	 *            {@link Integer} line count
-	 * @throws HSLoginException
-	 */
-	private void loginStringTest(String line, int count) throws HSLoginException {
-		// TODO geht bestimmt schöner, aber funktioniert ;)
-
-		if (count < 10) { // sollte innerhalb der ersten 10 Zeilen stehen..
-			if (line.contains("System nicht verf")) {// blöööde Umlaute...
-				throw new HSLoginException(this.getString(R.string.error_site_down));
-			}
-		}
-		// A</u>nmelden
-		// if (line.contains("Anmeldung fehlgeschlagen")) {
-		if (count < 50 && count > 30) {
-			if (line.contains("A</u>nmelden")) {
-				throw new HSLoginException(this.getString(R.string.error_login_failed));
-			}
-		}
 	}
 
 }

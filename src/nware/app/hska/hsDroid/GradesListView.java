@@ -1,33 +1,10 @@
 package nware.app.hska.hsDroid;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BrowserCompatSpec;
-import org.apache.http.impl.cookie.CookieSpecBase;
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -53,82 +30,196 @@ import android.widget.TextView;
  * @author Oliver Eichner
  * 
  */
-public class GradesListView extends ListActivity implements Runnable {
+public class GradesListView extends ListActivity {
+
+	private static Boolean fistStart = true;
 
 	private ExamAdapter m_examAdapter;
 
-	// storage public static, damit sie aus anderen activities verfügbar ist
-	private String asiKey;
-	// private static ExamStorage examStorage;
-
-	// FIXME eigene Klasse die vor dem Laden des View geladen wird, für
-	// das holen der Noten? per bundle übergeben, da beim Wechsel von Portrait
-	// zu Landscape und vice versa die noten neu abgerufen werden
 	private ArrayList<Exam> examsTest;
 
-	public ProgressDialog progressDialog;
+	private GradeParserThread mGradeParserThread = null;
+
+	private ProgressDialog mProgressDialog = null;
+	private static final int DIALOG_PROGRESS = 1;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		System.out.println("test onCreate");
 
-		Bundle extras = getIntent().getExtras();
-		if (extras != null) {
-			asiKey = extras.getString("asiKey");
+		// TODO //FIXME asikey und cookies darf nicht leer sein!!!!!!
+		// StaticSessionData.gParser = new GradeParserThread();
+		if (fistStart) {
+			showDialog(DIALOG_PROGRESS);
+			mGradeParserThread = new GradeParserThread(mProgressHandle);
+			mGradeParserThread.start();
 		}
-		// TODO //FIXME aiskey und cookies darf nicht leer sein!!!!!!
-
-		getMarks();
-
-		// layout festlegen
-		setContentView(R.layout.grade_list_view);
 
 		this.examsTest = new ArrayList<Exam>();
+		// this.examsTest = StaticSessionData.gParser.getExamsList();
+		// layout festlegen
+
+		setContentView(R.layout.grade_list_view);
+
 		this.m_examAdapter = new ExamAdapter(GradesListView.this, R.layout.grade_row_item, this.examsTest);
 		m_examAdapter.notifyDataSetInvalidated();
+
 		setListAdapter(this.m_examAdapter);
 
-	}
+		// lezten thread holen, wenn er noch nicht fertig ist
+		if (getLastNonConfigurationInstance() != null) {
 
-	public void getMarks() {
+			mGradeParserThread = (GradeParserThread) getLastNonConfigurationInstance();
+			mGradeParserThread.handlerOfCaller = mProgressHandle;
 
-		// new ProgressDialog(this);
-		progressDialog = ProgressDialog.show(this, "", this.getString(R.string.progress_loading));
-
-		Thread thread = new Thread(this);
-		thread.start();
-	}
-
-	public void run() {
-		// progressHandler.sendMessage(progressHandler.obtainMessage(1));
-		progressHandler.sendEmptyMessage(1);
-		getGradesFromWeb();
-		progressHandler.sendEmptyMessage(0);
-	}
-
-	private Handler progressHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			String message = "";
-			switch (msg.what) {
-			case 0:
-				m_examAdapter.getFilter().filter("actualexam");
-				progressDialog.dismiss();
-				return;
-			case 1:
-				message = GradesListView.this.getString(R.string.progress_notenfetch);
+			// Prüfen ob der thread noch läuft
+			switch (mGradeParserThread.getStatus()) {
+			case GradeParserThread.STATE_RUNNING:
+				// progress dialog wieder anzeigen
+				showDialog(DIALOG_PROGRESS);
 				break;
-			case 2:
-				message = GradesListView.this.getString(R.string.progress_notencleanup);
+			case GradeParserThread.STATE_NOT_STARTED:
+				// progress dialog schließen, falls er noch offen ist
+				// FIXME prüfen ob dialog geöffnet ist!!
+				dismissDialog(DIALOG_PROGRESS);
 				break;
-			case 3:
-				message = GradesListView.this.getString(R.string.progress_notenparse);
+			// case GradeParserThread.STATE_ERROR:
+			// // progress dialog schließen, falls er noch offen ist
+			// dismissDialog(DIALOG_PROGRESS);
+			// break;
+			case GradeParserThread.STATE_DONE:
+				GradesListView.this.examsTest = mGradeParserThread.getExamsList();
+				mGradeParserThread = null;
+				// progress dialog schließen, falls er noch offen ist
+				dismissDialog(DIALOG_PROGRESS);
+				// TODO daten aktualisieren
+				// GradesListView.this.m_examAdapter.notifyDataSetChanged();
+				this.m_examAdapter.getFilter().filter("actualexam");
+				break;
 			default:
+				// sollte nicht vorkommen ;)
+				Log.d("onCreate should not happen", String.valueOf(mGradeParserThread.getStatus()));
+
+				dismissDialog(DIALOG_PROGRESS);
+				// thread killen
+				mGradeParserThread.stopThread();
+				mGradeParserThread = null;
 				break;
 			}
-			progressDialog.setMessage(message);
+		}
 
+	}
+
+	/**
+	 * ProgresDialog Handler
+	 */
+	final Handler mProgressHandle = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			Log.d("handler msg.what:", String.valueOf(msg.what));
+			// String message =
+			// HsDroidMain.this.getString(R.string.progress_loading);
+			switch (msg.what) {
+			case GradeParserThread.MESSAGE_COMPLETE:
+				Log.d("handler", "Login_complete");
+				GradesListView.this.examsTest = mGradeParserThread.getExamsList();
+				mGradeParserThread = null;
+				dismissDialog(DIALOG_PROGRESS);
+				// TODO daten aktualisieren
+				// GradesListView.this.m_examAdapter.notifyDataSetChanged();
+				GradesListView.this.m_examAdapter.getFilter().filter("actualexam");
+
+				// Intent i = new Intent(GradesListView.this,
+				// GradesListView.class);
+				// // i.putExtra("asiKey", asiKey);
+				// startActivity(i);
+				break;
+			case GradeParserThread.MESSAGE_ERROR:
+				dismissDialog(DIALOG_PROGRESS);
+				Log.d("handler login error", msg.getData().getString("Message"));
+				createDialog(GradesListView.this.getString(R.string.error_couldnt_connect),
+						msg.getData().getString("Message"));
+				// TODO alert dialog auch mit showDialog???
+
+				mGradeParserThread.stopThread();
+				mGradeParserThread = null;
+				break;
+			case GradeParserThread.MESSAGE_PROGRESS_FETCH:
+				mProgressDialog.setMessage(GradesListView.this.getString(R.string.progress_notenfetch));
+				break;
+			case GradeParserThread.MESSAGE_PROGRESS_PARSE:
+				mProgressDialog.setMessage(GradesListView.this.getString(R.string.progress_parse));
+				break;
+			case GradeParserThread.MESSAGE_PROGRESS_CLEANUP:
+				mProgressDialog.setMessage(GradesListView.this.getString(R.string.progress_notencleanup));
+				break;
+			default:
+				Log.d("onCreate should not happen", String.valueOf(mGradeParserThread.getStatus()));
+				dismissDialog(DIALOG_PROGRESS);
+				// Get rid of the sending thread
+				mGradeParserThread.stopThread();
+				mGradeParserThread = null;
+				break;
+			}
 		}
 	};
+
+	@Override
+	public Object onRetainNonConfigurationInstance() {
+		removeDialog(DIALOG_PROGRESS);
+		// prüfen on der login thread noch läuft
+		if (mGradeParserThread != null) {
+			// referenz zur aktivity entfernen (memory leak)
+			mGradeParserThread.handlerOfCaller = null;
+			// instanz die erhalten werden soll zurückgeben
+			return (mGradeParserThread);
+		}
+		return super.onRetainNonConfigurationInstance();
+	}
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case DIALOG_PROGRESS:
+			mProgressDialog = new ProgressDialog(this);
+			// mProgressDialog.setMessage(this.getString(R.string.progress_connect));
+			mProgressDialog.setIndeterminate(true);
+			mProgressDialog.setCancelable(false);
+			return mProgressDialog;
+			// progressDialog.setProgressStyle() //TODO in sdk nachschauen was
+			// es noch für optionen gibt
+		default:
+			return null;
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		System.out.println("test onSaveInstanceState");
+
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		System.out.println("test onPause");
+		fistStart = false;
+
+	}
+
+	@Override
+	protected void onResume() {
+
+		super.onResume();
+		if (examsTest == null || examsTest.size() == 0) {
+			System.out.println("test onResume:empty");
+		} else {
+			System.out.println("test onResume:data found");
+		}
+	}
 
 	/**
 	 * Optionsmenü
@@ -143,19 +234,17 @@ public class GradesListView extends ListActivity implements Runnable {
 	/**
 	 * Optionsmenü Callback
 	 */
-
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_about:
-			// TODO add about dialog
 			new AboutDialog(this);
-			// Toast.makeText(this, "You pressed about!",
-			// Toast.LENGTH_LONG).show();
 			return true;
 		case R.id.view_menu_refresh:
-			// TODO add about dialog
-
-			getMarks();
+			Log.d("OptonItemSelect", "refresh.. not implemented");
+			showDialog(DIALOG_PROGRESS);
+			mGradeParserThread = new GradeParserThread(mProgressHandle);
+			mGradeParserThread.start();
+			// StaticSessionData.gParser.refreshList();
 			return true;
 		case R.id.view_submenu_examViewAll:
 			if (item.isChecked())
@@ -183,6 +272,12 @@ public class GradesListView extends ListActivity implements Runnable {
 		}
 		Log.d("GradeView menu:", "default");
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void createDialog(String title, String text) {
+		AlertDialog ad = new AlertDialog.Builder(this).setPositiveButton(this.getString(R.string.error_ok), null)
+				.setTitle(title).setMessage(text).create();
+		ad.show();
 	}
 
 	/**
@@ -296,6 +391,9 @@ public class GradesListView extends ListActivity implements Runnable {
 
 		@Override
 		public int getCount() {
+			if (this.examsList == null) {
+				return 0;
+			}
 			return this.examsList.size();
 
 		}
@@ -313,6 +411,8 @@ public class GradesListView extends ListActivity implements Runnable {
 				// }
 
 				// kein prefix, also ganzes (altes) array übernehmen
+
+				// FIXME ??
 				if (prefix == null || prefix.length() == 0 || prefix == "") {
 					synchronized (mLock) {
 						results.values = examsTest;
@@ -372,248 +472,6 @@ public class GradesListView extends ListActivity implements Runnable {
 	 */
 	private boolean isActualExam(Exam nExam) {
 		return nExam.getSemester().equals(getLastExamSem());
-	}
-
-	private void getGradesFromWeb() {
-		// FIXME asi key könnte man auch mit get in den header einbauen bzw alle
-		// gets...
-		progressHandler.sendMessage(progressHandler.obtainMessage(1));
-		String notenSpiegelURL = "https://qis2.hs-karlsruhe.de/qisserver/rds?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
-				+ asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";
-
-		HttpResponse response;
-		HttpEntity entity;
-
-		try {
-			DefaultHttpClient client = new DefaultHttpClient();
-			HttpPost httpPost = new HttpPost(notenSpiegelURL);
-			CookieSpecBase cookieSpecBase = new BrowserCompatSpec();
-
-			List<Header> cookieHeader = cookieSpecBase.formatCookies(HsDroidMain.cookies);
-
-			httpPost.setHeader(cookieHeader.get(0));
-
-			response = client.execute(httpPost);
-			entity = response.getEntity();
-			InputStream is = entity.getContent();
-
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is), 4096);
-			String line;
-			progressHandler.sendMessage(progressHandler.obtainMessage(2));
-			Boolean record = false;
-			StringBuilder sb = new StringBuilder();
-			while ((line = rd.readLine()) != null) {
-				if (!record && line.contains("<table border=\"0\">")) {
-					record = true;
-				}
-				if (record && line.contains("</table>")) {
-					sb.append(line);
-					// System.out.println("last line: " + line);
-					record = false;
-					break;
-				}
-				if (record) {
-					// alle nicht anzeigbaren zeichen entfernen (\n,\t,\s...)
-					line = line.trim();
-
-					// alle html leerzeichen müssen raus, da der xml reader nix
-					// mit anfangen kann
-					line = line.replaceAll("&nbsp;", "");
-
-					// da die <img ..> tags nicht xml like "well formed" sind,
-					// muss man sie ein bissel anpassen ;)
-					if (line.contains("<img")) {
-						line = line.substring(0, line.indexOf(">") + 1) + "</a>";
-					}
-					sb.append(line);
-					// System.out.println("line: " + line);
-				}
-			}
-			if (entity != null)
-				entity.consumeContent();
-			is.close();
-			String htmlContentString = sb.toString();
-
-			rd.close();
-			progressHandler.sendMessage(progressHandler.obtainMessage(3));
-			read(htmlContentString);
-
-		} catch (ClientProtocolException e) {
-			Log.e("Notenspiegel::client exception:", e.getMessage());
-			e.printStackTrace();
-		} catch (IOException e) {
-			Log.e("Notenspiegel::io exception:", e.getMessage());
-			e.printStackTrace();
-		}
-
-	}
-
-	private void read(String test) {
-		SAXParser sp;
-		try {
-			sp = SAXParserFactory.newInstance().newSAXParser();
-			XMLReader xr = sp.getXMLReader();
-			LoginContentHandler uch = new LoginContentHandler();
-			xr.setContentHandler(uch);
-
-			xr.parse(new InputSource(new StringReader(test)));
-		} catch (ParserConfigurationException e) {
-			Log.e("read:ParserConfException:", e.getMessage());
-			e.printStackTrace();
-		} catch (SAXException e) {
-			Log.e("read:SAXException:", e.getMessage());
-			e.printStackTrace();
-		} catch (IOException e) {
-			Log.e("read:IOException:", e.getMessage());
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * SAX2 event Handler for "Notenspiegel" html page
-	 * 
-	 * @author Oliver Eichner
-	 * 
-	 */
-	private class LoginContentHandler extends DefaultHandler {
-
-		Boolean fetch = false;
-		Boolean waitForTd = false;
-		int elementCount = 0; // 0-7
-		private String examNr;
-		private String examName;
-		private String semester;
-		private String examDate;
-		private String grade;
-		private boolean passed;
-		private String notation;
-		private int attempts;
-
-		private void resetLectureVars() {
-			this.examNr = "";
-			this.examName = "";
-			this.semester = "";
-			this.examDate = "";
-			this.grade = "";
-			this.passed = false;
-			this.notation = "";
-			this.attempts = 0;
-		}
-
-		@Override
-		public void startElement(String n, String l, String q, Attributes a) throws SAXException {
-			super.startElement(n, l, q, a);
-			// Log.d("hska saxparser start l:", l);
-			if (l == "tr") {
-				waitForTd = true;
-			}
-			if (waitForTd && l == "th") {
-				waitForTd = false;
-			}
-			if (fetch && l == "td") {
-				elementCount++;
-			}
-			if (waitForTd && l == "td") {
-				fetch = true;
-				waitForTd = false;
-			}
-
-		}
-
-		@Override
-		public void endElement(String n, String l, String q) throws SAXException {
-			super.endElement(n, l, q);
-			if (l == "tr" && fetch == true) {
-
-				examsTest.add(new Exam(examNr, examName, semester, examDate, grade, passed, notation, attempts));
-
-				waitForTd = false;
-				fetch = false;
-				elementCount = 0;
-				resetLectureVars();
-
-			}
-
-		}
-
-		@Override
-		public void characters(char ch[], int start, int length) {
-			try {
-				super.characters(ch, start, length);
-			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			String text = new String(ch, start, length);
-			// FIXME test
-			text = text.trim();
-			if (fetch) {
-				switch (elementCount) {
-				case 0:
-					// Log.d("PruefNr:", text);
-					examNr += text;
-					// System.out.println("pnr  ["+examNr+"]");
-
-					break;
-				case 1:
-					// Log.d("PruefName:", text);
-					examName += text;
-					// System.out.println("ptxt  ["+examName+"]");
-
-					break;
-				case 2:
-					// Log.d("Semester:", text);
-					semester += text;
-					break;
-				case 3:
-					// Log.d("Datum:", text);
-					examDate += text;
-					// SimpleDateFormat sdfToDate = new SimpleDateFormat(
-					// "dd.MM.yyyy");
-					// try {
-					// examDate = sdfToDate.parse(text);
-					// } catch (ParseException e) {
-					// // Log.d("read:: date parser: ", e.getMessage());
-					// e.printStackTrace();
-					// }
-					break;
-				case 4:
-					// Log.d("Note:", text);
-					grade += text;
-					break;
-				case 5:
-					// Log.d("Status:", text);
-					if (text.equals("bestanden")) {
-						passed = true;
-					}
-					break;
-				case 6:
-					// Log.d("Vermerk:", text);
-					notation += text;
-					break;
-				case 7:
-					// Log.d("Versuch:", text);
-					attempts = Integer.valueOf(text);
-					break;
-
-				default:
-					break;
-				}
-			}
-
-		}
-
-		public void startDocument() throws SAXException {
-			super.startDocument();
-			examsTest = new ArrayList<Exam>();
-			resetLectureVars();
-		}
-
-		public void endDocument() throws SAXException {
-			super.endDocument();
-			// array umdrehen
-			Collections.reverse(examsTest);
-		}
 	}
 
 }
