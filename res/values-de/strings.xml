@@ -15,8 +15,8 @@
 	<string name="error_login_failed">Anmeldung fehlgeschlagen, bitte Logindaten
 		überprüfen.</string>
 	<string name="progress_loading">Laden...</string>
-	<string name="progress_login">Anmelden...</string>
-	<string name="progress_webcheck">Antwort prüfen...</string>
+	<string name="progress_connect">Verbinden...</string>
+	<string name="progress_parse">Parsen...</string>
 	<string name="progress_cookie">Keks nehmen...</string>
 	<string name="progress_notenfetch">Noten holen...</string>
 

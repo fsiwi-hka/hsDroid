@@ -21,24 +21,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class HsDroidMain extends Activity {
-	// public static GradeParser gParser;
-
-	// private final String UPDATE_URL =
-	// "https://qis2.hs-karlsruhe.de/qisserver/rds?state=user&type=1&category=auth.login&startpage=portal.vm&breadCrumbSource=portal";
-	// public static List<Cookie> cookies;
-	// DefaultHttpClient client;
-	// private String asiKey;
-	// boolean loggedIn = false;
 
 	private LoginThread mLoginThread = null;
 
 	private ProgressDialog mProgressDialog = null;
 	private static final int DIALOG_PROGRESS = 1;
-
 	private EditText UserEditText;
 	private EditText PassEditText;
 	private CheckBox LoginCheckBox;
-	// private Context mainContext;
 
 	private boolean checkBoxChecked;
 	private SharedPreferences notenapp_preferences;
@@ -46,12 +36,6 @@ public class HsDroidMain extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-
-		// mainContext = this;
-		// progressDialog = new ProgressDialog(this);
-		// progressDialog.setMessage(this.getString(R.string.progress_loading));
-		// progressDialog.setIndeterminate(true);
-		// progressDialog.setCancelable(false);
 
 		UserEditText = (EditText) findViewById(R.id.username);
 		PassEditText = (EditText) findViewById(R.id.password);
@@ -123,8 +107,6 @@ public class HsDroidMain extends Activity {
 					mLoginThread = new LoginThread(mProgressHandle, username, password);
 					mLoginThread.start();
 
-					// doLogin(username, password);
-
 				}
 			}
 		});
@@ -136,46 +118,6 @@ public class HsDroidMain extends Activity {
 			}
 		});
 
-		// lezten thread holen, wenn er noch nicht fertig ist
-		if (getLastNonConfigurationInstance() != null) {
-
-			mLoginThread = (LoginThread) getLastNonConfigurationInstance();
-			mLoginThread.HandlerOfCaller = mProgressHandle;
-
-			// Prüfen ob der thread noch läuft
-			switch (mLoginThread.getStatus()) {
-			case LoginThread.STATE_RUNNING:
-				// progress dialog wieder anzeigen
-				showDialog(DIALOG_PROGRESS);
-				break;
-			case LoginThread.STATE_NOT_STARTED:
-				// progress dialog schließen, falls er noch offen ist
-				dismissDialog(DIALOG_PROGRESS);
-				break;
-			case LoginThread.STATE_ERROR:
-				// progress dialog schließen, falls er noch offen ist
-				dismissDialog(DIALOG_PROGRESS);
-				break;
-			case LoginThread.STATE_DONE:
-				mLoginThread = null;
-				// progress dialog schließen, falls er noch offen ist
-				dismissDialog(DIALOG_PROGRESS);
-				// activity starten
-				Intent i = new Intent(HsDroidMain.this, GradesListView.class);
-				startActivity(i);
-				break;
-			default:
-				// sollte nicht vorkommen ;)
-				Log.d("onCreate should not happen", String.valueOf(mLoginThread.getStatus()));
-
-				dismissDialog(DIALOG_PROGRESS);
-				// thread killen
-				mLoginThread.stopThread();
-				mLoginThread = null;
-				break;
-			}
-		}
-
 	}
 
 	@Override
@@ -183,12 +125,9 @@ public class HsDroidMain extends Activity {
 		switch (id) {
 		case DIALOG_PROGRESS:
 			mProgressDialog = new ProgressDialog(this);
-			// mProgressDialog.setMessage(this.getString(R.string.progress_connect));
 			mProgressDialog.setIndeterminate(true);
 			mProgressDialog.setCancelable(false);
 			return mProgressDialog;
-			// progressDialog.setProgressStyle() //TODO in sdk nachschauen was
-			// es noch für optionen gibt
 		default:
 			return null;
 		}
@@ -240,14 +179,16 @@ public class HsDroidMain extends Activity {
 			case LoginThread.MESSAGE_COMPLETE:
 				Log.d("handler", "Login_complete");
 				mLoginThread = null;
-				dismissDialog(DIALOG_PROGRESS);
+				removeDialog(DIALOG_PROGRESS);
+				// dismissDialog(DIALOG_PROGRESS);
 				Intent i = new Intent(HsDroidMain.this, GradesListView.class);
 				// // i.putExtra("asiKey", asiKey);
 				startActivity(i);
 				break;
 			case LoginThread.MESSAGE_ERROR:
 				Log.d("handler login error", msg.getData().getString("Message"));
-				dismissDialog(DIALOG_PROGRESS);
+				removeDialog(DIALOG_PROGRESS);
+				// dismissDialog(DIALOG_PROGRESS);
 				String errorMessage = msg.getData().getString("Message");
 				if (errorMessage.equals(LoginThread.ERROR_MSG_SITE_MAINTENANCE)) {
 					errorMessage = HsDroidMain.this.getString(R.string.error_site_down);
@@ -257,6 +198,7 @@ public class HsDroidMain extends Activity {
 					errorMessage = HsDroidMain.this.getString(R.string.error_cookie_empty);
 				}
 				createDialog(HsDroidMain.this.getString(R.string.error_couldnt_connect), errorMessage);
+				removeDialog(DIALOG_PROGRESS);
 				// TODO alert dialog auch mit showDialog???
 
 				mLoginThread.stopThread();
@@ -273,7 +215,8 @@ public class HsDroidMain extends Activity {
 				break;
 			default:
 				Log.d("progressHandler Main", "unknown message");
-				dismissDialog(DIALOG_PROGRESS);
+				removeDialog(DIALOG_PROGRESS);
+				// dismissDialog(DIALOG_PROGRESS);
 				// Get rid of the sending thread
 				mLoginThread.stopThread();
 				mLoginThread = null;
@@ -281,19 +224,6 @@ public class HsDroidMain extends Activity {
 			}
 		}
 	};
-
-	@Override
-	public Object onRetainNonConfigurationInstance() {
-		removeDialog(DIALOG_PROGRESS);
-		// prüfen on der login thread noch läuft
-		if (mLoginThread != null) {
-			// referenz zur aktivity entfernen (memory leak)
-			mLoginThread.HandlerOfCaller = null;
-			// instanz die erhalten werden soll zurückgeben
-			return (mLoginThread);
-		}
-		return super.onRetainNonConfigurationInstance();
-	}
 
 	private void quit(boolean success, Intent i) {
 		setResult((success) ? -1 : 0, i);

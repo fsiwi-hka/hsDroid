@@ -75,6 +75,7 @@ public class GradeParserThread extends Thread {
 
 	@Override
 	public void run() {
+		mThreadStatus = STATE_RUNNING;
 		// FIXME asi key könnte man auch mit get in den header einbauen bzw alle
 		// gets...
 		// progressHandler.sendMessage(progressHandler.obtainMessage(1));

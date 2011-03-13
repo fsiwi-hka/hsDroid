@@ -49,64 +49,31 @@ public class GradesListView extends ListActivity {
 
 		// TODO //FIXME asikey und cookies darf nicht leer sein!!!!!!
 		// StaticSessionData.gParser = new GradeParserThread();
-		if (fistStart) {
+		this.examsTest = new ArrayList<Exam>();
+		if (savedInstanceState == null) {
+
 			showDialog(DIALOG_PROGRESS);
 			mGradeParserThread = new GradeParserThread(mProgressHandle);
 			mGradeParserThread.start();
+
+		} else {
+			Log.d("hs-Droid:Grades ListeView", "saved instance not null!!!!");
+			examsTest = (ArrayList<Exam>) savedInstanceState.get("exams_list");
+			Log.d("hs-Droid:Grades ListeView", String.valueOf(examsTest.size()));
 		}
 
-		this.examsTest = new ArrayList<Exam>();
-		// this.examsTest = StaticSessionData.gParser.getExamsList();
 		// layout festlegen
 
 		setContentView(R.layout.grade_list_view);
 
 		this.m_examAdapter = new ExamAdapter(GradesListView.this, R.layout.grade_row_item, this.examsTest);
-		m_examAdapter.notifyDataSetInvalidated();
+		if (this.examsTest.size() == 0) {
+			this.m_examAdapter.notifyDataSetInvalidated();
+		} else {
+			this.m_examAdapter.getFilter().filter("actualexam");
+		}
 
 		setListAdapter(this.m_examAdapter);
-
-		// lezten thread holen, wenn er noch nicht fertig ist
-		if (getLastNonConfigurationInstance() != null) {
-
-			mGradeParserThread = (GradeParserThread) getLastNonConfigurationInstance();
-			mGradeParserThread.handlerOfCaller = mProgressHandle;
-
-			// Prüfen ob der thread noch läuft
-			switch (mGradeParserThread.getStatus()) {
-			case GradeParserThread.STATE_RUNNING:
-				// progress dialog wieder anzeigen
-				showDialog(DIALOG_PROGRESS);
-				break;
-			case GradeParserThread.STATE_NOT_STARTED:
-				// progress dialog schließen, falls er noch offen ist
-				// FIXME prüfen ob dialog geöffnet ist!!
-				dismissDialog(DIALOG_PROGRESS);
-				break;
-			// case GradeParserThread.STATE_ERROR:
-			// // progress dialog schließen, falls er noch offen ist
-			// dismissDialog(DIALOG_PROGRESS);
-			// break;
-			case GradeParserThread.STATE_DONE:
-				GradesListView.this.examsTest = mGradeParserThread.getExamsList();
-				mGradeParserThread = null;
-				// progress dialog schließen, falls er noch offen ist
-				dismissDialog(DIALOG_PROGRESS);
-				// TODO daten aktualisieren
-				// GradesListView.this.m_examAdapter.notifyDataSetChanged();
-				this.m_examAdapter.getFilter().filter("actualexam");
-				break;
-			default:
-				// sollte nicht vorkommen ;)
-				Log.d("onCreate should not happen", String.valueOf(mGradeParserThread.getStatus()));
-
-				dismissDialog(DIALOG_PROGRESS);
-				// thread killen
-				mGradeParserThread.stopThread();
-				mGradeParserThread = null;
-				break;
-			}
-		}
 
 	}
 
@@ -118,22 +85,16 @@ public class GradesListView extends ListActivity {
 		@Override
 		public void handleMessage(Message msg) {
 			Log.d("handler msg.what:", String.valueOf(msg.what));
-			// String message =
-			// HsDroidMain.this.getString(R.string.progress_loading);
+
 			switch (msg.what) {
 			case GradeParserThread.MESSAGE_COMPLETE:
 				Log.d("handler", "Login_complete");
 				GradesListView.this.examsTest = mGradeParserThread.getExamsList();
 				mGradeParserThread = null;
 				dismissDialog(DIALOG_PROGRESS);
-				// TODO daten aktualisieren
-				// GradesListView.this.m_examAdapter.notifyDataSetChanged();
+
 				GradesListView.this.m_examAdapter.getFilter().filter("actualexam");
 
-				// Intent i = new Intent(GradesListView.this,
-				// GradesListView.class);
-				// // i.putExtra("asiKey", asiKey);
-				// startActivity(i);
 				break;
 			case GradeParserThread.MESSAGE_ERROR:
 				dismissDialog(DIALOG_PROGRESS);
@@ -166,19 +127,6 @@ public class GradesListView extends ListActivity {
 	};
 
 	@Override
-	public Object onRetainNonConfigurationInstance() {
-		removeDialog(DIALOG_PROGRESS);
-		// prüfen on der login thread noch läuft
-		if (mGradeParserThread != null) {
-			// referenz zur aktivity entfernen (memory leak)
-			mGradeParserThread.handlerOfCaller = null;
-			// instanz die erhalten werden soll zurückgeben
-			return (mGradeParserThread);
-		}
-		return super.onRetainNonConfigurationInstance();
-	}
-
-	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case DIALOG_PROGRESS:
@@ -187,17 +135,26 @@ public class GradesListView extends ListActivity {
 			mProgressDialog.setIndeterminate(true);
 			mProgressDialog.setCancelable(false);
 			return mProgressDialog;
-			// progressDialog.setProgressStyle() //TODO in sdk nachschauen was
-			// es noch für optionen gibt
+
 		default:
 			return null;
 		}
 	}
 
 	@Override
+	protected void onRestoreInstanceState(Bundle outState) {
+		super.onRestoreInstanceState(outState);
+		examsTest = (ArrayList<Exam>) outState.get("exams_list");
+		this.m_examAdapter.getFilter().filter("actualexam");
+
+		System.out.println("test onRestoreInstanceState");
+	}
+
+	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 
+		outState.putParcelableArrayList("exams_list", examsTest);
 		System.out.println("test onSaveInstanceState");
 
 	}
@@ -206,7 +163,7 @@ public class GradesListView extends ListActivity {
 	protected void onPause() {
 		super.onPause();
 		System.out.println("test onPause");
-		fistStart = false;
+		// fistStart = false;
 
 	}
 
@@ -354,14 +311,13 @@ public class GradesListView extends ListActivity {
 							exGrade.setBackgroundColor(Color.RED);
 							exGrade.setTextColor(Color.BLACK);
 						} else {
-							exGrade.setTextColor(Color.RED); // TODO helleres
-																// rot
+							exGrade.setTextColor(Color.RED);
 							exGrade.setBackgroundColor(Color.TRANSPARENT);
 						}
 					} else {
 						exGrade.setTextColor(Color.rgb(0x87, 0xeb, 0x0c)); // Color.rgb(0x87,0xeb,0x0c
 						exGrade.setBackgroundColor(Color.TRANSPARENT);
-						// TODO android grün ;)
+						// vllt. android grün ;)
 						// http://www.perbang.dk/rgb/A4C639/
 						// # C1FF00 # AEE500
 						// gingerbread ähnlich, bissel heller.. BEEB0C
@@ -370,9 +326,9 @@ public class GradesListView extends ListActivity {
 						exGrade.setText(ex.getGrade());
 					} else {
 						if (ex.isPassed())
-							exGrade.setText("B");
+							exGrade.setText("BE");
 						else
-							exGrade.setText("N");
+							exGrade.setText("NB");
 					}
 				}
 

@@ -4,13 +4,15 @@
 	android:versionName="@string/app_version" 
 	android:versionCode="2">
 	<application android:icon="@drawable/icon" android:label="@string/app_name">
-		<activity android:name="HsDroidMain" android:label="@string/app_name">
+		<activity android:name="HsDroidMain" android:label="@string/app_name" android:configChanges="orientation"
+		>
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".GradesListView" android:label="@string/grades_view">
+		<activity android:name=".GradesListView" android:label="@string/grades_view" android:configChanges="orientation"
+		>
 			<intent-filter>
 			<action android:name="android.intent.action.VIEW" />
 

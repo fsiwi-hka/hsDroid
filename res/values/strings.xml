@@ -16,11 +16,10 @@
 	<string name="error_site_down">Website is currently in maintenance mode.</string>
 	<string name="error_login_failed">Login failed, please check login data.</string>
 	<string name="progress_loading">Loading...</string>
-	<string name="progress_login">Logon...</string>
-	<string name="progress_webcheck">Check response...</string>
+	<string name="progress_connect">Connecting...</string>
+	<string name="progress_parse">Parse...</string>
 	<string name="progress_cookie">Take cookie...</string>
 	<string name="progress_notenfetch">Take grades...</string>
-
 	<string name="progress_notencleanup">Html cleanup...</string>
 	<string name="progress_notenparse">Prepare grades...</string>
 	<string name="title_view_marks">Grades</string>

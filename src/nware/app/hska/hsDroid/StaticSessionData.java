@@ -8,5 +8,5 @@ public class StaticSessionData {
 	public static List<Cookie> cookies;
 	public static String asiKey;
 
-	public static GradeParserThread gParser;
+	// public static GradeParserThread gParser;
 }
