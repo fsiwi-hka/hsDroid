@@ -60,7 +60,7 @@ public class HsDroidMain extends Activity {
 				// Benutzernamen: nicht anzeigbare Zeichen entfernen, alles
 				// klein schreiben
 				// (leerzeichen killen und erster Buchstabe klein, wenn über
-				// android autoverfolständigung eingefügt...)
+				// android autovervollständigung eingefügt...)
 				String username = UserEditText.getText().toString().trim().toLowerCase();
 				// Password: nicht anzeigbare Zeichen entfernen
 				String password = PassEditText.getText().toString().trim();
@@ -147,8 +147,6 @@ public class HsDroidMain extends Activity {
 			Toast.makeText(this, "You pressed preferences!", Toast.LENGTH_LONG).show();
 			return true;
 		case R.id.menu_about:
-			// Toast.makeText(this, "You pressed about!", Toast.LENGTH_LONG)
-			// .show();
 			Log.d("Main menu:", "about");
 			aboutDialog();
 
@@ -180,15 +178,12 @@ public class HsDroidMain extends Activity {
 				Log.d("handler", "Login_complete");
 				mLoginThread = null;
 				removeDialog(DIALOG_PROGRESS);
-				// dismissDialog(DIALOG_PROGRESS);
 				Intent i = new Intent(HsDroidMain.this, GradesListView.class);
-				// // i.putExtra("asiKey", asiKey);
 				startActivity(i);
 				break;
 			case LoginThread.MESSAGE_ERROR:
 				Log.d("handler login error", msg.getData().getString("Message"));
 				removeDialog(DIALOG_PROGRESS);
-				// dismissDialog(DIALOG_PROGRESS);
 				String errorMessage = msg.getData().getString("Message");
 				if (errorMessage.equals(LoginThread.ERROR_MSG_SITE_MAINTENANCE)) {
 					errorMessage = HsDroidMain.this.getString(R.string.error_site_down);
@@ -198,8 +193,6 @@ public class HsDroidMain extends Activity {
 					errorMessage = HsDroidMain.this.getString(R.string.error_cookie_empty);
 				}
 				createDialog(HsDroidMain.this.getString(R.string.error_couldnt_connect), errorMessage);
-				removeDialog(DIALOG_PROGRESS);
-				// TODO alert dialog auch mit showDialog???
 
 				mLoginThread.stopThread();
 				mLoginThread = null;
@@ -216,8 +209,7 @@ public class HsDroidMain extends Activity {
 			default:
 				Log.d("progressHandler Main", "unknown message");
 				removeDialog(DIALOG_PROGRESS);
-				// dismissDialog(DIALOG_PROGRESS);
-				// Get rid of the sending thread
+
 				mLoginThread.stopThread();
 				mLoginThread = null;
 				break;

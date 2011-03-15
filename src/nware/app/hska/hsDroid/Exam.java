@@ -5,19 +5,21 @@ import android.os.Parcelable;
 
 /**
  * Komplexer Datentyp zum Speichern einzelner Prüfungen
+ * 
  * @author Oliver Eichner
  * @version 0.1
  */
 public class Exam implements Parcelable {
 
-	private String examNr="";
-	private String examName="";
-	private String semester="";
-	private String examDate="";
-	private String grade="";
-	private boolean passed =false;
-	private String notation="";
-	private int attempts=0;
+	private String examNr = "";
+	private String examName = "";
+	private String semester = "";
+	private String examDate = "";
+	private String grade = "";
+	private boolean passed = false;
+	private String notation = "";
+	private int attempts = 0;
+	private String infoLink = "";
 
 	/**
 	 * Konstruktor für {@link Parcel}
@@ -28,18 +30,26 @@ public class Exam implements Parcelable {
 
 	/**
 	 * Konstruktor zum erstellen einer Prüfung
-	 * @param examNr Die Prüfungs Nummer
-	 * @param examName Der name der Prüfung
-	 * @param semester Das Semester in dem geschrieben wurde
-	 * @param examDate Das Prüfungs Datum
-	 * @param grade Die erzielte Note
-	 * @param passed Bestanden Status
-	 * @param notation Vermerk zur Prüfung
-	 * @param attempts Versuche bis jetzt
+	 * 
+	 * @param examNr
+	 *            Die Prüfungs Nummer
+	 * @param examName
+	 *            Der name der Prüfung
+	 * @param semester
+	 *            Das Semester in dem geschrieben wurde
+	 * @param examDate
+	 *            Das Prüfungs Datum
+	 * @param grade
+	 *            Die erzielte Note
+	 * @param passed
+	 *            Bestanden Status
+	 * @param notation
+	 *            Vermerk zur Prüfung
+	 * @param attempts
+	 *            Versuche bis jetzt
 	 */
-	public Exam(String examNr, String examName, String semester,
-			String examDate, String grade, boolean passed, String notation,
-			int attempts) {
+	public Exam(String examNr, String examName, String semester, String examDate, String grade, boolean passed,
+			String notation, int attempts, String infoLink) {
 		super();
 		this.examNr = examNr;
 		this.examName = examName;
@@ -49,6 +59,7 @@ public class Exam implements Parcelable {
 		this.passed = passed;
 		this.notation = notation;
 		this.attempts = attempts;
+		this.infoLink = infoLink;
 	}
 
 	public String getExamNr() {
@@ -83,8 +94,12 @@ public class Exam implements Parcelable {
 		return attempts;
 	}
 
-	//methoden für Parcel
-	
+	public String getInfoLink() {
+		return infoLink;
+	}
+
+	// methoden für Parcel
+
 	@Override
 	public int describeContents() {
 		// TODO Auto-generated method stub
@@ -100,6 +115,7 @@ public class Exam implements Parcelable {
 		dest.writeInt(passed ? 1 : 0);
 		dest.writeString(notation);
 		dest.writeInt(attempts);
+		dest.writeString(infoLink);
 
 	}
 
@@ -123,6 +139,7 @@ public class Exam implements Parcelable {
 		this.passed = in.readInt() == 1 ? true : false;
 		this.notation = in.readString();
 		this.attempts = in.readInt();
+		this.infoLink = in.readString();
 	}
 
 }

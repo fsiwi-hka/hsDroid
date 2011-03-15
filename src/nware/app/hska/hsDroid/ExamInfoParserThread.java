@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -39,9 +37,10 @@ import android.util.Log;
  * @author Oliver Eichner
  * 
  */
-public class GradeParserThread extends Thread {
-	private ArrayList<Exam> examsTest;
-
+public class ExamInfoParserThread extends Thread {
+	// private ArrayList<Exam> examsTest;
+	private ExamInfo examInfo;
+	private Exam exam;
 	public final static byte STATE_NOT_STARTED = 0;
 	public final static byte STATE_RUNNING = 1;
 	public final static byte STATE_DONE = 2;
@@ -61,16 +60,18 @@ public class GradeParserThread extends Thread {
 	/**
 	 * 
 	 */
-	public GradeParserThread(Handler nHandler) {
+	public ExamInfoParserThread(Handler nHandler, Exam exam) {
 		// TODO Auto-generated constructor stub
+
 		this.handlerOfCaller = nHandler;
-		this.examsTest = new ArrayList<Exam>();
+		this.examInfo = new ExamInfo(exam);
+		// this.examsTest = new ArrayList<Exam>();
 
 		// getGradesFromWeb();
 	}
 
-	public ArrayList<Exam> getExamsList() {
-		return this.examsTest;
+	public ExamInfo getExamInfo() {
+		return this.examInfo;
 	}
 
 	@Override
@@ -79,8 +80,11 @@ public class GradeParserThread extends Thread {
 		// FIXME asi key könnte man auch mit get in den header einbauen bzw alle
 		// gets...
 		// progressHandler.sendMessage(progressHandler.obtainMessage(1));
-		final String notenSpiegelURL = "https://qis2.hs-karlsruhe.de/qisserver/rds?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
-				+ StaticSessionData.asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";
+
+		// final String notenSpiegelURL =
+		// "https://qis2.hs-karlsruhe.de/qisserver/rds?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
+		// + StaticSessionData.asiKey +
+		// "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";
 
 		Message fetchMessage = handlerOfCaller.obtainMessage();
 		fetchMessage.what = MESSAGE_PROGRESS_FETCH;
@@ -91,7 +95,7 @@ public class GradeParserThread extends Thread {
 
 		try {
 
-			HttpPost httpPost = new HttpPost(notenSpiegelURL);
+			HttpPost httpPost = new HttpPost(examInfo.getExam().getInfoLink());
 			CookieSpecBase cookieSpecBase = new BrowserCompatSpec();
 
 			List<Header> cookieHeader = cookieSpecBase.formatCookies(StaticSessionData.cookies);
@@ -115,7 +119,7 @@ public class GradeParserThread extends Thread {
 					break;
 				}
 
-				if (!record && line.contains("<table border=\"0\">")) {
+				if (!record && line.contains("<table border=\"0\" align=\"left\"  width=\"60%\">")) {
 					record = true;
 				}
 				if (record && line.contains("</table>")) {
@@ -137,7 +141,7 @@ public class GradeParserThread extends Thread {
 					// da die <img ..> tags nicht xml like "well formed" sind,
 					// muss man sie ein bissel anpassen ;)
 					if (line.contains("<img")) {
-						// Log.d("grade parser", line);
+						Log.d("examInfo parser", line);
 						line = line.substring(0, line.indexOf(">") + 1) + "</a>";
 					}
 					sb.append(line);
@@ -223,27 +227,22 @@ public class GradeParserThread extends Thread {
 
 		Boolean fetch = false;
 		Boolean waitForTd = false;
-		int elementCount = 0; // 0-7
-		private String examNr;
-		private String examName;
-		private String semester;
-		private String examDate;
-		private String grade;
-		private boolean passed;
-		private String notation;
-		private int attempts;
-		private String infoLink;
+		int trCount = 0;
+		int tdCount = 0; // 0-7
+		private String sehrGutAmount;
+		private String gutAmount;
+		private String befriedigendAmount;
+		private String ausreichendAmount;
+		private String nichtAusreichendAmount;
+		private String average;
 
 		private void resetLectureVars() {
-			this.examNr = "";
-			this.examName = "";
-			this.semester = "";
-			this.examDate = "";
-			this.grade = "";
-			this.passed = false;
-			this.notation = "";
-			this.attempts = 0;
-			this.infoLink = "";
+			this.sehrGutAmount = "";
+			this.gutAmount = "";
+			this.befriedigendAmount = "";
+			this.ausreichendAmount = "";
+			this.befriedigendAmount = "";
+			this.ausreichendAmount = "";
 		}
 
 		@Override
@@ -251,22 +250,18 @@ public class GradeParserThread extends Thread {
 			super.startElement(n, l, q, a);
 			// Log.d("hska saxparser start l:", l);
 			if (l == "tr") {
+				trCount++;
 				waitForTd = true;
 			}
 			if (waitForTd && l == "th") {
 				waitForTd = false;
 			}
 			if (fetch && l == "td") {
-				elementCount++;
+				tdCount++;
 			}
 			if (waitForTd && l == "td") {
 				fetch = true;
 				waitForTd = false;
-			}
-
-			if (l == "a") {
-				// Log.d("startElement a", a.getValue("href"));
-				this.infoLink = a.getValue("href");
 			}
 
 		}
@@ -276,13 +271,14 @@ public class GradeParserThread extends Thread {
 			super.endElement(n, l, q);
 			if (l == "tr" && fetch == true) {
 
-				examsTest.add(new Exam(examNr, examName, semester, examDate, grade, passed, notation, attempts,
-						infoLink));
+				// examsTest.add(new Exam(examNr, examName, semester, examDate,
+				// grade, passed, notation, attempts,
+				// infoLink));
 
 				waitForTd = false;
 				fetch = false;
-				elementCount = 0;
-				resetLectureVars();
+				tdCount = 0;
+				// resetLectureVars();
 
 			}
 
@@ -300,56 +296,44 @@ public class GradeParserThread extends Thread {
 			// FIXME test
 			text = text.trim();
 			if (fetch) {
-				switch (elementCount) {
+				switch (tdCount) {
 				case 0:
-					// Log.d("PruefNr:", text);
-					examNr += text;
+					Log.d("first:" + trCount + ":", text);
+					// examNr += text;
 					// System.out.println("pnr  ["+examNr+"]");
 
 					break;
 				case 1:
-					// Log.d("PruefName:", text);
-					examName += text;
+					Log.d("second:" + trCount + ":", text);
+					switch (trCount) {
+					case 4:
+						sehrGutAmount += text;
+						break;
+					case 5:
+						gutAmount += text;
+						break;
+					case 6:
+						befriedigendAmount += text;
+						break;
+					case 7:
+						ausreichendAmount += text;
+						break;
+					case 8:
+						nichtAusreichendAmount += text;
+						break;
+					case 10:
+						average += text;
+						break;
+					default:
+						break;
+					}
+					// examName += text;
 					// System.out.println("ptxt  ["+examName+"]");
 
 					break;
-				case 2:
-					// Log.d("Semester:", text);
-					semester += text;
-					break;
-				case 3:
-					// Log.d("Datum:", text);
-					examDate += text;
-					// SimpleDateFormat sdfToDate = new SimpleDateFormat(
-					// "dd.MM.yyyy");
-					// try {
-					// examDate = sdfToDate.parse(text);
-					// } catch (ParseException e) {
-					// // Log.d("read:: date parser: ", e.getMessage());
-					// e.printStackTrace();
-					// }
-					break;
-				case 4:
-					// Log.d("Note:", text);
-					grade += text;
-					break;
-				case 5:
-					// Log.d("Status:", text);
-					if (text.equals("bestanden")) {
-						passed = true;
-					}
-					break;
-				case 6:
-					// Log.d("Vermerk:", text);
-					notation += text;
-					break;
-				case 7:
-					// Log.d("Versuch:", text);
-					attempts = Integer.valueOf(text);
-					break;
 
 				default:
-					Log.d("parser default", text + " element:" + elementCount);
+					Log.d("parser default", text + " element:" + tdCount);
 					break;
 				}
 			}
@@ -358,14 +342,18 @@ public class GradeParserThread extends Thread {
 
 		public void startDocument() throws SAXException {
 			super.startDocument();
-			examsTest = new ArrayList<Exam>();
+			// examsTest = new ArrayList<Exam>();
 			resetLectureVars();
 		}
 
 		public void endDocument() throws SAXException {
 			super.endDocument();
-			// array umdrehen
-			Collections.reverse(examsTest);
+			examInfo.setSehrGutAmount(sehrGutAmount);
+			examInfo.setGutAmount(gutAmount);
+			examInfo.setBefriedigendAmount(befriedigendAmount);
+			examInfo.setAusreichendAmount(ausreichendAmount);
+			examInfo.setNichtAusreichendAmount(nichtAusreichendAmount);
+			examInfo.setAverage(average);
 		}
 	}
 }

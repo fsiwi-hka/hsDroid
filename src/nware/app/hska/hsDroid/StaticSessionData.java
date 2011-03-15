@@ -7,6 +7,4 @@ import org.apache.http.cookie.Cookie;
 public class StaticSessionData {
 	public static List<Cookie> cookies;
 	public static String asiKey;
-
-	// public static GradeParserThread gParser;
 }

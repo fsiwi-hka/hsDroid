@@ -134,7 +134,6 @@ public class LoginThread extends Thread {
 			Message cookieMessage = HandlerOfCaller.obtainMessage();
 			cookieMessage.what = MESSAGE_PROGRESS_COOKIE;
 			HandlerOfCaller.sendMessage(cookieMessage);
-			// progressHandle.sendMessage(progressHandle.obtainMessage(3));
 			if (client.getCookieStore().getCookies().size() != 0) {
 				StaticSessionData.cookies = client.getCookieStore().getCookies();
 				// cookies darf nicht leer sein
@@ -195,7 +194,9 @@ public class LoginThread extends Thread {
 		}
 		// A</u>nmelden
 		// if (line.contains("Anmeldung fehlgeschlagen")) {
-		if (count < 50 && count > 30) {
+		if (count > 30 && count < 50) {
+			// wenn am anfang der link Anmelden steht, hat es wohl mit der
+			// anmeldung nicht geklappt
 			if (line.contains("A</u>nmelden")) {
 				// throw new
 				// HSLoginException(this.getString(R.string.error_login_failed));

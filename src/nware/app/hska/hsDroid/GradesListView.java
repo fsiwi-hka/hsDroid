@@ -19,9 +19,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ListView;
 import android.widget.TextView;
 
 /**
@@ -32,17 +35,19 @@ import android.widget.TextView;
  */
 public class GradesListView extends ListActivity {
 
-	private static Boolean fistStart = true;
-
 	private ExamAdapter m_examAdapter;
 
 	private ArrayList<Exam> examsTest;
 
+	private ExamInfo actualExamInfo = null;
+
 	private GradeParserThread mGradeParserThread = null;
+	private ExamInfoParserThread mExamInfoParserThread = null;
 
 	private ProgressDialog mProgressDialog = null;
 	private static final int DIALOG_PROGRESS = 1;
 
+	@SuppressWarnings("unchecked")
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		System.out.println("test onCreate");
@@ -64,7 +69,7 @@ public class GradesListView extends ListActivity {
 
 		// layout festlegen
 
-		setContentView(R.layout.grade_list_view);
+		// setContentView(R.layout.grade_list_view);
 
 		this.m_examAdapter = new ExamAdapter(GradesListView.this, R.layout.grade_row_item, this.examsTest);
 		if (this.examsTest.size() == 0) {
@@ -73,7 +78,25 @@ public class GradesListView extends ListActivity {
 			this.m_examAdapter.getFilter().filter("actualexam");
 		}
 
-		setListAdapter(this.m_examAdapter);
+		// setListAdapter(this.m_examAdapter);
+
+		final ListView lv = getListView();
+		lv.setAdapter(this.m_examAdapter);
+
+		lv.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				// When clicked, show a toast with the TextView text
+				Log.d("list click test", parent.toString() + "pos:" + position + " id:" + id);
+
+				Log.d("list click test", "huhu " + GradesListView.this.m_examAdapter.getCount());
+				Log.d("list click test", "object: " + GradesListView.this.m_examAdapter.getItem(position).getInfoLink());
+				showDialog(DIALOG_PROGRESS);
+				mExamInfoParserThread = new ExamInfoParserThread(mProgressHandle, GradesListView.this.m_examAdapter
+						.getItem(position));
+				mExamInfoParserThread.start();
+
+			}
+		});
 
 	}
 
@@ -89,11 +112,20 @@ public class GradesListView extends ListActivity {
 			switch (msg.what) {
 			case GradeParserThread.MESSAGE_COMPLETE:
 				Log.d("handler", "Login_complete");
-				GradesListView.this.examsTest = mGradeParserThread.getExamsList();
-				mGradeParserThread = null;
-				dismissDialog(DIALOG_PROGRESS);
+				if (mGradeParserThread != null) {
+					GradesListView.this.examsTest = mGradeParserThread.getExamsList();
+					mGradeParserThread = null;
+					GradesListView.this.m_examAdapter.getFilter().filter("actualexam");
+				}
 
-				GradesListView.this.m_examAdapter.getFilter().filter("actualexam");
+				if (mExamInfoParserThread != null) {
+					actualExamInfo = mExamInfoParserThread.getExamInfo();
+					mExamInfoParserThread = null;
+					// new ExamInfoDialog(GradesListView.this, actualExamInfo);
+
+				}
+
+				dismissDialog(DIALOG_PROGRESS);
 
 				break;
 			case GradeParserThread.MESSAGE_ERROR:
@@ -141,9 +173,11 @@ public class GradesListView extends ListActivity {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onRestoreInstanceState(Bundle outState) {
 		super.onRestoreInstanceState(outState);
+
 		examsTest = (ArrayList<Exam>) outState.get("exams_list");
 		this.m_examAdapter.getFilter().filter("actualexam");
 
@@ -197,11 +231,9 @@ public class GradesListView extends ListActivity {
 			new AboutDialog(this);
 			return true;
 		case R.id.view_menu_refresh:
-			Log.d("OptonItemSelect", "refresh.. not implemented");
 			showDialog(DIALOG_PROGRESS);
 			mGradeParserThread = new GradeParserThread(mProgressHandle);
 			mGradeParserThread.start();
-			// StaticSessionData.gParser.refreshList();
 			return true;
 		case R.id.view_submenu_examViewAll:
 			if (item.isChecked())
@@ -351,6 +383,12 @@ public class GradesListView extends ListActivity {
 				return 0;
 			}
 			return this.examsList.size();
+
+		}
+
+		@Override
+		public Exam getItem(int position) {
+			return this.examsList.get(position);
 
 		}
 

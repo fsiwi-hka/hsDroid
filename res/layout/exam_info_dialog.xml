@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+	<TextView android:id="@+id/examinfo_title"
+		android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="überschrift"></TextView>
+	<TableLayout android:id="@+id/examinfo_tablelayout"
+		android:layout_width="match_parent" android:layout_height="wrap_content">
+	<TableRow android:layout_width="wrap_content" android:id="@+id/examInfoRow">
+	<LinearLayout android:id="@+id/linearLayout1" android:layout_width="wrap_content" android:layout_height="wrap_content">
+		<TextView android:text="TextView" android:id="@+id/examInfoTextView1"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		<TextView android:text="TextView" android:id="@+id/examInfoTextView2" android:layout_height="wrap_content" android:layout_width="match_parent"></TextView>
+	</LinearLayout>
+
+	</TableRow>
+	</TableLayout>
+	<TextView android:id="@+id/examinfoAverage"
+		android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Durchschnitt"></TextView>
+</LinearLayout>
