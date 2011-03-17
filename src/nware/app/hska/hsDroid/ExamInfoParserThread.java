@@ -40,12 +40,12 @@ import android.util.Log;
 public class ExamInfoParserThread extends Thread {
 	// private ArrayList<Exam> examsTest;
 	private ExamInfo examInfo;
-	private Exam exam;
-	public final static byte STATE_NOT_STARTED = 0;
-	public final static byte STATE_RUNNING = 1;
-	public final static byte STATE_DONE = 2;
+	// private Exam exam;
+	public final static byte THREAD_NOT_STARTED = 0;
+	public final static byte THREAD_RUNNING = 1;
+	public final static byte THREAD_DONE = 2;
 
-	private byte mThreadStatus = STATE_NOT_STARTED;
+	private byte mThreadStatus = THREAD_NOT_STARTED;
 
 	private boolean mStoppingThread;
 
@@ -76,8 +76,9 @@ public class ExamInfoParserThread extends Thread {
 
 	@Override
 	public void run() {
-		mThreadStatus = STATE_RUNNING;
-		// FIXME asi key könnte man auch mit get in den header einbauen bzw alle
+		mThreadStatus = THREAD_RUNNING;
+		// FIXME asi key aus url könnte man auch mit get in den header einbauen.
+		// bzw alle
 		// gets...
 		// progressHandler.sendMessage(progressHandler.obtainMessage(1));
 
@@ -159,7 +160,7 @@ public class ExamInfoParserThread extends Thread {
 			parseMessage.what = MESSAGE_PROGRESS_PARSE;
 			handlerOfCaller.sendMessage(parseMessage);
 			read(htmlContentString);
-			mThreadStatus = STATE_DONE;
+			mThreadStatus = THREAD_DONE;
 			Message oMessage = handlerOfCaller.obtainMessage();
 			oMessage.what = MESSAGE_COMPLETE;
 			handlerOfCaller.sendMessage(oMessage);
@@ -242,7 +243,8 @@ public class ExamInfoParserThread extends Thread {
 			this.befriedigendAmount = "";
 			this.ausreichendAmount = "";
 			this.befriedigendAmount = "";
-			this.ausreichendAmount = "";
+			this.nichtAusreichendAmount = "";
+			this.average = "";
 		}
 
 		@Override
@@ -299,11 +301,18 @@ public class ExamInfoParserThread extends Thread {
 				switch (tdCount) {
 				case 0:
 					Log.d("first:" + trCount + ":", text);
-					// examNr += text;
-					// System.out.println("pnr  ["+examNr+"]");
+					switch (trCount) {
+					case 10:
+						average += text;
+						break;
+
+					default:
+						break;
+					}
 
 					break;
 				case 1:
+					// FIXME +=text.. wegen zeilenumbrüchen im html code..
 					Log.d("second:" + trCount + ":", text);
 					switch (trCount) {
 					case 4:
@@ -327,8 +336,6 @@ public class ExamInfoParserThread extends Thread {
 					default:
 						break;
 					}
-					// examName += text;
-					// System.out.println("ptxt  ["+examName+"]");
 
 					break;
 
@@ -342,7 +349,6 @@ public class ExamInfoParserThread extends Thread {
 
 		public void startDocument() throws SAXException {
 			super.startDocument();
-			// examsTest = new ArrayList<Exam>();
 			resetLectureVars();
 		}
 

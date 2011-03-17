@@ -5,8 +5,6 @@ import android.content.Context;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 public class ExamInfoDialog {
@@ -14,34 +12,45 @@ public class ExamInfoDialog {
 	public ExamInfoDialog(Context context, ExamInfo exInfo) {
 		final Dialog dialog = new Dialog(context);
 		dialog.setContentView(R.layout.exam_info_dialog);
-		dialog.setTitle(exInfo.getExam().getExamName());
+		dialog.setTitle("Notenverteilung");
 		dialog.setCancelable(true);
 		dialog.setCanceledOnTouchOutside(true);
 
 		TextView aboutTitle = (TextView) dialog.findViewById(R.id.examinfo_title);
-		aboutTitle.setText("notenverteilung");
+		aboutTitle.setText(exInfo.getExam().getExamName());
+		TextView aboutSubTitle = (TextView) dialog.findViewById(R.id.examinfo_SubTitle);
+		aboutSubTitle.setText(exInfo.getExam().getExamNr() + " - " + exInfo.getExam().getSemester());
 
-		TableLayout table = (TableLayout) dialog.findViewById(R.id.examinfo_tablelayout);
-
-		TableRow rowSehrGut = (TableRow) dialog.findViewById(R.id.examInfoRow);
-		TextView titleSG = (TextView) dialog.findViewById(R.id.examInfoTextView1);
+		TextView titleSG = (TextView) dialog.findViewById(R.id.examInfoTextViewSG1);
 		titleSG.setText("Sehr Gut");
-		// rowSehrGut.addView(titleSG);
-		TextView gradeSG = (TextView) dialog.findViewById(R.id.examInfoTextView1);
-		titleSG.setText(exInfo.getSehrGutAmount());
-		// rowSehrGut.addView(gradeSG);
-		// table.addView(rowSehrGut);
+		TextView gradeSG = (TextView) dialog.findViewById(R.id.examInfoTextViewSG2);
+		gradeSG.setText(exInfo.getSehrGutAmount());
 
-		TableRow rowGut = (TableRow) dialog.findViewById(R.id.examInfoRow);
-		TextView titleG = (TextView) dialog.findViewById(R.id.examInfoTextView1);
-		titleSG.setText("Sehr Gut");
-		// rowSehrGut.addView(titleG);
-		TextView gradeG = (TextView) dialog.findViewById(R.id.examInfoTextView1);
-		titleSG.setText(exInfo.getGutAmount());
-		// rowSehrGut.addView(gradeG);
-		// table.addView(rowGut);
+		TextView titleG = (TextView) dialog.findViewById(R.id.examInfoTextViewG1);
+		titleG.setText("Gut");
+		TextView gradeG = (TextView) dialog.findViewById(R.id.examInfoTextViewG2);
+		gradeG.setText(exInfo.getGutAmount());
 
-		Button button = (Button) dialog.findViewById(R.id.about_cancel);
+		TextView titleB = (TextView) dialog.findViewById(R.id.examInfoTextViewB1);
+		titleB.setText("Befriedigend");
+		TextView gradeB = (TextView) dialog.findViewById(R.id.examInfoTextViewB2);
+		gradeB.setText(exInfo.getBefriedigendAmount());
+
+		TextView titleA = (TextView) dialog.findViewById(R.id.examInfoTextViewA1);
+		titleA.setText("Ausreichend");
+		TextView gradeA = (TextView) dialog.findViewById(R.id.examInfoTextViewA2);
+		gradeA.setText(exInfo.getAusreichendAmount());
+
+		TextView titleN = (TextView) dialog.findViewById(R.id.examInfoTextViewN1);
+		titleN.setText("Nicht Ausreichend");
+		TextView gradeN = (TextView) dialog.findViewById(R.id.examInfoTextViewN2);
+		gradeN.setText(exInfo.getNichtAusreichendAmount().trim()); // FIXME null
+																	// text
+
+		TextView average = (TextView) dialog.findViewById(R.id.examinfoAverage);
+		average.setText(exInfo.getAverage());
+
+		Button button = (Button) dialog.findViewById(R.id.examinfo_cancel);
 		button.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -53,5 +62,4 @@ public class ExamInfoDialog {
 
 		dialog.show();
 	}
-
 }

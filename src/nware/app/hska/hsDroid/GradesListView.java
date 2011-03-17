@@ -38,9 +38,7 @@ public class GradesListView extends ListActivity {
 	private ExamAdapter m_examAdapter;
 
 	private ArrayList<Exam> examsTest;
-
-	private ExamInfo actualExamInfo = null;
-
+	private ExamInfo currentEInfo;
 	private GradeParserThread mGradeParserThread = null;
 	private ExamInfoParserThread mExamInfoParserThread = null;
 
@@ -85,15 +83,21 @@ public class GradesListView extends ListActivity {
 
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				// When clicked, show a toast with the TextView text
-				Log.d("list click test", parent.toString() + "pos:" + position + " id:" + id);
+				if (!GradesListView.this.m_examAdapter.getItem(position).getInfoLink().equals("")) {
 
-				Log.d("list click test", "huhu " + GradesListView.this.m_examAdapter.getCount());
-				Log.d("list click test", "object: " + GradesListView.this.m_examAdapter.getItem(position).getInfoLink());
-				showDialog(DIALOG_PROGRESS);
-				mExamInfoParserThread = new ExamInfoParserThread(mProgressHandle, GradesListView.this.m_examAdapter
-						.getItem(position));
-				mExamInfoParserThread.start();
+					// When clicked, show a toast with the TextView text
+					Log.d("list click test", parent.toString() + "pos:" + position + " id:" + id);
+
+					Log.d("list click test", "huhu " + GradesListView.this.m_examAdapter.getCount());
+					Log.d("list click test", "object: "
+							+ GradesListView.this.m_examAdapter.getItem(position).getInfoLink());
+					showDialog(DIALOG_PROGRESS);
+					mExamInfoParserThread = new ExamInfoParserThread(mProgressHandle, GradesListView.this.m_examAdapter
+							.getItem(position));
+					mExamInfoParserThread.start();
+				} else {
+					Log.d("list onClick", "keine url. todo: alertDialog");
+				}
 
 			}
 		});
@@ -119,9 +123,9 @@ public class GradesListView extends ListActivity {
 				}
 
 				if (mExamInfoParserThread != null) {
-					actualExamInfo = mExamInfoParserThread.getExamInfo();
+					currentEInfo = mExamInfoParserThread.getExamInfo();
 					mExamInfoParserThread = null;
-					// new ExamInfoDialog(GradesListView.this, actualExamInfo);
+					new ExamInfoDialog(GradesListView.this, currentEInfo);
 
 				}
 
@@ -139,7 +143,7 @@ public class GradesListView extends ListActivity {
 				mGradeParserThread = null;
 				break;
 			case GradeParserThread.MESSAGE_PROGRESS_FETCH:
-				mProgressDialog.setMessage(GradesListView.this.getString(R.string.progress_notenfetch));
+				mProgressDialog.setMessage(GradesListView.this.getString(R.string.progress_loading));
 				break;
 			case GradeParserThread.MESSAGE_PROGRESS_PARSE:
 				mProgressDialog.setMessage(GradesListView.this.getString(R.string.progress_parse));

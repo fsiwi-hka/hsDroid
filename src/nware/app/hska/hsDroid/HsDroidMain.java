@@ -30,7 +30,7 @@ public class HsDroidMain extends Activity {
 	private EditText PassEditText;
 	private CheckBox LoginCheckBox;
 
-	private boolean checkBoxChecked;
+	private boolean checkBoxChecked = false;
 	private SharedPreferences notenapp_preferences;
 
 	public void onCreate(Bundle savedInstanceState) {

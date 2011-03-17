@@ -9,7 +9,7 @@
 	<string name="cancel">Close</string>
 	<string name="error">Error</string>
 	<string name="error_name_missing">Please enter HS-Username.</string>
-	<string name="error_name_incorrect">HS-Username wrong. ex.: agag0001</string>
+	<string name="error_name_incorrect">Wrong HS-Username. ex.: mami1011</string>
 	<string name="error_ok">OK</string>
 	<string name="error_password_missing">Please enter password.</string>
 	<string name="error_couldnt_connect">Connection error</string>
