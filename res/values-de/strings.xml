@@ -42,8 +42,9 @@
 	<string name="error_cookie_empty">Keinen Keks bekommen?</string>
 
 	<string name="about_subtitle">Notenviewer</string>
-	<string name="about_maintext">App um sich am &quot;Online Service 2 für Studierende&quot; anzumelden und die Noten abzufragen.\n\nFür weiter Informationen:\ncode.google.com/p/hs-droid\n\nFür Fragen, Kritik, Ideen, Verbesserungsvorschläge oder was auch immer, auf der Homepage gibt es einen Issue Tracker oder per EMail an n0izeland@gmail.com</string>
-
+		<string name="about_maintext">App um sich am &quot;Online Service 2 für
+		Studierende&quot; anzumelden und die Noten abzufragen.\n\nHomepage:
+		code.google.com/p/hs-droid\nEMail: n0izeland@gmail.com</string>
 
 
 

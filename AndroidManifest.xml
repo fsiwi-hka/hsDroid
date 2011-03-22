@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="nware.app.hska.hsDroid" 
-	android:versionName="@string/app_version" 
+	package="de.nware.app.hsDroid" android:versionName="@string/app_version"
 	android:versionCode="2">
 	<application android:icon="@drawable/icon" android:label="@string/app_name">
-		<activity android:name="HsDroidMain" android:label="@string/app_name" android:configChanges="orientation"
-		>
+		<activity android:name="HsDroidMain" android:label="@string/app_name"
+			android:configChanges="orientation">
+
+
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".GradesListView" android:label="@string/grades_view" android:configChanges="orientation"
-		>
+		<activity android:name="de.nware.app.hsDroid.ui.GradesList" android:label="@string/grades_list"
+			android:configChanges="orientation">
 			<intent-filter>
-			<action android:name="android.intent.action.VIEW" />
-
+				<action android:name="android.intent.action.VIEW" />
 			</intent-filter>
+		</activity>
+		<activity android:name=".ui.Preferences" android:label="@string/label_set_preferences">
 		</activity>
 
 	</application>
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
-	    <uses-sdk android:minSdkVersion="7" 
-              android:maxSdkVersion="10" />
+	<uses-sdk android:minSdkVersion="7" android:maxSdkVersion="10" />
 </manifest>

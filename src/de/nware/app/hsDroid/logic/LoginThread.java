@@ -1,4 +1,4 @@
-package nware.app.hska.hsDroid;
+package de.nware.app.hsDroid.logic;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -14,6 +14,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+
+import de.nware.app.hsDroid.data.StaticSessionData;
 
 import android.os.Bundle;
 import android.os.Handler;

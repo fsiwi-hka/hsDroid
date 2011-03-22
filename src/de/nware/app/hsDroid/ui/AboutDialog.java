@@ -1,7 +1,9 @@
-package nware.app.hska.hsDroid;
+package de.nware.app.hsDroid.ui;
 
+import de.nware.app.hsDroid.R;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -25,9 +27,11 @@ public class AboutDialog {
 
 		TextView aboutTitle = (TextView) dialog.findViewById(R.id.about_title);
 		aboutTitle.setText(context.getString(R.string.app_name) + " - " + context.getString(R.string.app_version));
+		aboutTitle.setShadowLayer(1, 1, 1, Color.GRAY);
 
 		TextView aboutSubTitle = (TextView) dialog.findViewById(R.id.about_SubTitle);
 		aboutSubTitle.setText(context.getString(R.string.about_subtitle));
+		aboutSubTitle.setShadowLayer(1, 1, 1, Color.GRAY);
 
 		TextView mainText = (TextView) dialog.findViewById(R.id.about_maintext);
 		mainText.setText(context.getString(R.string.about_maintext));

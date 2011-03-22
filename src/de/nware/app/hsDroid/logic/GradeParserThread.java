@@ -1,7 +1,7 @@
 /**
  * 
  */
-package nware.app.hska.hsDroid;
+package de.nware.app.hsDroid.logic;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,6 +29,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
+
+import de.nware.app.hsDroid.data.Exam;
+import de.nware.app.hsDroid.data.StaticSessionData;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -95,7 +98,6 @@ public class GradeParserThread extends Thread {
 			CookieSpecBase cookieSpecBase = new BrowserCompatSpec();
 
 			List<Header> cookieHeader = cookieSpecBase.formatCookies(StaticSessionData.cookies);
-
 			httpPost.setHeader(cookieHeader.get(0));
 
 			response = client.execute(httpPost);
@@ -265,8 +267,7 @@ public class GradeParserThread extends Thread {
 			}
 
 			if (l == "a") {
-				// Log.d("startElement a", a.getValue("href"));
-				this.infoLink = a.getValue("href");
+				this.infoLink = a.getValue("href"); // kann leer sein!!
 			}
 
 		}
@@ -297,7 +298,7 @@ public class GradeParserThread extends Thread {
 				e.printStackTrace();
 			}
 			String text = new String(ch, start, length);
-			// FIXME test
+
 			text = text.trim();
 			if (fetch) {
 				switch (elementCount) {

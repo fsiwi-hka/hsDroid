@@ -1,4 +1,4 @@
-package nware.app.hska.hsDroid;
+package de.nware.app.hsDroid.ui;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,10 +8,13 @@ import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,6 +29,11 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ListView;
 import android.widget.TextView;
+import de.nware.app.hsDroid.R;
+import de.nware.app.hsDroid.data.Exam;
+import de.nware.app.hsDroid.data.ExamInfo;
+import de.nware.app.hsDroid.logic.ExamInfoParserThread;
+import de.nware.app.hsDroid.logic.GradeParserThread;
 
 /**
  * {@link ListActivity} zum anzeigen der Prüfungen
@@ -33,7 +41,7 @@ import android.widget.TextView;
  * @author Oliver Eichner
  * 
  */
-public class GradesListView extends ListActivity {
+public class GradesList extends ListActivity {
 
 	private ExamAdapter m_examAdapter;
 
@@ -43,15 +51,24 @@ public class GradesListView extends ListActivity {
 	private ExamInfoParserThread mExamInfoParserThread = null;
 
 	private ProgressDialog mProgressDialog = null;
-	private static final int DIALOG_PROGRESS = 1;
+
+	private SharedPreferences notenapp_preferences;
+
+	private static final byte DIALOG_PROGRESS = 1;
+
+	private static final String SORT_ALL = "";
+	private static final String SORT_ALL_FAILED = "allfail";
+	private static final String SORT_ACTUAL = "act";
+	private static final String SORT_ACTUAL_FAILED = "actfail";
 
 	@SuppressWarnings("unchecked")
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		System.out.println("test onCreate");
 
-		// TODO //FIXME asikey und cookies darf nicht leer sein!!!!!!
-		// StaticSessionData.gParser = new GradeParserThread();
+		// einstellungne holen
+		notenapp_preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
 		this.examsTest = new ArrayList<Exam>();
 		if (savedInstanceState == null) {
 
@@ -66,33 +83,24 @@ public class GradesListView extends ListActivity {
 		}
 
 		// layout festlegen
-
-		// setContentView(R.layout.grade_list_view);
-
-		this.m_examAdapter = new ExamAdapter(GradesListView.this, R.layout.grade_row_item, this.examsTest);
+		this.m_examAdapter = new ExamAdapter(GradesList.this, R.layout.grade_row_item, this.examsTest);
 		if (this.examsTest.size() == 0) {
 			this.m_examAdapter.notifyDataSetInvalidated();
 		} else {
-			this.m_examAdapter.getFilter().filter("actualexam");
-		}
 
-		// setListAdapter(this.m_examAdapter);
+			this.m_examAdapter.getFilter().filter(getDefaultListSort());
+		}
 
 		final ListView lv = getListView();
 		lv.setAdapter(this.m_examAdapter);
 
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if (!GradesListView.this.m_examAdapter.getItem(position).getInfoLink().equals("")) {
+				// url muss vorhandensein
+				if (!GradesList.this.m_examAdapter.getItem(position).getInfoLink().equals("")) {
 
-					// When clicked, show a toast with the TextView text
-					Log.d("list click test", parent.toString() + "pos:" + position + " id:" + id);
-
-					Log.d("list click test", "huhu " + GradesListView.this.m_examAdapter.getCount());
-					Log.d("list click test", "object: "
-							+ GradesListView.this.m_examAdapter.getItem(position).getInfoLink());
 					showDialog(DIALOG_PROGRESS);
-					mExamInfoParserThread = new ExamInfoParserThread(mProgressHandle, GradesListView.this.m_examAdapter
+					mExamInfoParserThread = new ExamInfoParserThread(mProgressHandle, GradesList.this.m_examAdapter
 							.getItem(position));
 					mExamInfoParserThread.start();
 				} else {
@@ -102,6 +110,25 @@ public class GradesListView extends ListActivity {
 			}
 		});
 
+	}
+
+	// helper get rid of....
+	private String getDefaultListSort() {
+
+		String prefView = notenapp_preferences.getString("defaultViewPref", "");
+		switch (Integer.valueOf(prefView)) {
+		case 0:
+			return SORT_ALL;
+		case 1:
+			return SORT_ACTUAL;
+		case 2:
+			return SORT_ACTUAL_FAILED;
+		case 3:
+			return SORT_ALL_FAILED;
+
+		default:
+			return "";
+		}
 	}
 
 	/**
@@ -117,15 +144,15 @@ public class GradesListView extends ListActivity {
 			case GradeParserThread.MESSAGE_COMPLETE:
 				Log.d("handler", "Login_complete");
 				if (mGradeParserThread != null) {
-					GradesListView.this.examsTest = mGradeParserThread.getExamsList();
+					GradesList.this.examsTest = mGradeParserThread.getExamsList();
 					mGradeParserThread = null;
-					GradesListView.this.m_examAdapter.getFilter().filter("actualexam");
+					GradesList.this.m_examAdapter.getFilter().filter(getDefaultListSort());
 				}
 
 				if (mExamInfoParserThread != null) {
 					currentEInfo = mExamInfoParserThread.getExamInfo();
 					mExamInfoParserThread = null;
-					new ExamInfoDialog(GradesListView.this, currentEInfo);
+					new ExamInfoDialog(GradesList.this, currentEInfo);
 
 				}
 
@@ -135,7 +162,7 @@ public class GradesListView extends ListActivity {
 			case GradeParserThread.MESSAGE_ERROR:
 				dismissDialog(DIALOG_PROGRESS);
 				Log.d("handler login error", msg.getData().getString("Message"));
-				createDialog(GradesListView.this.getString(R.string.error_couldnt_connect),
+				createDialog(GradesList.this.getString(R.string.error_couldnt_connect),
 						msg.getData().getString("Message"));
 				// TODO alert dialog auch mit showDialog???
 
@@ -143,13 +170,13 @@ public class GradesListView extends ListActivity {
 				mGradeParserThread = null;
 				break;
 			case GradeParserThread.MESSAGE_PROGRESS_FETCH:
-				mProgressDialog.setMessage(GradesListView.this.getString(R.string.progress_loading));
+				mProgressDialog.setMessage(GradesList.this.getString(R.string.progress_loading));
 				break;
 			case GradeParserThread.MESSAGE_PROGRESS_PARSE:
-				mProgressDialog.setMessage(GradesListView.this.getString(R.string.progress_parse));
+				mProgressDialog.setMessage(GradesList.this.getString(R.string.progress_parse));
 				break;
 			case GradeParserThread.MESSAGE_PROGRESS_CLEANUP:
-				mProgressDialog.setMessage(GradesListView.this.getString(R.string.progress_notencleanup));
+				mProgressDialog.setMessage(GradesList.this.getString(R.string.progress_notencleanup));
 				break;
 			default:
 				Log.d("onCreate should not happen", String.valueOf(mGradeParserThread.getStatus()));
@@ -183,7 +210,8 @@ public class GradesListView extends ListActivity {
 		super.onRestoreInstanceState(outState);
 
 		examsTest = (ArrayList<Exam>) outState.get("exams_list");
-		this.m_examAdapter.getFilter().filter("actualexam");
+		this.m_examAdapter.getFilter().filter(getDefaultListSort());
+		// FIXME nicht default list sort.!!
 
 		System.out.println("test onRestoreInstanceState");
 	}
@@ -216,6 +244,16 @@ public class GradesListView extends ListActivity {
 		}
 	}
 
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		if (hasFocus) {
+			notenapp_preferences = PreferenceManager.getDefaultSharedPreferences(this);
+			// checkBoxChecked =
+			// notenapp_preferences.getBoolean("saveLoginDataPref", false);
+			// LoginCheckBox.setChecked(checkBoxChecked);
+		}
+	}
+
 	/**
 	 * Optionsmenü
 	 */
@@ -239,20 +277,28 @@ public class GradesListView extends ListActivity {
 			mGradeParserThread = new GradeParserThread(mProgressHandle);
 			mGradeParserThread.start();
 			return true;
+		case R.id.view_menu_preferences:
+			Intent settingsActivity = new Intent(getBaseContext(), Preferences.class);
+			startActivity(settingsActivity);
+			// update??
+			notenapp_preferences = PreferenceManager.getDefaultSharedPreferences(this);
+			// checkBoxChecked =
+			// notenapp_preferences.getBoolean("SaveLoginToggle", false);
+			return true;
 		case R.id.view_submenu_examViewAll:
 			if (item.isChecked())
 				item.setChecked(false);
 			else
 				item.setChecked(true);
 
-			m_examAdapter.getFilter().filter("");
+			m_examAdapter.getFilter().filter(SORT_ALL);
 			return true;
 		case R.id.view_submenu_examViewOnlyLast:
 			if (item.isChecked())
 				item.setChecked(false);
 			else
 				item.setChecked(true);
-			m_examAdapter.getFilter().filter("actualexam");
+			m_examAdapter.getFilter().filter(SORT_ACTUAL);
 			return true;
 		case R.id.view_submenu_examViewOnlyLastFailed:
 			if (item.isChecked())
@@ -260,7 +306,7 @@ public class GradesListView extends ListActivity {
 			else
 				item.setChecked(true);
 
-			m_examAdapter.getFilter().filter("failed");
+			m_examAdapter.getFilter().filter(SORT_ACTUAL_FAILED);
 			return true;
 		}
 		Log.d("GradeView menu:", "default");
@@ -329,6 +375,11 @@ public class GradesListView extends ListActivity {
 				TextView exSemester = (TextView) v.findViewById(R.id.examSemester);
 				if (exName != null) {
 					exName.setText(ex.getExamName());
+					if (isActualExam(ex)) {
+						exName.setShadowLayer(3, 0, 0, Color.GREEN);
+					} else {
+						exName.setShadowLayer(0, 0, 0, 0);
+					}
 				}
 				if (exNr != null) {
 					exNr.setText(ex.getExamNr());
@@ -342,21 +393,20 @@ public class GradesListView extends ListActivity {
 				if (exGrade != null) {
 					if (!ex.isPassed()) {
 						// FIXME wenn möglich.. farben gedöns is ziemlich tricky
-						// wegen des "recycler" von ListActivity
+						// wegen "recycler" von ListActivity
 						if (ex.getAttempts() > 1) {
-							exGrade.setBackgroundColor(Color.RED);
 							exGrade.setTextColor(Color.BLACK);
+							exGrade.setBackgroundColor(Color.RED);
+							exGrade.setCompoundDrawablePadding(2);
+
 						} else {
 							exGrade.setTextColor(Color.RED);
 							exGrade.setBackgroundColor(Color.TRANSPARENT);
 						}
 					} else {
-						exGrade.setTextColor(Color.rgb(0x87, 0xeb, 0x0c)); // Color.rgb(0x87,0xeb,0x0c
+						exGrade.setTextColor(Color.rgb(0x87, 0xeb, 0x0c));
+
 						exGrade.setBackgroundColor(Color.TRANSPARENT);
-						// vllt. android grün ;)
-						// http://www.perbang.dk/rgb/A4C639/
-						// # C1FF00 # AEE500
-						// gingerbread ähnlich, bissel heller.. BEEB0C
 					}
 					if (ex.getGrade() != "") {
 						exGrade.setText(ex.getGrade());
@@ -397,21 +447,13 @@ public class GradesListView extends ListActivity {
 		}
 
 		private class ExamFilter extends Filter {
+
 			protected FilterResults performFiltering(CharSequence prefix) {
 				// result objekt
 				FilterResults results = new FilterResults();
 
-				// FIXME ...funzt nich..//wenn adapter array leer, hole original
-				// if (examsList == null) {
-				// synchronized (mLock) { // Notice the declaration above
-				// examsList = new ArrayList<Exam>(examsTest);
-				// }
-				// }
-
-				// kein prefix, also ganzes (altes) array übernehmen
-
 				// FIXME ??
-				if (prefix == null || prefix.length() == 0 || prefix == "") {
+				if (prefix == null || prefix.length() == 0 || prefix == SORT_ALL) {
 					synchronized (mLock) {
 						results.values = examsTest;
 						results.count = examsTest.size();
@@ -423,7 +465,7 @@ public class GradesListView extends ListActivity {
 					final int count = items.size();
 					final ArrayList<Exam> newItems = new ArrayList<Exam>(count);
 
-					if (prefix.equals("failed")) {
+					if (prefix.equals(SORT_ACTUAL_FAILED)) {
 						for (int i = 0; i < count; i++) {
 							final Exam item = items.get(i);
 
@@ -432,7 +474,16 @@ public class GradesListView extends ListActivity {
 								newItems.add(item);
 							}
 						}
-					} else if (prefix.equals("actualexam")) {
+					} else if (prefix.equals(SORT_ALL_FAILED)) {
+						for (int i = 0; i < count; i++) {
+							final Exam item = items.get(i);
+
+							// nicht bestanden
+							if (!item.isPassed()) {
+								newItems.add(item);
+							}
+						}
+					} else if (prefix.equals(SORT_ACTUAL)) {
 						for (int i = 0; i < count; i++) {
 							final Exam item = items.get(i);
 							// semester muss übereinstimmen

@@ -50,11 +50,10 @@
 		<TextView android:id="@+id/examGrade" 
 			android:textSize="18sp"
 			android:textStyle="bold" 
-			android:layout_gravity="right"
 			android:layout_marginRight="5dp"
 			android:layout_width="wrap_content" 
 			android:layout_height="wrap_content"
 			android:text="1,0"
-			 />
+			 android:layout_gravity="center"/>
 	</LinearLayout>
 </LinearLayout>

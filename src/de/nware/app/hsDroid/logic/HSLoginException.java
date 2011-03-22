@@ -1,4 +1,4 @@
-package nware.app.hska.hsDroid;
+package de.nware.app.hsDroid.logic;
 
 public class HSLoginException extends Exception {
 	/**

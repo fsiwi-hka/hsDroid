@@ -1,0 +1,44 @@
+Changelog und ToDo Liste für hsDroid
+===========================================
+
+_____
+ToDo:
+	-weniger traffic
+	 	- sqlite um noten zu speichern (optional)
+	 		+keine warte zeit um zur activity zu wecheln
+	 		=>connect thread als service
+	 	- http session daten endlich mal nutzen ;) und solange cokkie gültig ist => bypass login
+	 		=> cookie löschen option/knopf...
+	 
+	-weg mit der progressbar!!!
+		Inhalt der Liste bald möglichst updaten..
+		
+	-layout!!
+
+__________
+Changelog:
+
+mar/2o11 - v0.1.8
+	+Preferences wip
+	+AutoLogin
+
+v0.1.7
+	+ListItem onClick - Notenverteilung
+	+xml fixes
+
+v0.1.6
+	+menu preferences,view,about
+	+Threads ausgelagert
+	+locals en
+	+screen orientation fix
+
+v0.1.5
+	-TableLayout
+	+ListActivity
+	+looper
+	
+v.0.1
+	+ login
+	+ user und password Speichern (SharedPreferences)
+	+ SAXParser für "Notenspiegel"
+	+ TableLayout für Noten

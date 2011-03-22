@@ -24,7 +24,7 @@
 		</LinearLayout>
 		<ImageView android:src="@drawable/icon" android:id="@+id/about_image"
 			android:layout_height="wrap_content" android:layout_width="wrap_content"
-			android:layout_weight="0"  ></ImageView>
+			android:layout_weight="0"  android:layout_gravity="center"></ImageView>
 	</LinearLayout>
 	<TextView android:id="@+id/about_maintext"
 		android:text="TEst Text für main TExt, mit ganz viel text, der nix bringt.. huhu haha foo bar \n asd asd asd asd "

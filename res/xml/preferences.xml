@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="Allgemein">
+		<CheckBoxPreference android:title="Auto Login"
+			android:defaultValue="false" android:summary="Automatische anledung erlauben?"
+			android:key="autoLoginPref" />
+		<CheckBoxPreference android:title="Save Login Data"
+			android:defaultValue="false" android:summary="Lokale Einstellungen beim Beenden löschen?"
+			android:key="saveLoginDataPref" />
+<!-- 		<CheckBoxPreference android:title="Auto Cleanup"
+			android:defaultValue="false" android:summary="Lokale Einstellungen beim Beenden löschen?"
+			android:key="autoCleanUpPref" /> -->
+	</PreferenceCategory>
+	<PreferenceCategory android:title="Notenspiegel">
+		<CheckBoxPreference android:title="Auto Update"
+			android:defaultValue="false" android:summary="Automatisch nach neuen Noten schauen?"
+			android:key="autoUpdatePref" />
+	<ListPreference
+                        android:title="Standard Ansicht"
+                        android:summary="Legt fest in welcher Ansicht der Notenspiegel angezeigt werden soll."
+                        android:key="defaultViewPref"
+                        android:defaultValue=""
+                        android:entries="@array/defaultViewListArray"
+                        android:entryValues="@array/defaultViewListValues" />
+
+	</PreferenceCategory>
+</PreferenceScreen>

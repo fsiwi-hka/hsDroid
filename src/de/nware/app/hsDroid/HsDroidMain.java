@@ -1,4 +1,4 @@
-package nware.app.hska.hsDroid;
+package de.nware.app.hsDroid;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -17,9 +17,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.Toast;
+import de.nware.app.hsDroid.logic.LoginThread;
+import de.nware.app.hsDroid.ui.AboutDialog;
+import de.nware.app.hsDroid.ui.GradesList;
+import de.nware.app.hsDroid.ui.Preferences;
 
+/**
+ * 
+ * @author Oliver Eichner
+ * 
+ */
 public class HsDroidMain extends Activity {
 
 	private LoginThread mLoginThread = null;
@@ -41,82 +51,110 @@ public class HsDroidMain extends Activity {
 		PassEditText = (EditText) findViewById(R.id.password);
 
 		LoginCheckBox = (CheckBox) findViewById(R.id.login_checkBox);
-
 		notenapp_preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		String savedUser = notenapp_preferences.getString("UserSave", "");
 		String savedPass = notenapp_preferences.getString("PassSave", "");
-		checkBoxChecked = notenapp_preferences.getBoolean("CheckBox", false);
+		checkBoxChecked = notenapp_preferences.getBoolean("saveLoginDataPref", false);
+
 		LoginCheckBox.setChecked(checkBoxChecked);
 
 		if (checkBoxChecked && !savedUser.equals("")) {
 			UserEditText.setText(savedUser);
 			PassEditText.setText(savedPass);
 		}
+		boolean autoLogin = notenapp_preferences.getBoolean("autoLoginPref", false);
+		if (autoLogin) {
+			doLogin(getCurrentFocus());
+		}
+
+		LoginCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				// TODO Auto-generated method stub
+				SharedPreferences.Editor editor = notenapp_preferences.edit();
+				if (LoginCheckBox.isChecked()) {
+					editor.putBoolean("saveLoginDataPref", true);
+				} else {
+					editor.putBoolean("saveLoginDataPref", false);
+				}
+				editor.commit();
+			}
+		});
 
 		Button button = (Button) findViewById(R.id.login);
 
 		button.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				// Benutzernamen: nicht anzeigbare Zeichen entfernen, alles
-				// klein schreiben
-				// (leerzeichen killen und erster Buchstabe klein, wenn über
-				// android autovervollständigung eingefügt...)
-				String username = UserEditText.getText().toString().trim().toLowerCase();
-				// Password: nicht anzeigbare Zeichen entfernen
-				String password = PassEditText.getText().toString().trim();
-
-				// FIXME zu unsicher.. wird alles im plaintext gespeichert..
-				// eventuell sqlite mit encryption..
-				// speichern von user und passwort
-				SharedPreferences.Editor editor = notenapp_preferences.edit();
-				if (LoginCheckBox.isChecked()) {
-
-					editor.putString("UserSave", username);
-					editor.putString("PassSave", password);
-					editor.putBoolean("CheckBox", true);
-					editor.commit(); // Very important
-				} else {
-
-					editor.remove("UserSave");
-					editor.remove("PassSave");
-					editor.remove("CheckBox");
-					editor.commit(); // Very important
-				}
-
-				if (username.length() == 0) {
-
-					createDialog(v.getContext().getString(R.string.error),
-							v.getContext().getString(R.string.error_name_missing));
-					return;
-				} else
-				// FIXME bessere RegExp
-				if (!username.matches("^[a-zA-Z]{4}[0-9]{4}")) {
-					createDialog(v.getContext().getString(R.string.error),
-							v.getContext().getString(R.string.error_name_incorrect));
-					return;
-				} else
-
-				if (password.length() == 0) {
-					createDialog(v.getContext().getString(R.string.error),
-							v.getContext().getString(R.string.error_password_missing));
-					return;
-				} else {
-					//
-					// mProgressDialog.show();
-					showDialog(DIALOG_PROGRESS);
-					mLoginThread = new LoginThread(mProgressHandle, username, password);
-					mLoginThread.start();
-
-				}
+				doLogin(v);
 			}
 		});
 
-		button = (Button) findViewById(R.id.cancel);
-		button.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				quit(false, null);
-			}
-		});
+	}
+
+	private void doLogin(View v) {
+		// Benutzernamen: nicht anzeigbare Zeichen entfernen, alles
+		// klein schreiben
+		// (leerzeichen killen und erster Buchstabe klein, wenn über
+		// android autovervollständigung eingefügt...)
+		String username = UserEditText.getText().toString().trim().toLowerCase();
+		// Password: nicht anzeigbare Zeichen entfernen
+		String password = PassEditText.getText().toString().trim();
+
+		// FIXME zu unsicher.. wird alles im plaintext gespeichert..
+		// eventuell sqlite mit encryption..
+		// speichern von user und passwort
+		SharedPreferences.Editor editor = notenapp_preferences.edit();
+		if (LoginCheckBox.isChecked()) {
+			editor.putString("UserSave", username);
+			editor.putString("PassSave", password);
+			editor.putBoolean("saveLoginDataPref", true);
+		} else {
+			editor.remove("UserSave");
+			editor.remove("PassSave");
+			editor.putBoolean("saveLoginDataPref", false);
+		}
+		editor.commit(); // Very important
+
+		if (username.length() == 0) {
+
+			createDialog(v.getContext().getString(R.string.error), v.getContext()
+					.getString(R.string.error_name_missing));
+			return;
+		} else
+		// FIXME bessere RegExp
+		if (!username.matches("^[a-zA-Z]{4}[0-9]{4}")) {
+			createDialog(v.getContext().getString(R.string.error),
+					v.getContext().getString(R.string.error_name_incorrect));
+			return;
+		} else
+
+		if (password.length() == 0) {
+			createDialog(v.getContext().getString(R.string.error),
+					v.getContext().getString(R.string.error_password_missing));
+			return;
+		} else {
+			//
+			// mProgressDialog.show();
+			showDialog(DIALOG_PROGRESS);
+			mLoginThread = new LoginThread(mProgressHandle, username, password);
+			mLoginThread.start();
+
+		}
+	}
+
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		if (hasFocus) {
+			notenapp_preferences = PreferenceManager.getDefaultSharedPreferences(this);
+			checkBoxChecked = notenapp_preferences.getBoolean("saveLoginDataPref", false);
+			LoginCheckBox.setChecked(checkBoxChecked);
+		}
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
 
 	}
 
@@ -144,7 +182,13 @@ public class HsDroidMain extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_preferences:
-			Toast.makeText(this, "You pressed preferences!", Toast.LENGTH_LONG).show();
+			Intent settingsActivity = new Intent(getBaseContext(), Preferences.class);
+			startActivity(settingsActivity);
+			// notenapp_preferences =
+			// PreferenceManager.getDefaultSharedPreferences(this);
+			// checkBoxChecked =
+			// notenapp_preferences.getBoolean("SaveLoginToggle", false);
+
 			return true;
 		case R.id.menu_about:
 			Log.d("Main menu:", "about");
@@ -171,14 +215,12 @@ public class HsDroidMain extends Activity {
 		@Override
 		public void handleMessage(Message msg) {
 			Log.d("handler msg.what:", String.valueOf(msg.what));
-			// String message =
-			// HsDroidMain.this.getString(R.string.progress_loading);
 			switch (msg.what) {
 			case LoginThread.MESSAGE_COMPLETE:
 				Log.d("handler", "Login_complete");
 				mLoginThread = null;
 				removeDialog(DIALOG_PROGRESS);
-				Intent i = new Intent(HsDroidMain.this, GradesListView.class);
+				Intent i = new Intent(HsDroidMain.this, GradesList.class);
 				startActivity(i);
 				break;
 			case LoginThread.MESSAGE_ERROR:
@@ -217,13 +259,13 @@ public class HsDroidMain extends Activity {
 		}
 	};
 
-	private void quit(boolean success, Intent i) {
-		setResult((success) ? -1 : 0, i);
-		finish();
-	}
+	// private void quit(boolean success, Intent i) {
+	// setResult((success) ? -1 : 0, i);
+	// finish();
+	// }
 
 	/**
-	 * Creates {@link AlertDialog}
+	 * Creates an custom {@link AlertDialog}
 	 * 
 	 * @param title
 	 *            {@link String} dialog title
