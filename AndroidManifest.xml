@@ -12,7 +12,7 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name="de.nware.app.hsDroid.ui.GradesList" android:label="@string/grades_list"
+		<activity android:name="de.nware.app.hsDroid.ui.GradesList" android:label="@string/grades_view"
 			android:configChanges="orientation">
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
