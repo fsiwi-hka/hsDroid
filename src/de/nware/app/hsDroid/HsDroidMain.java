@@ -95,8 +95,9 @@ public class HsDroidMain extends Activity {
 	private void doLogin(View v) {
 		// Benutzernamen: nicht anzeigbare Zeichen entfernen, alles
 		// klein schreiben
-		// (leerzeichen killen und erster Buchstabe klein, wenn über
-		// android autovervollständigung eingefügt...)
+		// (leerzeichen killen und Buchstaben klein,
+		// wegen leerzeichen bei android autovervollständigung beim tippen in
+		// der textbox...
 		String username = UserEditText.getText().toString().trim().toLowerCase();
 		// Password: nicht anzeigbare Zeichen entfernen
 		String password = PassEditText.getText().toString().trim();
@@ -117,7 +118,6 @@ public class HsDroidMain extends Activity {
 		editor.commit(); // Very important
 
 		if (username.length() == 0) {
-
 			createDialog(v.getContext().getString(R.string.error), v.getContext()
 					.getString(R.string.error_name_missing));
 			return;
@@ -134,12 +134,9 @@ public class HsDroidMain extends Activity {
 					v.getContext().getString(R.string.error_password_missing));
 			return;
 		} else {
-			//
-			// mProgressDialog.show();
 			showDialog(DIALOG_PROGRESS);
 			mLoginThread = new LoginThread(mProgressHandle, username, password);
 			mLoginThread.start();
-
 		}
 	}
 

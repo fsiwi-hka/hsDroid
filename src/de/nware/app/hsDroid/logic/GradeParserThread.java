@@ -30,13 +30,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import de.nware.app.hsDroid.data.Exam;
-import de.nware.app.hsDroid.data.StaticSessionData;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import de.nware.app.hsDroid.data.Exam;
+import de.nware.app.hsDroid.data.StaticSessionData;
 
 /**
  * @author Oliver Eichner
@@ -81,6 +80,9 @@ public class GradeParserThread extends Thread {
 		mThreadStatus = STATE_RUNNING;
 		// FIXME asi key könnte man auch mit get in den header einbauen bzw alle
 		// gets...
+
+		// FIXME link zuu statisch.. geht warscheinlich nur für bachelor..testen
+
 		// progressHandler.sendMessage(progressHandler.obtainMessage(1));
 		final String notenSpiegelURL = "https://qis2.hs-karlsruhe.de/qisserver/rds?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
 				+ StaticSessionData.asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";
@@ -199,7 +201,13 @@ public class GradeParserThread extends Thread {
 		try {
 			sp = SAXParserFactory.newInstance().newSAXParser();
 			XMLReader xr = sp.getXMLReader();
-			LoginContentHandler uch = new LoginContentHandler();
+			try {
+				xr.setFeature("http://xml.org/sax/features/validation", true);
+			} catch (SAXException e) {
+				System.err.println("Cannot activate validation.");
+			}
+
+			gpContentHandler uch = new gpContentHandler();
 			xr.setContentHandler(uch);
 
 			xr.parse(new InputSource(new StringReader(test)));
@@ -221,7 +229,7 @@ public class GradeParserThread extends Thread {
 	 * @author Oliver Eichner
 	 * 
 	 */
-	private class LoginContentHandler extends DefaultHandler {
+	private class gpContentHandler extends DefaultHandler {
 
 		Boolean fetch = false;
 		Boolean waitForTd = false;

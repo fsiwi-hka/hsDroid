@@ -24,4 +24,7 @@
                         android:entryValues="@array/defaultViewListValues" />
 
 	</PreferenceCategory>
+	<CheckBoxPreference android:title="Hervorheben"
+			android:defaultValue="false" android:summary="Aktuelle Prüfungen hervorheben? SoSe11"
+			android:key="highlightActualExamsPref" />
 </PreferenceScreen>

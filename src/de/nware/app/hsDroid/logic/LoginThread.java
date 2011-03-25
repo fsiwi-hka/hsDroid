@@ -15,12 +15,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 
-import de.nware.app.hsDroid.data.StaticSessionData;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import de.nware.app.hsDroid.data.StaticSessionData;
 
 /**
  * Login Thread
@@ -89,16 +88,15 @@ public class LoginThread extends Thread {
 			HandlerOfCaller.sendMessage(connectMessage);
 			// Post Daten zusammen bauen
 			HttpPost post = new HttpPost(UPDATE_URL);
-			List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+			List<NameValuePair> postData = new ArrayList<NameValuePair>();
 
-			// bessere namen als "asdf" und "fdsa" für die post daten
-			// sind ihnen beim basteln der Seite nicht eingefallen xD
-			// warscheinlich ganz nach dem motto "security by obscurity" ;)
-			nvps.add(new BasicNameValuePair("asdf", this.username));
-			nvps.add(new BasicNameValuePair("fdsa", this.password));
-			nvps.add(new BasicNameValuePair("submit", "Anmelden"));
+			postData.add(new BasicNameValuePair("asdf", this.username));
+			postData.add(new BasicNameValuePair("fdsa", this.password));
+			postData.add(new BasicNameValuePair("submit", "Anmelden"));
+
+			// header bauen
 			post.setHeader("Content-Type", "application/x-www-form-urlencoded");
-			post.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+			post.setEntity(new UrlEncodedFormEntity(postData, HTTP.UTF_8));
 
 			// http Anfrage starten
 			response = client.execute(post);
@@ -113,6 +111,7 @@ public class LoginThread extends Thread {
 			int count = 0;
 			// progressHandle.sendMessage(progressHandle.obtainMessage(2));
 			// response auswerten
+
 			while ((line = rd.readLine()) != null) {
 
 				// möglichkeit den thread hier zu stoppen... sinnvoll?
@@ -122,11 +121,12 @@ public class LoginThread extends Thread {
 				// TODO check login success
 				loginStringTest(line, count);
 
+				// session id holen
 				if (line.contains("asi=")) {
-					// wenn ein asi Key gefunden wird, kann man davon
+					// wenn eine session id gefunden wird, kann man davon
 					// ausgehen, dass man angemeldet is ;)
-					int begin = line.indexOf("asi=");
-					StaticSessionData.asiKey = line.substring(begin + 4, begin + 24);
+					int begin = line.indexOf("asi=") + 4;
+					StaticSessionData.asiKey = line.substring(begin, begin + 20);
 					break;
 				}
 				count++;
@@ -189,8 +189,6 @@ public class LoginThread extends Thread {
 
 		if (count < 10) { // sollte innerhalb der ersten 10 Zeilen stehen..
 			if (line.contains("System nicht verf")) {// blöööde Umlaute...
-				// throw new
-				// HSLoginException(HsDroidMain.this.getString(R.string.error_site_down));
 				throw new HSLoginException(ERROR_MSG_SITE_MAINTENANCE);
 			}
 		}

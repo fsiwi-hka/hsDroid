@@ -44,7 +44,7 @@ import de.nware.app.hsDroid.logic.GradeParserThread;
 public class GradesList extends ListActivity {
 
 	private ExamAdapter m_examAdapter;
-
+	private ListView lv;
 	private ArrayList<Exam> examsTest;
 	private ExamInfo currentEInfo;
 	private GradeParserThread mGradeParserThread = null;
@@ -52,7 +52,7 @@ public class GradesList extends ListActivity {
 
 	private ProgressDialog mProgressDialog = null;
 
-	private SharedPreferences notenapp_preferences;
+	private SharedPreferences mPreferences;
 
 	private static final byte DIALOG_PROGRESS = 1;
 
@@ -60,6 +60,7 @@ public class GradesList extends ListActivity {
 	private static final String SORT_ALL_FAILED = "allfail";
 	private static final String SORT_ACTUAL = "act";
 	private static final String SORT_ACTUAL_FAILED = "actfail";
+	private static String ACTUAL_SORT = SORT_ALL;
 
 	@SuppressWarnings("unchecked")
 	public void onCreate(Bundle savedInstanceState) {
@@ -67,7 +68,9 @@ public class GradesList extends ListActivity {
 		System.out.println("test onCreate");
 
 		// einstellungne holen
-		notenapp_preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+		ACTUAL_SORT = getDefaultListSort();
 
 		this.examsTest = new ArrayList<Exam>();
 		if (savedInstanceState == null) {
@@ -91,7 +94,7 @@ public class GradesList extends ListActivity {
 			this.m_examAdapter.getFilter().filter(getDefaultListSort());
 		}
 
-		final ListView lv = getListView();
+		lv = getListView();
 		lv.setAdapter(this.m_examAdapter);
 
 		lv.setOnItemClickListener(new OnItemClickListener() {
@@ -112,10 +115,10 @@ public class GradesList extends ListActivity {
 
 	}
 
-	// helper get rid of....
+	// helper, get rid of....
 	private String getDefaultListSort() {
 
-		String prefView = notenapp_preferences.getString("defaultViewPref", "");
+		String prefView = mPreferences.getString("defaultViewPref", "");
 		switch (Integer.valueOf(prefView)) {
 		case 0:
 			return SORT_ALL;
@@ -211,7 +214,7 @@ public class GradesList extends ListActivity {
 
 		examsTest = (ArrayList<Exam>) outState.get("exams_list");
 		this.m_examAdapter.getFilter().filter(getDefaultListSort());
-		// FIXME nicht default list sort.!!
+		// FIXME nicht default , alte sortierung.!!
 
 		System.out.println("test onRestoreInstanceState");
 	}
@@ -247,9 +250,10 @@ public class GradesList extends ListActivity {
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		if (hasFocus) {
-			notenapp_preferences = PreferenceManager.getDefaultSharedPreferences(this);
+			mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+			this.m_examAdapter.getFilter().filter(ACTUAL_SORT);
 			// checkBoxChecked =
-			// notenapp_preferences.getBoolean("saveLoginDataPref", false);
+			// mPreferences.getBoolean("saveLoginDataPref", false);
 			// LoginCheckBox.setChecked(checkBoxChecked);
 		}
 	}
@@ -281,9 +285,9 @@ public class GradesList extends ListActivity {
 			Intent settingsActivity = new Intent(getBaseContext(), Preferences.class);
 			startActivity(settingsActivity);
 			// update??
-			notenapp_preferences = PreferenceManager.getDefaultSharedPreferences(this);
+			mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 			// checkBoxChecked =
-			// notenapp_preferences.getBoolean("SaveLoginToggle", false);
+			// mPreferences.getBoolean("SaveLoginToggle", false);
 			return true;
 		case R.id.view_submenu_examViewAll:
 			if (item.isChecked())
@@ -291,6 +295,7 @@ public class GradesList extends ListActivity {
 			else
 				item.setChecked(true);
 
+			ACTUAL_SORT = SORT_ALL;
 			m_examAdapter.getFilter().filter(SORT_ALL);
 			return true;
 		case R.id.view_submenu_examViewOnlyLast:
@@ -298,6 +303,7 @@ public class GradesList extends ListActivity {
 				item.setChecked(false);
 			else
 				item.setChecked(true);
+			ACTUAL_SORT = SORT_ACTUAL;
 			m_examAdapter.getFilter().filter(SORT_ACTUAL);
 			return true;
 		case R.id.view_submenu_examViewOnlyLastFailed:
@@ -306,11 +312,14 @@ public class GradesList extends ListActivity {
 			else
 				item.setChecked(true);
 
+			ACTUAL_SORT = SORT_ACTUAL_FAILED;
 			m_examAdapter.getFilter().filter(SORT_ACTUAL_FAILED);
 			return true;
+		default:
+			Log.d("GradeView menu:", "default");
+			return super.onOptionsItemSelected(item);
 		}
-		Log.d("GradeView menu:", "default");
-		return super.onOptionsItemSelected(item);
+
 	}
 
 	private void createDialog(String title, String text) {
@@ -329,10 +338,10 @@ public class GradesList extends ListActivity {
 		Date dt = new Date();
 		int year = dt.getYear() - 100;
 		int month = dt.getMonth() + 1;
-		if (month < 7 && month > 1) { // zwischen jan und jul ws anzeigen
+		if (month > 1 && month < 7) { // zwischen jan und jul ws anzeigen
 			semString = "WiSe " + (year - 1) + "/" + year;
 		} else {// ansonsten ss
-			// wenn schon januar is, dann -1
+			// wenn januar is, dann jahr-1
 			if (month == 1) {
 				year--;
 			}
@@ -375,7 +384,7 @@ public class GradesList extends ListActivity {
 				TextView exSemester = (TextView) v.findViewById(R.id.examSemester);
 				if (exName != null) {
 					exName.setText(ex.getExamName());
-					if (isActualExam(ex)) {
+					if (isActualExam(ex) && mPreferences.getBoolean("highlightActualExamsPref", false)) {
 						exName.setShadowLayer(3, 0, 0, Color.GREEN);
 					} else {
 						exName.setShadowLayer(0, 0, 0, 0);

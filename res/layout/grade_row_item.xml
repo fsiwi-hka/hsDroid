@@ -11,7 +11,7 @@
 		android:layout_weight="1">
 
 		<TextView android:id="@+id/examName" 
-			android:textSize="12sp"
+			android:textSize="14sp"
 			android:textStyle="bold" 
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" />
@@ -51,6 +51,7 @@
 			android:textSize="18sp"
 			android:textStyle="bold" 
 			android:layout_marginRight="5dp"
+			android:layout_marginLeft="5dp"
 			android:layout_width="wrap_content" 
 			android:layout_height="wrap_content"
 			android:text="1,0"

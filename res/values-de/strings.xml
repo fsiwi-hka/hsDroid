@@ -35,15 +35,14 @@
 	<string name="submenu_examViewOnlyLast">Aktuelle Prüfungen</string>
 	<string name="menu_view">Ansicht</string>
 	<string name="empty_list_view">Keine Daten vorhanden</string>
-	<string name="submenu_examViewOnlyLastFailed">Nicht Bestandene Prüfungen</string>
-
+	<string name="submenu_examViewOnlyLastFailed">Nicht bestandene Prüfungen</string>
+	<string name="submenu_examViewAllFailed">Alle nicht bestandenen Prüfungen</string>
 	<string name="menu_refresh">Aktualisieren</string>
 
 	<string name="error_cookie_empty">Keinen Keks bekommen?</string>
 
 	<string name="about_subtitle">Notenviewer</string>
-		<string name="about_maintext">App um sich am &quot;Online Service 2 für
-		Studierende&quot; anzumelden und die Noten abzufragen.\n\nHomepage:
+		<string name="about_maintext">App um sich am &quot;Online Service 2&quot; anzumelden und die Noten abzufragen.\n\nHomepage:
 		code.google.com/p/hs-droid\nEMail: n0izeland@gmail.com</string>
 
 

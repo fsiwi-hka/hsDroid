@@ -28,14 +28,13 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import de.nware.app.hsDroid.data.Exam;
-import de.nware.app.hsDroid.data.ExamInfo;
-import de.nware.app.hsDroid.data.StaticSessionData;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import de.nware.app.hsDroid.data.Exam;
+import de.nware.app.hsDroid.data.ExamInfo;
+import de.nware.app.hsDroid.data.StaticSessionData;
 
 /**
  * @author Oliver Eichner
@@ -297,6 +296,7 @@ public class ExamInfoParserThread extends Thread {
 			} catch (SAXException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				throw new RuntimeException("error reading chars in parser. " + e.getMessage());
 			}
 			String text = new String(ch, start, length);
 			// FIXME test
