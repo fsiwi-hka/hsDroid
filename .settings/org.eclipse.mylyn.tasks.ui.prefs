@@ -1,4 +1,4 @@
-#Fri Mar 18 13:50:48 CET 2011
+#Sat Mar 26 16:24:59 CET 2011
 eclipse.preferences.version=1
-project.repository.kind=googlecode
-project.repository.url=http\://code.google.com/p/hs-droid
+project.repository.kind=github
+project.repository.url=http\://github.com/n0iz/hsDroid
