@@ -20,6 +20,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import de.nware.app.hsDroid.data.StaticSessionData;
 import de.nware.app.hsDroid.logic.LoginThread;
 import de.nware.app.hsDroid.ui.AboutDialog;
 import de.nware.app.hsDroid.ui.GradesList;
@@ -101,7 +102,10 @@ public class HsDroidMain extends Activity {
 		String username = UserEditText.getText().toString().trim().toLowerCase();
 		// Password: nicht anzeigbare Zeichen entfernen
 		String password = PassEditText.getText().toString().trim();
-
+		if (StaticSessionData.cookies != null) {
+			mProgressHandle.sendEmptyMessage(LoginThread.MESSAGE_COMPLETE);
+			return;
+		}
 		// FIXME zu unsicher.. wird alles im plaintext gespeichert..
 		// eventuell sqlite mit encryption..
 		// speichern von user und passwort
@@ -137,6 +141,8 @@ public class HsDroidMain extends Activity {
 			showDialog(DIALOG_PROGRESS);
 			mLoginThread = new LoginThread(mProgressHandle, username, password);
 			mLoginThread.start();
+			mLoginThread.login();
+
 		}
 	}
 
@@ -215,6 +221,10 @@ public class HsDroidMain extends Activity {
 			switch (msg.what) {
 			case LoginThread.MESSAGE_COMPLETE:
 				Log.d("handler", "Login_complete");
+				if (mLoginThread != null) {
+					mLoginThread.stopThread();
+					mLoginThread.kill();
+				}
 				mLoginThread = null;
 				removeDialog(DIALOG_PROGRESS);
 				Intent i = new Intent(HsDroidMain.this, GradesList.class);
@@ -234,6 +244,7 @@ public class HsDroidMain extends Activity {
 				createDialog(HsDroidMain.this.getString(R.string.error_couldnt_connect), errorMessage);
 
 				mLoginThread.stopThread();
+				mLoginThread.kill();
 				mLoginThread = null;
 				break;
 			case LoginThread.MESSAGE_PROGRESS_CONNECT:
