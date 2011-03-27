@@ -103,7 +103,7 @@ public class LoginThread extends Thread {
 						oMessage.what = MESSAGE_ERROR;
 						HandlerOfCaller.sendMessage(oMessage);
 					} catch (Throwable e) {
-						// TODO Auto-generated catch block
+						Log.e("Login Handler", e.getMessage());
 						e.printStackTrace();
 					}
 					break;
@@ -122,7 +122,7 @@ public class LoginThread extends Thread {
 						oMessage.what = MESSAGE_ERROR;
 						HandlerOfCaller.sendMessage(oMessage);
 					} catch (Throwable e) {
-						// TODO Auto-generated catch block
+						Log.e("Login Handler", e.getMessage());
 						e.printStackTrace();
 					}
 					break;
@@ -152,12 +152,13 @@ public class LoginThread extends Thread {
 	public boolean login() {
 		while (mHandler == null) {
 			int count = 0;
+			// FIXME geht erst im zweiten Durchlauf der Schleife????
 			Log.e("login", "handler empty: " + count);
 			try {
 				sleep(1);
 				count += 1;
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+				Log.e("Login login() pause", e.getMessage());
 				e.printStackTrace();
 			}
 

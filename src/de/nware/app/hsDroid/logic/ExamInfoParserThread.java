@@ -64,8 +64,6 @@ public class ExamInfoParserThread extends Thread {
 	 * 
 	 */
 	public ExamInfoParserThread(Handler nHandler, Exam exam) {
-		// TODO Auto-generated constructor stub
-
 		this.handlerOfCaller = nHandler;
 		this.examInfo = new ExamInfo(exam);
 		// this.examsTest = new ArrayList<Exam>();
@@ -294,7 +292,6 @@ public class ExamInfoParserThread extends Thread {
 			try {
 				super.characters(ch, start, length);
 			} catch (SAXException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				throw new RuntimeException("error reading chars in parser. " + e.getMessage());
 			}
@@ -316,7 +313,7 @@ public class ExamInfoParserThread extends Thread {
 
 					break;
 				case 1:
-					// FIXME +=text.. wegen zeilenumbrüchen im html code..
+					// XXX +=text.. wegen zeilenumbrüchen im html code..
 					Log.d("second:" + trCount + ":", text);
 					switch (trCount) {
 					case 4:

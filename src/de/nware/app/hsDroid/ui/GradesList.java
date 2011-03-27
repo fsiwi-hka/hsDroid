@@ -130,7 +130,7 @@ public class GradesList extends ListActivity {
 			return SORT_ALL_FAILED;
 
 		default:
-			return "";
+			return prefView;
 		}
 	}
 
@@ -167,7 +167,7 @@ public class GradesList extends ListActivity {
 				Log.d("handler login error", msg.getData().getString("Message"));
 				createDialog(GradesList.this.getString(R.string.error_couldnt_connect),
 						msg.getData().getString("Message"));
-				// TODO alert dialog auch mit showDialog???
+				// XXX alert dialog auch mit showDialog???
 
 				mGradeParserThread.stopThread();
 				mGradeParserThread = null;
@@ -213,7 +213,7 @@ public class GradesList extends ListActivity {
 		super.onRestoreInstanceState(outState);
 
 		examsTest = (ArrayList<Exam>) outState.get("exams_list");
-		this.m_examAdapter.getFilter().filter(getDefaultListSort());
+		this.m_examAdapter.getFilter().filter(GradesList.ACTUAL_SORT);
 		// FIXME nicht default , alte sortierung.!!
 
 		System.out.println("test onRestoreInstanceState");
@@ -358,7 +358,7 @@ public class GradesList extends ListActivity {
 	 */
 	private class ExamAdapter extends ArrayAdapter<Exam> implements Filterable {
 		private ArrayList<Exam> examsList;
-		private final Object mLock = new Object(); // FIXME ??
+		private final Object mLock = new Object();
 		private ExamFilter mFilter;
 
 		public ExamAdapter(Context context, int textViewResourceId, ArrayList<Exam> nExams) {
@@ -461,7 +461,6 @@ public class GradesList extends ListActivity {
 				// result objekt
 				FilterResults results = new FilterResults();
 
-				// FIXME ??
 				if (prefix == null || prefix.length() == 0 || prefix == SORT_ALL) {
 					synchronized (mLock) {
 						results.values = examsTest;

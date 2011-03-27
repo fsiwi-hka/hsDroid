@@ -64,11 +64,9 @@ public class GradeParserThread extends Thread {
 	 * 
 	 */
 	public GradeParserThread(Handler nHandler) {
-		// TODO Auto-generated constructor stub
 		this.handlerOfCaller = nHandler;
 		this.examsTest = new ArrayList<Exam>();
 
-		// getGradesFromWeb();
 	}
 
 	public ArrayList<Exam> getExamsList() {
@@ -302,8 +300,8 @@ public class GradeParserThread extends Thread {
 			try {
 				super.characters(ch, start, length);
 			} catch (SAXException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				// XXX string auslagern
 			}
 			String text = new String(ch, start, length);
 

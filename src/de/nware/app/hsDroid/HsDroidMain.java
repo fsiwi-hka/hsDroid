@@ -72,7 +72,6 @@ public class HsDroidMain extends Activity {
 
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				// TODO Auto-generated method stub
 				SharedPreferences.Editor editor = notenapp_preferences.edit();
 				if (LoginCheckBox.isChecked()) {
 					editor.putBoolean("saveLoginDataPref", true);
@@ -127,7 +126,7 @@ public class HsDroidMain extends Activity {
 			return;
 		} else
 		// FIXME bessere RegExp
-		if (!username.matches("^[a-zA-Z]{4}[0-9]{4}")) {
+		if (!username.matches("^[a-zA-Z]{4}(00|10){1}[0-9]{2}")) {
 			createDialog(v.getContext().getString(R.string.error),
 					v.getContext().getString(R.string.error_name_incorrect));
 			return;
