@@ -5,21 +5,23 @@
 
 
 	<RelativeLayout android:id="@+id/relativeLayout1"
-		android:layout_width="match_parent" android:gravity="center" android:layout_height="match_parent">
-		<Button android:text="@string/login" android:id="@+id/login"
-			android:layout_alignParentBottom="true" android:layout_width="match_parent" android:layout_height="wrap_content"></Button>
+		android:layout_width="match_parent" android:gravity="center"
+		android:layout_height="match_parent" android:layout_marginTop="@dimen/top">
+		
 		<EditText android:id="@+id/username" android:layout_width="match_parent"
 			android:text="EditText" android:layout_height="wrap_content"
-			android:hint="@string/username"
-			android:layout_alignParentLeft="true"
+			android:hint="@string/username" android:layout_alignParentLeft="true"
 			android:layout_alignParentRight="true"></EditText>
 		<EditText android:id="@+id/password" android:layout_height="wrap_content"
 			android:text="EditText" android:layout_width="match_parent"
 			android:hint="@string/password" android:password="true"
 			android:layout_below="@+id/username"></EditText>
 		<CheckBox android:layout_height="wrap_content" android:id="@+id/login_checkBox"
-			android:text="@string/login_checkBox" android:layout_width="match_parent"
+			android:text="@string/savePW_checkBox" android:layout_width="match_parent"
 			android:layout_below="@+id/password"></CheckBox>
+		<Button android:text="@string/login" android:id="@+id/login"
+			android:layout_alignParentBottom="true" android:layout_width="match_parent"
+			android:layout_height="wrap_content"></Button>
 	</RelativeLayout>
 
 
