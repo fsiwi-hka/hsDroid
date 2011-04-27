@@ -37,7 +37,7 @@
 	<string name="grades_view_semester">Semester: </string>
 	
 	<string name="menu_preferences">Einstellungen</string>
-	<string name="menu_about">Über</string>
+	<string name="menu_about">Info</string>
 	<string name="menu_refresh">Aktualisieren</string>
 	<string name="menu_view">Ansicht</string>
 	<string name="submenu_examViewAll">Alle Prüfungen</string>
@@ -48,15 +48,15 @@
 	<string name="empty_list_view">Keine Daten vorhanden</string>
 	
 	<string name="about_subtitle">Notenviewer</string>
-	<string name="about_maintext">App um am &quot;Online Service 2&quot; die Noten abzufragen.\n\nHomepage:
+	<string name="about_maintext">App um über den &quot;Online Service 2&quot; die Noten abzufragen.\n\nHomepage:
 		https://github.com/n0iz/hsDroid\nEMail: eiol0011@hs-karlsruhe.com</string>
 	
 	<string name="label_set_preferences">Einstellungen</string>
 	<string-array name="defaultViewListArray">
 		<item>Alle</item>
-		<item>Aktuelle</item>
-		<item>Aktuell nicht Bestanden</item>
-		<item>Alle nicht Bestanden</item>
+		<item>Letzte</item>
+		<item>Letzte, nicht Bestanden</item>
+		<item>Alle, nicht Bestanden</item>
 	</string-array>
 	
 	<string-array name="defaultViewListValues">
