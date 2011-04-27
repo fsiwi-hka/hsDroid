@@ -2,7 +2,7 @@
 
 <resources>
 	<string name="app_name">hsDroid</string>
-	<string name="app_version">0.1.8-svn</string>
+	<string name="app_version">0.1.9-git</string>
 	
 	<string name="username">HS-Benutzername</string>
 	<string name="password">Passwort</string>

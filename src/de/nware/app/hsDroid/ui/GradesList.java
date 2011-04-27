@@ -119,7 +119,7 @@ public class GradesList extends ListActivity {
 	private String getDefaultListSort() {
 
 		String prefView = mPreferences.getString("defaultViewPref", "1");
-		if (prefView.isEmpty()) {
+		if (prefView.equals("")) {
 			prefView = "1";
 		}
 		switch (Integer.valueOf(prefView)) {
@@ -314,6 +314,15 @@ public class GradesList extends ListActivity {
 
 			ACTUAL_SORT = SORT_ACTUAL_FAILED;
 			m_examAdapter.getFilter().filter(SORT_ACTUAL_FAILED);
+			return true;
+		case R.id.view_submenu_examViewAllFailed:
+			if (item.isChecked())
+				item.setChecked(false);
+			else
+				item.setChecked(true);
+
+			ACTUAL_SORT = SORT_ALL_FAILED;
+			m_examAdapter.getFilter().filter(SORT_ALL_FAILED);
 			return true;
 		default:
 			Log.d("GradeView menu:", "default");
