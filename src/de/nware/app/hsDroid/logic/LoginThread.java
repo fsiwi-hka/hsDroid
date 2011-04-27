@@ -59,8 +59,8 @@ public class LoginThread extends Thread {
 	private String password;
 	private String username;
 
-	public Handler HandlerOfCaller;
-	public Handler mHandler;
+	public Handler mParentHandler;
+	public Handler mThreadHandler;
 
 	/**
 	 * Login into qis2 server and save cookie and asiKey
@@ -71,8 +71,8 @@ public class LoginThread extends Thread {
 	 * @param nPassword
 	 *            {@link String} Password
 	 */
-	public LoginThread(Handler nHandler, String nUsername, String nPassword) {
-		this.HandlerOfCaller = nHandler;
+	public LoginThread(Handler nParentHandler, String nUsername, String nPassword) {
+		this.mParentHandler = nParentHandler;
 		this.username = nUsername;
 		this.password = nPassword;
 	}
@@ -86,7 +86,7 @@ public class LoginThread extends Thread {
 		// prepare Looper
 		Looper.prepare();
 
-		mHandler = new Handler() {
+		mThreadHandler = new Handler() {
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
 				case HANLDER_MSG_LOGIN:
@@ -95,13 +95,13 @@ public class LoginThread extends Thread {
 
 					} catch (Exception e) {
 						mThreadStatus = STATE_ERROR;
-						Message oMessage = HandlerOfCaller.obtainMessage();
+						Message oMessage = mParentHandler.obtainMessage();
 						Bundle oBundle = new Bundle();
 						String strMessage = e.getMessage();
 						oBundle.putString("Message", strMessage);
 						oMessage.setData(oBundle);
 						oMessage.what = MESSAGE_ERROR;
-						HandlerOfCaller.sendMessage(oMessage);
+						mParentHandler.sendMessage(oMessage);
 					} catch (Throwable e) {
 						Log.e("Login Handler", e.getMessage());
 						e.printStackTrace();
@@ -114,13 +114,13 @@ public class LoginThread extends Thread {
 
 					} catch (Exception e) {
 						mThreadStatus = STATE_ERROR;
-						Message oMessage = HandlerOfCaller.obtainMessage();
+						Message oMessage = mParentHandler.obtainMessage();
 						Bundle oBundle = new Bundle();
 						String strMessage = e.getMessage();
 						oBundle.putString("Message", strMessage);
 						oMessage.setData(oBundle);
 						oMessage.what = MESSAGE_ERROR;
-						HandlerOfCaller.sendMessage(oMessage);
+						mParentHandler.sendMessage(oMessage);
 					} catch (Throwable e) {
 						Log.e("Login Handler", e.getMessage());
 						e.printStackTrace();
@@ -142,7 +142,7 @@ public class LoginThread extends Thread {
 		// Looper.myLooper().quit();
 
 		this.mStoppingThread = true;
-		mHandler.getLooper().quit();
+		mThreadHandler.getLooper().quit();
 	}
 
 	public byte getStatus() {
@@ -150,7 +150,7 @@ public class LoginThread extends Thread {
 	}
 
 	public boolean login() {
-		while (mHandler == null) {
+		while (mThreadHandler == null) {
 			int count = 0;
 			// FIXME geht erst im zweiten Durchlauf der Schleife????
 			Log.e("login", "handler empty: " + count);
@@ -163,15 +163,15 @@ public class LoginThread extends Thread {
 			}
 
 		}
-		return this.mHandler.sendEmptyMessage(HANLDER_MSG_LOGIN);
+		return this.mThreadHandler.sendEmptyMessage(HANLDER_MSG_LOGIN);
 	}
 
 	public boolean logout() {
-		return this.mHandler.sendEmptyMessage(HANLDER_MSG_LOGOUT);
+		return this.mThreadHandler.sendEmptyMessage(HANLDER_MSG_LOGOUT);
 	}
 
 	public boolean kill() {
-		return this.mHandler.sendEmptyMessage(HANLDER_MSG_KILL);
+		return this.mThreadHandler.sendEmptyMessage(HANLDER_MSG_KILL);
 	}
 
 	private void doLogout() throws Exception {
@@ -192,9 +192,9 @@ public class LoginThread extends Thread {
 
 		// progressHandle.sendMessage(progressHandle.obtainMessage(1));
 
-		Message connectMessage = HandlerOfCaller.obtainMessage();
+		Message connectMessage = mParentHandler.obtainMessage();
 		connectMessage.what = MESSAGE_PROGRESS_CONNECT;
-		HandlerOfCaller.sendMessage(connectMessage);
+		mParentHandler.sendMessage(connectMessage);
 		// Post Daten zusammen bauen
 		HttpPost post = new HttpPost(UPDATE_URL);
 		List<NameValuePair> postData = new ArrayList<NameValuePair>();
@@ -210,17 +210,21 @@ public class LoginThread extends Thread {
 		// http Anfrage starten
 		response = client.execute(post);
 
-		Message parseMessage = HandlerOfCaller.obtainMessage();
+		Message parseMessage = mParentHandler.obtainMessage();
 		parseMessage.what = MESSAGE_PROGRESS_PARSE;
-		HandlerOfCaller.sendMessage(parseMessage);
+
+		// Send Message to mainThread
+		mParentHandler.sendMessage(parseMessage);
+
 		entity = response.getEntity();
+
 		InputStream is = entity.getContent();
+
 		BufferedReader rd = new BufferedReader(new InputStreamReader(is), 4096);
+
 		String line;
 		int count = 0;
-		// progressHandle.sendMessage(progressHandle.obtainMessage(2));
 		// response auswerten
-
 		while ((line = rd.readLine()) != null) {
 
 			// möglichkeit den thread hier zu stoppen... sinnvoll?
@@ -242,9 +246,9 @@ public class LoginThread extends Thread {
 		}
 		rd.close();
 		is.close();
-		Message cookieMessage = HandlerOfCaller.obtainMessage();
+		Message cookieMessage = mParentHandler.obtainMessage();
 		cookieMessage.what = MESSAGE_PROGRESS_COOKIE;
-		HandlerOfCaller.sendMessage(cookieMessage);
+		mParentHandler.sendMessage(cookieMessage);
 		if (client.getCookieStore().getCookies().size() != 0) {
 
 			StaticSessionData.cookies = client.getCookieStore().getCookies();
@@ -275,9 +279,9 @@ public class LoginThread extends Thread {
 			entity.consumeContent();
 
 		mThreadStatus = STATE_DONE;
-		Message oMessage = HandlerOfCaller.obtainMessage();
+		Message oMessage = mParentHandler.obtainMessage();
 		oMessage.what = MESSAGE_COMPLETE;
-		HandlerOfCaller.sendMessage(oMessage);
+		mParentHandler.sendMessage(oMessage);
 	}
 
 	/**

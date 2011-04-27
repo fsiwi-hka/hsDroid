@@ -43,7 +43,7 @@
 	<string name="error_cookie_empty">Got no cookie</string>
 
 	<string name="about_subtitle">Gradesviewer</string>
-	<string name="about_maintext">App to login at &quot;Online Service 2 für Studierende&quot; and grab your grades.\n\nFor more informations visit:\ncode.google.com/p/hs-droid\n\nFor questions, crit, ideas,suggest improvments or what ever, at the homepage is an issue tracker or via mail at n0izeland@gmail.com</string>
+	<string name="about_maintext">App to login at &quot;Online Service 2 für Studierende&quot; and grab your grades.\n\nFor more informations visit:\nhttps://github.com/n0iz/hsDroid\n\nEmail: eiol0011@hs-karlsruhe.de</string>
 
 
 

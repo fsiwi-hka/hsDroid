@@ -118,7 +118,10 @@ public class GradesList extends ListActivity {
 	// helper, get rid of....
 	private String getDefaultListSort() {
 
-		String prefView = mPreferences.getString("defaultViewPref", "");
+		String prefView = mPreferences.getString("defaultViewPref", "1");
+		if (prefView.isEmpty()) {
+			prefView = "1";
+		}
 		switch (Integer.valueOf(prefView)) {
 		case 0:
 			return SORT_ALL;
@@ -238,8 +241,8 @@ public class GradesList extends ListActivity {
 
 	@Override
 	protected void onResume() {
-
 		super.onResume();
+		ACTUAL_SORT = getDefaultListSort();
 		if (examsTest == null || examsTest.size() == 0) {
 			System.out.println("test onResume:empty");
 		} else {
@@ -250,11 +253,7 @@ public class GradesList extends ListActivity {
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		if (hasFocus) {
-			mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 			this.m_examAdapter.getFilter().filter(ACTUAL_SORT);
-			// checkBoxChecked =
-			// mPreferences.getBoolean("saveLoginDataPref", false);
-			// LoginCheckBox.setChecked(checkBoxChecked);
 		}
 	}
 
@@ -288,6 +287,7 @@ public class GradesList extends ListActivity {
 			mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 			// checkBoxChecked =
 			// mPreferences.getBoolean("SaveLoginToggle", false);
+			ACTUAL_SORT = getDefaultListSort();
 			return true;
 		case R.id.view_submenu_examViewAll:
 			if (item.isChecked())

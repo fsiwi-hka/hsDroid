@@ -15,40 +15,43 @@
 	<string name="error_password_missing">Bitte Passwort angeben.</string>
 	<string name="error_couldnt_connect">Verbindungsfehler</string>
 	<string name="error_site_down">Hochschulwebsite ist im Wartungsmodus.</string>
-	<string name="error_login_failed">Anmeldung fehlgeschlagen, bitte Logindaten
-		überprüfen.</string>
+	<string name="error_login_failed">Anmeldung fehlgeschlagen, bitte Logindaten überprüfen.</string>
+	<string name="error_cookie_empty">Keinen Keks bekommen?</string>
+		
 	<string name="progress_loading">Laden...</string>
 	<string name="progress_connect">Verbinden...</string>
 	<string name="progress_parse">Parsen...</string>
 	<string name="progress_cookie">Keks nehmen...</string>
 	<string name="progress_notenfetch">Noten holen...</string>
-
 	<string name="progress_notencleanup">Html säubern...</string>
 	<string name="progress_notenparse">Noten angeln...</string>
+	
 	<string name="title_view_marks">Notenspiegel</string>
 	<string name="title_head_exam">Prüfung</string>
 	<string name="title_head_mark">Note</string>
-	<string name="login_checkBox">Anmeldedaten Speichern</string>
+	
+	<string name="savePW_checkBox">Passwort Speichern</string>
+	
 	<string name="grades_view">hsDroid - Notenspiegel</string>
 	<string name="grades_view_attempt">Versuch: </string>
 	<string name="grades_view_semester">Semester: </string>
+	
 	<string name="menu_preferences">Einstellungen</string>
 	<string name="menu_about">Über</string>
+	<string name="menu_refresh">Aktualisieren</string>
+	<string name="menu_view">Ansicht</string>
 	<string name="submenu_examViewAll">Alle Prüfungen</string>
 	<string name="submenu_examViewOnlyLast">Aktuelle Prüfungen</string>
-	<string name="menu_view">Ansicht</string>
-	<string name="empty_list_view">Keine Daten vorhanden</string>
 	<string name="submenu_examViewOnlyLastFailed">Nicht bestandene Prüfungen</string>
 	<string name="submenu_examViewAllFailed">Alle nicht bestandenen Prüfungen</string>
-	<string name="menu_refresh">Aktualisieren</string>
-
-	<string name="error_cookie_empty">Keinen Keks bekommen?</string>
-
-	<string name="about_subtitle">Notenviewer</string>
-		<string name="about_maintext">App um sich am &quot;Online Service 2&quot; anzumelden und die Noten abzufragen.\n\nHomepage:
-		code.google.com/p/hs-droid\nEMail: n0izeland@gmail.com</string>
 	
-	<string name="label_set_preferences">Set Preferences</string>
+	<string name="empty_list_view">Keine Daten vorhanden</string>
+	
+	<string name="about_subtitle">Notenviewer</string>
+	<string name="about_maintext">App um am &quot;Online Service 2&quot; die Noten abzufragen.\n\nHomepage:
+		https://github.com/n0iz/hsDroid\nEMail: eiol0011@hs-karlsruhe.com</string>
+	
+	<string name="label_set_preferences">Einstellungen</string>
 	<string-array name="defaultViewListArray">
 		<item>Alle</item>
 		<item>Aktuelle</item>

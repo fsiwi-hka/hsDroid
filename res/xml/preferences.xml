@@ -2,14 +2,14 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory android:title="Allgemein">
 		<CheckBoxPreference android:title="Auto Login"
-			android:defaultValue="false" android:summary="Automatische anledung erlauben?"
+			android:defaultValue="false" android:summary="Automatische beim Online Service anmelden?"
 			android:key="autoLoginPref" />
-		<CheckBoxPreference android:title="Save Login Data"
-			android:defaultValue="false" android:summary="Lokale Einstellungen beim Beenden löschen?"
+		<CheckBoxPreference android:title="Passwort Speichern"
+			android:defaultValue="false" android:summary="Passwort speichern? Hinweis: Wird unverschlüsselt gespeichert!"
 			android:key="saveLoginDataPref" />
-<!-- 		<CheckBoxPreference android:title="Auto Cleanup"
+ 		<CheckBoxPreference android:title="Delete UserData"
 			android:defaultValue="false" android:summary="Lokale Einstellungen beim Beenden löschen?"
-			android:key="autoCleanUpPref" /> -->
+			android:key="autoCleanUpPref" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="Notenspiegel">
 		<CheckBoxPreference android:title="Auto Update"
@@ -25,6 +25,8 @@
 
 	</PreferenceCategory>
 	<CheckBoxPreference android:title="Hervorheben"
-			android:defaultValue="false" android:summary="Aktuelle Prüfungen hervorheben? SoSe11"
+			android:defaultValue="false" android:summary="Prüfungen des aktuellen Semesters hervorheben?"
 			android:key="highlightActualExamsPref" />
+	<Preference android:title="Farbe" android:summary="Farbe zum Hervorheben auswählen"
+			android:key="highlightColorPref"/>
 </PreferenceScreen>

@@ -124,9 +124,7 @@ public class HsDroidMain extends Activity {
 			createDialog(v.getContext().getString(R.string.error), v.getContext()
 					.getString(R.string.error_name_missing));
 			return;
-		} else
-		// FIXME bessere RegExp
-		if (!username.matches("^[a-zA-Z]{4}(00|10){1}[0-9]{2}")) {
+		} else if (!username.matches("^[a-zA-Z]{4}(00|10){1}[0-9]{2}")) {
 			createDialog(v.getContext().getString(R.string.error),
 					v.getContext().getString(R.string.error_name_incorrect));
 			return;
@@ -186,10 +184,6 @@ public class HsDroidMain extends Activity {
 		case R.id.menu_preferences:
 			Intent settingsActivity = new Intent(getBaseContext(), Preferences.class);
 			startActivity(settingsActivity);
-			// notenapp_preferences =
-			// PreferenceManager.getDefaultSharedPreferences(this);
-			// checkBoxChecked =
-			// notenapp_preferences.getBoolean("SaveLoginToggle", false);
 
 			return true;
 		case R.id.menu_about:
@@ -220,19 +214,25 @@ public class HsDroidMain extends Activity {
 			switch (msg.what) {
 			case LoginThread.MESSAGE_COMPLETE:
 				Log.d("handler", "Login_complete");
+
 				if (mLoginThread != null) {
 					mLoginThread.stopThread();
 					mLoginThread.kill();
+					mLoginThread = null;
 				}
-				mLoginThread = null;
+
 				removeDialog(DIALOG_PROGRESS);
+
 				Intent i = new Intent(HsDroidMain.this, GradesList.class);
 				startActivity(i);
 				break;
 			case LoginThread.MESSAGE_ERROR:
 				Log.d("handler login error", msg.getData().getString("Message"));
+
 				removeDialog(DIALOG_PROGRESS);
+
 				String errorMessage = msg.getData().getString("Message");
+
 				if (errorMessage.equals(LoginThread.ERROR_MSG_SITE_MAINTENANCE)) {
 					errorMessage = HsDroidMain.this.getString(R.string.error_site_down);
 				} else if (errorMessage.equals(LoginThread.ERROR_MSG_LOGIN_FAILED)) {
@@ -240,6 +240,7 @@ public class HsDroidMain extends Activity {
 				} else if (errorMessage.equals(LoginThread.ERROR_MSG_COOKIE_MISSING)) {
 					errorMessage = HsDroidMain.this.getString(R.string.error_cookie_empty);
 				}
+
 				createDialog(HsDroidMain.this.getString(R.string.error_couldnt_connect), errorMessage);
 
 				mLoginThread.stopThread();
@@ -266,10 +267,10 @@ public class HsDroidMain extends Activity {
 		}
 	};
 
-	// private void quit(boolean success, Intent i) {
-	// setResult((success) ? -1 : 0, i);
-	// finish();
-	// }
+	private void quit(boolean success, Intent i) {
+		setResult((success) ? -1 : 0, i);
+		finish();
+	}
 
 	/**
 	 * Creates an custom {@link AlertDialog}
