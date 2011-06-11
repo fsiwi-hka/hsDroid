@@ -10,7 +10,7 @@
 	<string name="cancel">Schließen</string>
 	<string name="error">Fehler</string>
 	<string name="error_name_missing">Bitte HS-Benutzernamen angeben.</string>
-	<string name="error_name_incorrect">HS-Benutzername ist falsch. Bsp.: agag0001</string>
+	<string name="error_name_incorrect">HS-Benutzername ist falsch. Bsp.: mami1011</string>
 	<string name="error_ok">OK</string>
 	<string name="error_password_missing">Bitte Passwort angeben.</string>
 	<string name="error_couldnt_connect">Verbindungsfehler</string>

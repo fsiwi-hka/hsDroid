@@ -20,7 +20,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import de.nware.app.hsDroid.data.StaticSessionData;
 import de.nware.app.hsDroid.logic.LoginThread;
 import de.nware.app.hsDroid.ui.AboutDialog;
 import de.nware.app.hsDroid.ui.GradesList;
@@ -52,6 +51,7 @@ public class HsDroidMain extends Activity {
 		PassEditText = (EditText) findViewById(R.id.password);
 
 		LoginCheckBox = (CheckBox) findViewById(R.id.login_checkBox);
+
 		notenapp_preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		String savedUser = notenapp_preferences.getString("UserSave", "");
 		String savedPass = notenapp_preferences.getString("PassSave", "");
@@ -101,10 +101,12 @@ public class HsDroidMain extends Activity {
 		String username = UserEditText.getText().toString().trim().toLowerCase();
 		// Password: nicht anzeigbare Zeichen entfernen
 		String password = PassEditText.getText().toString().trim();
-		if (StaticSessionData.cookies != null) {
-			mProgressHandle.sendEmptyMessage(LoginThread.MESSAGE_COMPLETE);
-			return;
-		}
+		// if (StaticSessionData.cookies != null) { // prüfen wie alt das cookie
+		// // ist!!! und nach ca 30min
+		// // löschen
+		// mProgressHandle.sendEmptyMessage(LoginThread.MESSAGE_COMPLETE);
+		// return;
+		// }
 		// FIXME zu unsicher.. wird alles im plaintext gespeichert..
 		// eventuell sqlite mit encryption..
 		// speichern von user und passwort
