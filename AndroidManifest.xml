@@ -12,14 +12,22 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name="de.nware.app.hsDroid.ui.GradesList" android:label="@string/grades_view"
-			android:configChanges="orientation">
+		<activity android:name="de.nware.app.hsDroid.ui.GradesList"
+			android:label="@string/grades_view" android:configChanges="orientation">
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
 			</intent-filter>
 		</activity>
 		<activity android:name=".ui.Preferences" android:label="@string/label_set_preferences">
 		</activity>
+
+		<provider android:name="de.nware.app.hsDroid.provider.onlineService2Provider"
+			android:authorities="de.nware.app.hsDroid.provider.onlineService2Provider"
+			android:exported="false">
+
+			<grant-uri-permission android:pathPattern=".*" />
+		</provider>
+
 
 	</application>
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>

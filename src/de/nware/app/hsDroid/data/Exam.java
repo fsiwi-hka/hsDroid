@@ -4,10 +4,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Komplexer Datentyp zum Speichern einzelner Prüfungen
+ * Komplexer Datentyp zum Speichern einzelner Prüfungen.
+ * 
+ * {@link Parcelable}
  * 
  * @author Oliver Eichner
- * @version 0.1
+ * @version 0.2
  */
 public class Exam implements Parcelable {
 
@@ -20,6 +22,7 @@ public class Exam implements Parcelable {
 	private String notation = "";
 	private int attempts = 0;
 	private String infoLink = "";
+	private int infoID = 0;
 
 	/**
 	 * Konstruktor für {@link Parcel}
@@ -62,6 +65,20 @@ public class Exam implements Parcelable {
 		this.infoLink = infoLink;
 	}
 
+	public Exam(String examNr, String examName, String semester, String examDate, String grade, boolean passed,
+			String notation, int attempts, int infoID) {
+		super();
+		this.examNr = examNr;
+		this.examName = examName;
+		this.semester = semester;
+		this.examDate = examDate;
+		this.grade = grade;
+		this.passed = passed;
+		this.notation = notation;
+		this.attempts = attempts;
+		this.infoID = infoID;
+	}
+
 	public String getExamNr() {
 		return examNr;
 	}
@@ -98,6 +115,10 @@ public class Exam implements Parcelable {
 		return infoLink;
 	}
 
+	public int getInfoID() {
+		return infoID;
+	}
+
 	// methoden für Parcel
 
 	@Override
@@ -115,6 +136,7 @@ public class Exam implements Parcelable {
 		dest.writeString(notation);
 		dest.writeInt(attempts);
 		dest.writeString(infoLink);
+		dest.writeInt(infoID);
 
 	}
 
@@ -139,6 +161,7 @@ public class Exam implements Parcelable {
 		this.notation = in.readString();
 		this.attempts = in.readInt();
 		this.infoLink = in.readString();
+		this.infoID = in.readInt();
 	}
 
 }

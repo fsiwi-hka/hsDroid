@@ -83,7 +83,7 @@ public class ExamInfoParserThread extends Thread {
 		// gets...
 		// progressHandler.sendMessage(progressHandler.obtainMessage(1));
 
-		// final String notenSpiegelURL =
+		// final String notenSpiegelURLTmpl =
 		// "https://qis2.hs-karlsruhe.de/qisserver/rds?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
 		// + StaticSessionData.asiKey +
 		// "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";

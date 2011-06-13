@@ -7,10 +7,13 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -34,6 +37,7 @@ import de.nware.app.hsDroid.data.Exam;
 import de.nware.app.hsDroid.data.ExamInfo;
 import de.nware.app.hsDroid.logic.ExamInfoParserThread;
 import de.nware.app.hsDroid.logic.GradeParserThread;
+import de.nware.app.hsDroid.provider.onlineService2Data;
 
 /**
  * {@link ListActivity} zum anzeigen der Prüfungen
@@ -43,6 +47,7 @@ import de.nware.app.hsDroid.logic.GradeParserThread;
  */
 public class GradesList extends ListActivity {
 
+	private static final String TAG = "GradesListActivity";
 	private ExamAdapter m_examAdapter;
 	private ListView lv;
 	private ArrayList<Exam> examsTest;
@@ -71,7 +76,15 @@ public class GradesList extends ListActivity {
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
 		ACTUAL_SORT = getDefaultListSort();
+		Log.d(TAG, "create resolver");
 
+		final ContentResolver resolver = getContentResolver();
+		final Uri providerUri = onlineService2Data.ExamsUpdateCol.CONTENT_URI;
+		// Cursor setzen
+		final Cursor cursor = resolver.query(providerUri, null, null, null, null);
+		startManagingCursor(cursor);
+
+		Log.d(TAG, "update launched");
 		this.examsTest = new ArrayList<Exam>();
 		if (savedInstanceState == null) {
 
@@ -80,9 +93,9 @@ public class GradesList extends ListActivity {
 			mGradeParserThread.start();
 
 		} else {
-			Log.d("hs-Droid:Grades ListeView", "saved instance not null!!!!");
+			Log.d("hs-Droid:ExamsCol ListeView", "saved instance not null!!!!");
 			examsTest = (ArrayList<Exam>) savedInstanceState.get("exams_list");
-			Log.d("hs-Droid:Grades ListeView", String.valueOf(examsTest.size()));
+			Log.d("hs-Droid:ExamsCol ListeView", String.valueOf(examsTest.size()));
 		}
 
 		// layout festlegen
@@ -347,7 +360,8 @@ public class GradesList extends ListActivity {
 		Date dt = new Date();
 		int year = dt.getYear() - 100;
 		int month = dt.getMonth() + 1;
-		if (month > 1 && month < 7) { // zwischen jan und jul ws anzeigen
+		// if (month > 1 && month < 7) { // zwischen jan und jul ws anzeigen
+		if (month > 10 && month < 3) {
 			semString = "WiSe " + (year - 1) + "/" + year;
 		} else {// ansonsten ss
 			// wenn januar is, dann jahr-1
