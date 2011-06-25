@@ -22,6 +22,7 @@ class ExamParser extends DefaultHandler {
 	private Boolean fetch = false;
 	private Boolean waitForTd = false;
 	private int elementCount = 0;
+
 	private String examNr;
 	private String examName;
 	private String semester;
@@ -75,7 +76,7 @@ class ExamParser extends DefaultHandler {
 			// https://qis2.hs-karlsruhe.de/qisserver/rds?state=notenspiegelStudent&amp;next=list.vm&amp;nextdir=qispos/notenspiegel/student&amp;createInfos=Y&amp;struct=abschluss&amp;nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1%7Cstudiengang%3Astg%3DIB%7CpruefungOnTop%3Alabnr%3D2792169&amp;expand=0&amp;asi=oq.nE$uDmdlbVCRpLPX.
 			String searchString = "labnr%3D";
 			int stringLength = infoLink.indexOf(searchString) + 8;
-			String infoID = infoLink.substring(stringLength, stringLength + 7);
+			infoID = Integer.valueOf(infoLink.substring(stringLength, stringLength + 7));
 			Log.d(TAG, "infoLink: " + infoLink);
 			Log.d(TAG, "infoID: " + infoID);
 		}
@@ -86,7 +87,7 @@ class ExamParser extends DefaultHandler {
 	public void endElement(String n, String l, String q) throws SAXException {
 		super.endElement(n, l, q);
 		if (l == "tr" && fetch == true) {
-
+			Log.d(TAG, "infoID: " + infoID);
 			lecList.add(new Exam(examNr, examName, semester, examDate, grade, passed, notation, attempts, infoID));
 
 			waitForTd = false;

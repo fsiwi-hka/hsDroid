@@ -1,6 +1,5 @@
 package de.nware.app.hsDroid.ui;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import android.app.AlertDialog;
@@ -13,11 +12,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.provider.BaseColumns;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,17 +27,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import de.nware.app.hsDroid.R;
-import de.nware.app.hsDroid.data.Exam;
-import de.nware.app.hsDroid.data.ExamInfo;
-import de.nware.app.hsDroid.logic.ExamInfoParserThread;
-import de.nware.app.hsDroid.logic.GradeParserThread;
-import de.nware.app.hsDroid.provider.onlineService2Data;
+import de.nware.app.hsDroid.provider.onlineService2Data.ExamInfos;
+import de.nware.app.hsDroid.provider.onlineService2Data.ExamsCol;
+import de.nware.app.hsDroid.provider.onlineService2Data.ExamsUpdateCol;
 
 /**
  * {@link ListActivity} zum anzeigen der Prüfungen
@@ -48,12 +44,16 @@ import de.nware.app.hsDroid.provider.onlineService2Data;
 public class GradesList extends ListActivity {
 
 	private static final String TAG = "GradesListActivity";
-	private ExamAdapter m_examAdapter;
+	// private ExamAdapter m_examAdapter;
 	private ListView lv;
-	private ArrayList<Exam> examsTest;
-	private ExamInfo currentEInfo;
-	private GradeParserThread mGradeParserThread = null;
-	private ExamInfoParserThread mExamInfoParserThread = null;
+	// private ArrayList<Exam> examsTest;
+	// private ExamInfo currentEInfo;
+	// private GradeParserThread mGradeParserThread = null;
+	// private ExamInfoParserThread mExamInfoParserThread = null;
+	private Cursor cursor = null;
+	private Cursor examinfoCursor = null;
+
+	private ExamDBAdapter mExamAdapter;
 
 	private ProgressDialog mProgressDialog = null;
 
@@ -61,13 +61,18 @@ public class GradesList extends ListActivity {
 
 	private static final byte DIALOG_PROGRESS = 1;
 
+	private final int HANDLER_MSG_REFRESH = 1;
+	private final int HANDLER_MSG_LOADING = 2;
+	private final int HANDLER_MSG_INFO_GET = 3;
+	private final int HANDLER_MSG_INFO_READY = 4;
+
 	private static final String SORT_ALL = "";
 	private static final String SORT_ALL_FAILED = "allfail";
 	private static final String SORT_ACTUAL = "act";
 	private static final String SORT_ACTUAL_FAILED = "actfail";
 	private static String ACTUAL_SORT = SORT_ALL;
 
-	@SuppressWarnings("unchecked")
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		System.out.println("test onCreate");
@@ -77,48 +82,125 @@ public class GradesList extends ListActivity {
 
 		ACTUAL_SORT = getDefaultListSort();
 		Log.d(TAG, "create resolver");
-
 		final ContentResolver resolver = getContentResolver();
-		final Uri providerUri = onlineService2Data.ExamsUpdateCol.CONTENT_URI;
+		// laden liste aus db
+
+		// db update
+		// final Uri providerUri =
+		// onlineService2Data.ExamsUpdateCol.CONTENT_URI;
 		// Cursor setzen
-		final Cursor cursor = resolver.query(providerUri, null, null, null, null);
-		startManagingCursor(cursor);
+		// final Cursor cursor = resolver.query(providerUri, null, null, null,
+		// null);
+		// startManagingCursor(cursor);
 
 		Log.d(TAG, "update launched");
-		this.examsTest = new ArrayList<Exam>();
-		if (savedInstanceState == null) {
+		// this.examsTest = new ArrayList<Exam>();
 
-			showDialog(DIALOG_PROGRESS);
-			mGradeParserThread = new GradeParserThread(mProgressHandle);
-			mGradeParserThread.start();
-
-		} else {
-			Log.d("hs-Droid:ExamsCol ListeView", "saved instance not null!!!!");
-			examsTest = (ArrayList<Exam>) savedInstanceState.get("exams_list");
-			Log.d("hs-Droid:ExamsCol ListeView", String.valueOf(examsTest.size()));
-		}
+		// if (savedInstanceState == null) {
+		//
+		// showDialog(DIALOG_PROGRESS);
+		// mGradeParserThread = new GradeParserThread(mProgressHandle);
+		// mGradeParserThread.start();
+		//
+		// } else {
+		// Log.d("hs-Droid:ExamsCol ListeView", "saved instance not null!!!!");
+		// examsTest = (ArrayList<Exam>) savedInstanceState.get("exams_list");
+		// Log.d("hs-Droid:ExamsCol ListeView",
+		// String.valueOf(examsTest.size()));
+		// }
 
 		// layout festlegen
-		this.m_examAdapter = new ExamAdapter(GradesList.this, R.layout.grade_row_item, this.examsTest);
-		if (this.examsTest.size() == 0) {
-			this.m_examAdapter.notifyDataSetInvalidated();
-		} else {
-
-			this.m_examAdapter.getFilter().filter(getDefaultListSort());
-		}
+		// this.m_examAdapter = new ExamAdapter(GradesList.this,
+		// R.layout.grade_row_item, this.examsTest);
+		// if (this.examsTest.size() == 0) {
+		// this.m_examAdapter.notifyDataSetInvalidated();
+		// } else {
+		//
+		// this.m_examAdapter.getFilter().filter(getDefaultListSort());
+		// }
 
 		lv = getListView();
-		lv.setAdapter(this.m_examAdapter);
+		cursor = resolver.query(ExamsCol.CONTENT_URI, null, null, null, null);
+		startManagingCursor(cursor);
+
+		final String[] from = new String[] { ExamsCol.EXAMNAME, ExamsCol.EXAMNR, ExamsCol.ATTEMPTS, ExamsCol.GRADE };
+		final int[] to = new int[] { R.id.examName, R.id.examNr, R.id.examGrade, R.id.examAttempts, R.id.examGrade };
+		mExamAdapter = new ExamDBAdapter(GradesList.this, R.layout.grade_row_item, cursor, from, to);
+		lv.setAdapter(mExamAdapter);
+
+		this.mExamAdapter.getFilter().filter(getDefaultListSort());
 
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				// url muss vorhandensein
-				if (!GradesList.this.m_examAdapter.getItem(position).getInfoLink().equals("")) {
+				// url muss vorhanden sein
+				// if
+				// (!GradesList.this.m_examAdapter.getItem(position).getInfoLink().equals(""))
+				// {
+				Log.d(TAG, "itemid: " + mExamAdapter.getItemId(position));
+				long itemID = mExamAdapter.getItemId(position);
+				String selection = BaseColumns._ID + " LIKE ?";
+				Cursor cur = getContentResolver().query(ExamsCol.CONTENT_URI, null, selection,
+						new String[] { String.valueOf(itemID) }, null);
+				startManagingCursor(cur);
+				final String out;
+				if (cur.moveToFirst()) {
+					out = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.LINKID)).toString();
+					Log.d(TAG, "out: [" + out + "]");
+					final String name = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.EXAMNAME)).toString();
+					final String nr = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.EXAMNR)).toString();
+					final String semester = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.SEMESTER)).toString();
 
-					showDialog(DIALOG_PROGRESS);
-					mExamInfoParserThread = new ExamInfoParserThread(mProgressHandle, GradesList.this.m_examAdapter
-							.getItem(position));
-					mExamInfoParserThread.start();
+					if (!out.equals("0")) { // FIXME
+
+						Log.d(TAG, "show examInfo");
+						showDialog(DIALOG_PROGRESS);
+						mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_INFO_GET));
+						setRequestedOrientation(2);
+						Thread t = new Thread() {
+							public void run() {
+								try {
+									Looper.prepare();
+
+									// ContentProvider öffnen
+									final ContentResolver resolver = getContentResolver();
+									// Cursor setzen
+									examinfoCursor = resolver.query(ExamInfos.CONTENT_URI, null, null,
+											new String[] { out }, null);
+									startManagingCursor(examinfoCursor);
+									examinfoCursor.moveToFirst();
+
+									// Dem Handler bescheid sagen, dass die
+									// Daten
+									// nun
+									// verfügbar sind
+									Message oMessage = mProgressHandle.obtainMessage();
+									Bundle oBundle = new Bundle();
+
+									oBundle.putString("Name", name);
+									oBundle.putString("Nr", nr);
+									oBundle.putString("Semester", semester);
+
+									oMessage.setData(oBundle);
+									oMessage.what = HANDLER_MSG_INFO_READY;
+									mProgressHandle.sendMessage(oMessage);
+
+								} catch (Exception e) {
+									dismissDialog(DIALOG_PROGRESS);
+									createDialog(GradesList.this.getString(R.string.error), e.getMessage());
+									e.printStackTrace();
+								}
+								Looper.loop();
+							}
+						};
+						t.start();
+
+						// showDialog(DIALOG_PROGRESS);
+						// mExamInfoParserThread = new
+						// ExamInfoParserThread(mProgressHandle,
+						// GradesList.this.m_examAdapter
+						// .getItem(position));
+						// mExamInfoParserThread.start();
+					}
 				} else {
 					Log.d("list onClick", "keine url. todo: alertDialog");
 				}
@@ -129,6 +211,7 @@ public class GradesList extends ListActivity {
 	}
 
 	// helper, get rid of....
+	// hashmap??
 	private String getDefaultListSort() {
 
 		String prefView = mPreferences.getString("defaultViewPref", "1");
@@ -160,49 +243,40 @@ public class GradesList extends ListActivity {
 			Log.d("handler msg.what:", String.valueOf(msg.what));
 
 			switch (msg.what) {
-			case GradeParserThread.MESSAGE_COMPLETE:
-				Log.d("handler", "Login_complete");
-				if (mGradeParserThread != null) {
-					GradesList.this.examsTest = mGradeParserThread.getExamsList();
-					mGradeParserThread = null;
-					GradesList.this.m_examAdapter.getFilter().filter(getDefaultListSort());
-				}
 
-				if (mExamInfoParserThread != null) {
-					currentEInfo = mExamInfoParserThread.getExamInfo();
-					mExamInfoParserThread = null;
-					new ExamInfoDialog(GradesList.this, currentEInfo);
-
-				}
-
+			case HANDLER_MSG_REFRESH:
+				// ListView wieder neu laden
+				refreshList();
+				// Bildschirm Orientierung wieder dem User überlassen
+				setRequestedOrientation(-1);
 				dismissDialog(DIALOG_PROGRESS);
-
 				break;
-			case GradeParserThread.MESSAGE_ERROR:
-				dismissDialog(DIALOG_PROGRESS);
-				Log.d("handler login error", msg.getData().getString("Message"));
-				createDialog(GradesList.this.getString(R.string.error_couldnt_connect),
-						msg.getData().getString("Message"));
-				// XXX alert dialog auch mit showDialog???
 
-				mGradeParserThread.stopThread();
-				mGradeParserThread = null;
-				break;
-			case GradeParserThread.MESSAGE_PROGRESS_FETCH:
+			case HANDLER_MSG_LOADING:
 				mProgressDialog.setMessage(GradesList.this.getString(R.string.progress_loading));
 				break;
-			case GradeParserThread.MESSAGE_PROGRESS_PARSE:
-				mProgressDialog.setMessage(GradesList.this.getString(R.string.progress_parse));
+
+			case HANDLER_MSG_INFO_GET:
+				mProgressDialog.setMessage(GradesList.this.getString(R.string.progress_loading));
 				break;
-			case GradeParserThread.MESSAGE_PROGRESS_CLEANUP:
-				mProgressDialog.setMessage(GradesList.this.getString(R.string.progress_notencleanup));
+			case HANDLER_MSG_INFO_READY:
+				if (examinfoCursor == null) {
+					Log.d(TAG, "cursor null");
+				}
+
+				new ExamInfoDialog(GradesList.this, msg.getData().getString("Name"), msg.getData().getString("Nr"), msg
+						.getData().getString("Semester"), examinfoCursor);
+				dismissDialog(DIALOG_PROGRESS);
+				// schließe progress und zeige infodialog
 				break;
+
 			default:
-				Log.d("onCreate should not happen", String.valueOf(mGradeParserThread.getStatus()));
+				// Log.d("onCreate should not happen",
+				// String.valueOf(mGradeParserThread.getStatus()));
 				dismissDialog(DIALOG_PROGRESS);
 				// Get rid of the sending thread
-				mGradeParserThread.stopThread();
-				mGradeParserThread = null;
+				// mGradeParserThread.stopThread();
+				// mGradeParserThread = null;
 				break;
 			}
 		}
@@ -223,13 +297,12 @@ public class GradesList extends ListActivity {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void onRestoreInstanceState(Bundle outState) {
 		super.onRestoreInstanceState(outState);
 
-		examsTest = (ArrayList<Exam>) outState.get("exams_list");
-		this.m_examAdapter.getFilter().filter(GradesList.ACTUAL_SORT);
+		// examsTest = (ArrayList<Exam>) outState.get("exams_list");
+		// this.m_examAdapter.getFilter().filter(GradesList.ACTUAL_SORT);
 		// FIXME nicht default , alte sortierung.!!
 
 		System.out.println("test onRestoreInstanceState");
@@ -239,7 +312,7 @@ public class GradesList extends ListActivity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 
-		outState.putParcelableArrayList("exams_list", examsTest);
+		// outState.putParcelableArrayList("exams_list", examsTest);
 		System.out.println("test onSaveInstanceState");
 
 	}
@@ -256,17 +329,17 @@ public class GradesList extends ListActivity {
 	protected void onResume() {
 		super.onResume();
 		ACTUAL_SORT = getDefaultListSort();
-		if (examsTest == null || examsTest.size() == 0) {
-			System.out.println("test onResume:empty");
-		} else {
-			System.out.println("test onResume:data found");
-		}
+		// if (examsTest == null || examsTest.size() == 0) {
+		// System.out.println("test onResume:empty");
+		// } else {
+		// System.out.println("test onResume:data found");
+		// }
 	}
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		if (hasFocus) {
-			this.m_examAdapter.getFilter().filter(ACTUAL_SORT);
+			this.mExamAdapter.getFilter().filter(ACTUAL_SORT);
 		}
 	}
 
@@ -290,8 +363,8 @@ public class GradesList extends ListActivity {
 			return true;
 		case R.id.view_menu_refresh:
 			showDialog(DIALOG_PROGRESS);
-			mGradeParserThread = new GradeParserThread(mProgressHandle);
-			mGradeParserThread.start();
+			updateGrades();
+
 			return true;
 		case R.id.view_menu_preferences:
 			Intent settingsActivity = new Intent(getBaseContext(), Preferences.class);
@@ -309,7 +382,7 @@ public class GradesList extends ListActivity {
 				item.setChecked(true);
 
 			ACTUAL_SORT = SORT_ALL;
-			m_examAdapter.getFilter().filter(SORT_ALL);
+			mExamAdapter.getFilter().filter(ACTUAL_SORT);
 			return true;
 		case R.id.view_submenu_examViewOnlyLast:
 			if (item.isChecked())
@@ -317,7 +390,7 @@ public class GradesList extends ListActivity {
 			else
 				item.setChecked(true);
 			ACTUAL_SORT = SORT_ACTUAL;
-			m_examAdapter.getFilter().filter(SORT_ACTUAL);
+			mExamAdapter.getFilter().filter(ACTUAL_SORT);
 			return true;
 		case R.id.view_submenu_examViewOnlyLastFailed:
 			if (item.isChecked())
@@ -326,7 +399,7 @@ public class GradesList extends ListActivity {
 				item.setChecked(true);
 
 			ACTUAL_SORT = SORT_ACTUAL_FAILED;
-			m_examAdapter.getFilter().filter(SORT_ACTUAL_FAILED);
+			mExamAdapter.getFilter().filter(ACTUAL_SORT);
 			return true;
 		case R.id.view_submenu_examViewAllFailed:
 			if (item.isChecked())
@@ -335,12 +408,49 @@ public class GradesList extends ListActivity {
 				item.setChecked(true);
 
 			ACTUAL_SORT = SORT_ALL_FAILED;
-			m_examAdapter.getFilter().filter(SORT_ALL_FAILED);
+			mExamAdapter.getFilter().filter(ACTUAL_SORT);
 			return true;
 		default:
 			Log.d("GradeView menu:", "default");
 			return super.onOptionsItemSelected(item);
 		}
+
+	}
+
+	private void updateGrades() {
+		// Thread, update grades progress
+		mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_LOADING));
+		setRequestedOrientation(2);
+		Thread t = new Thread() {
+			public void run() {
+				try {
+					Looper.prepare();
+
+					// ContentProvider öffnen
+					final ContentResolver resolver = getContentResolver();
+					// Cursor setzen
+					final Cursor cursor = resolver.query(ExamsUpdateCol.CONTENT_URI, null, null, null, null);
+					startManagingCursor(cursor);
+
+					cursor.close();
+					// Dem Handler bescheid sagen, dass die Daten nun
+					// verfügbar sind
+					mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_REFRESH));
+
+				} catch (Exception e) {
+					dismissDialog(DIALOG_PROGRESS);
+					createDialog(GradesList.this.getString(R.string.error), e.getMessage());
+					e.printStackTrace();
+				}
+				Looper.loop();
+			}
+		};
+		t.start();
+
+	}
+
+	private void refreshList() {
+		this.lv.invalidateViews();
 
 	}
 
@@ -374,184 +484,269 @@ public class GradesList extends ListActivity {
 	}
 
 	/**
-	 * Prüfungs {@link ArrayAdapter} für {@link ListActivity}
 	 * 
 	 * @author Oliver Eichner
 	 * 
 	 */
-	private class ExamAdapter extends ArrayAdapter<Exam> implements Filterable {
-		private ArrayList<Exam> examsList;
-		private final Object mLock = new Object();
-		private ExamFilter mFilter;
+	public class ExamDBAdapter extends SimpleCursorAdapter {
 
-		public ExamAdapter(Context context, int textViewResourceId, ArrayList<Exam> nExams) {
-			super(context, textViewResourceId, nExams);
-			this.examsList = nExams;
+		private Context context;
+		private int layout;
+
+		public ExamDBAdapter(Context context, int layout, Cursor cursor, String[] from, int[] to) {
+			super(context, layout, cursor, from, to);
+			this.context = context;
+			this.layout = layout;
 		}
 
 		@Override
-		public View getView(int position, View convertView, ViewGroup parents) {
-			View v = convertView;
+		public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
+			Log.d(TAG, "exAdapter newView");
+			Cursor c = getCursor();
 
-			if (v == null) {
-				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				v = vi.inflate(R.layout.grade_row_item, null);
+			final LayoutInflater inflater = LayoutInflater.from(context);
+			View v = inflater.inflate(layout, viewGroup, false);
+
+			int nameCol = c.getColumnIndex(ExamsCol.EXAMNAME);
+			String name = c.getString(nameCol);
+			int rnCol = c.getColumnIndex(ExamsCol.EXAMNR);
+			String nr = c.getString(rnCol);
+			int attCol = c.getColumnIndex(ExamsCol.ATTEMPTS);
+			int att = c.getInt(attCol);
+			int gradeCol = c.getColumnIndex(ExamsCol.GRADE);
+			String grade = c.getString(gradeCol);
+			int semCol = c.getColumnIndex(ExamsCol.SEMESTER);
+			String sem = c.getString(semCol);
+			int passedCol = c.getColumnIndex(ExamsCol.PASSED);
+			int passed = c.getInt(passedCol);
+
+			Log.d(TAG, "name: " + name);
+			Log.d(TAG, "nr: " + nr);
+			Log.d(TAG, "att: " + att);
+			Log.d(TAG, "grade:" + grade);
+			Log.d(TAG, "sem:" + sem);
+			Log.d(TAG, "passed:" + passed);
+
+			/**
+			 * Next set the name of the entry.
+			 */
+			TextView exName = (TextView) v.findViewById(R.id.examName);
+
+			TextView exNr = (TextView) v.findViewById(R.id.examNr);
+
+			TextView exAtt = (TextView) v.findViewById(R.id.examAttempts);
+			TextView exGrade = (TextView) v.findViewById(R.id.examGrade);
+			TextView exSemester = (TextView) v.findViewById(R.id.examSemester);
+
+			if (exName != null) {
+				exName.setText(name);
+				if (isActualExam(sem) && mPreferences.getBoolean("highlightActualExamsPref", false)) {
+					exName.setShadowLayer(3, 0, 0, Color.GREEN);
+				} else {
+					exName.setShadowLayer(0, 0, 0, 0);
+				}
 			}
+			if (exNr != null) {
+				exNr.setText(nr);
+			}
+			if (exSemester != null) {
+				exSemester.setText(getApplicationContext().getString(R.string.grades_view_semester) + sem);
+			}
+			if (exAtt != null && att != 0) {
+				exAtt.setText(getApplicationContext().getString(R.string.grades_view_attempt) + att);
+			}
+			if (exGrade != null) {
+				if (passed == 0) {
+					// FIXME wenn möglich.. farben gedöns is ziemlich tricky
+					// wegen "recycler" von ListActivity
+					if (att > 1) {
+						exGrade.setTextColor(Color.BLACK);
+						exGrade.setBackgroundColor(Color.RED);
+						exGrade.setCompoundDrawablePadding(2);
 
-			Exam ex = this.examsList.get(position);
-			if (ex != null) {
-				TextView exName = (TextView) v.findViewById(R.id.examName);
-				TextView exNr = (TextView) v.findViewById(R.id.examNr);
-				TextView exAtt = (TextView) v.findViewById(R.id.examAttempts);
-				TextView exGrade = (TextView) v.findViewById(R.id.examGrade);
-				TextView exSemester = (TextView) v.findViewById(R.id.examSemester);
-				if (exName != null) {
-					exName.setText(ex.getExamName());
-					if (isActualExam(ex) && mPreferences.getBoolean("highlightActualExamsPref", false)) {
-						exName.setShadowLayer(3, 0, 0, Color.GREEN);
 					} else {
-						exName.setShadowLayer(0, 0, 0, 0);
-					}
-				}
-				if (exNr != null) {
-					exNr.setText(ex.getExamNr());
-				}
-				if (exSemester != null) {
-					exSemester.setText(this.getContext().getString(R.string.grades_view_semester) + ex.getSemester());
-				}
-				if (exAtt != null && ex.getAttempts() != 0) {
-					exAtt.setText(this.getContext().getString(R.string.grades_view_attempt) + ex.getAttempts());
-				}
-				if (exGrade != null) {
-					if (!ex.isPassed()) {
-						// FIXME wenn möglich.. farben gedöns is ziemlich tricky
-						// wegen "recycler" von ListActivity
-						if (ex.getAttempts() > 1) {
-							exGrade.setTextColor(Color.BLACK);
-							exGrade.setBackgroundColor(Color.RED);
-							exGrade.setCompoundDrawablePadding(2);
-
-						} else {
-							exGrade.setTextColor(Color.RED);
-							exGrade.setBackgroundColor(Color.TRANSPARENT);
-						}
-					} else {
-						exGrade.setTextColor(Color.rgb(0x87, 0xeb, 0x0c));
-
+						exGrade.setTextColor(Color.RED);
 						exGrade.setBackgroundColor(Color.TRANSPARENT);
 					}
-					if (ex.getGrade() != "") {
-						exGrade.setText(ex.getGrade());
-					} else {
-						if (ex.isPassed())
-							exGrade.setText("BE");
-						else
-							exGrade.setText("NB");
-					}
-				}
+				} else {
+					exGrade.setTextColor(Color.rgb(0x87, 0xeb, 0x0c));
 
+					exGrade.setBackgroundColor(Color.TRANSPARENT);
+				}
+				if (grade != "") {
+					exGrade.setText(grade);
+				} else {
+					if (passed == 0)
+						exGrade.setText("NB");
+					else
+						exGrade.setText("BE");
+				}
 			}
+
 			return v;
 		}
 
 		@Override
-		public Filter getFilter() {
-			if (mFilter == null) {
-				mFilter = new ExamFilter();
-			}
-			return mFilter;
+		public void bindView(View v, Context context, Cursor c) {
+			Log.d(TAG, "exAdapter bindView");
+			int nameCol = c.getColumnIndex(ExamsCol.EXAMNAME);
+			String name = c.getString(nameCol);
+			int rnCol = c.getColumnIndex(ExamsCol.EXAMNR);
+			String nr = c.getString(rnCol);
+			int attCol = c.getColumnIndex(ExamsCol.ATTEMPTS);
+			int att = c.getInt(attCol);
+			int gradeCol = c.getColumnIndex(ExamsCol.GRADE);
+			String grade = c.getString(gradeCol);
+			int semCol = c.getColumnIndex(ExamsCol.SEMESTER);
+			String sem = c.getString(semCol);
+			int passedCol = c.getColumnIndex(ExamsCol.PASSED);
+			int passed = c.getInt(passedCol);
 
-		}
+			/**
+			 * Next set the name of the entry.
+			 */
+			TextView exName = (TextView) v.findViewById(R.id.examName);
+			// if (exName != null) {
+			// exName.setText(name);
+			// }
 
-		@Override
-		public int getCount() {
-			if (this.examsList == null) {
-				return 0;
-			}
-			return this.examsList.size();
+			TextView exNr = (TextView) v.findViewById(R.id.examNr);
+			// if (exNr != null) {
+			// exNr.setText(exNr);
+			// }
+			TextView exAtt = (TextView) v.findViewById(R.id.examAttempts);
+			TextView exGrade = (TextView) v.findViewById(R.id.examGrade);
+			TextView exSemester = (TextView) v.findViewById(R.id.examSemester);
 
-		}
-
-		@Override
-		public Exam getItem(int position) {
-			return this.examsList.get(position);
-
-		}
-
-		private class ExamFilter extends Filter {
-
-			protected FilterResults performFiltering(CharSequence prefix) {
-				// result objekt
-				FilterResults results = new FilterResults();
-
-				if (prefix == null || prefix.length() == 0 || prefix == SORT_ALL) {
-					synchronized (mLock) {
-						results.values = examsTest;
-						results.count = examsTest.size();
-					}
+			if (exName != null) {
+				exName.setText(name);
+				if (isActualExam(sem) && mPreferences.getBoolean("highlightActualExamsPref", false)) {
+					exName.setShadowLayer(3, 0, 0, Color.GREEN);
 				} else {
+					exName.setShadowLayer(0, 0, 0, 0);
+				}
+			}
+			if (exNr != null) {
+				exNr.setText(nr);
+			}
+			if (exSemester != null) {
+				exSemester.setText(getApplicationContext().getString(R.string.grades_view_semester) + sem);
+			}
+			if (exAtt != null && att != 0) {
+				exAtt.setText(getApplicationContext().getString(R.string.grades_view_attempt) + att);
+			}
+			if (exGrade != null) {
+				if (passed == 0) { // wenn nicht bestanden
+					// FIXME wenn möglich.. farben gedöns is ziemlich tricky
+					// wegen "recycler" von ListActivity
+					if (att > 1) {
+						exGrade.setTextColor(Color.BLACK);
+						exGrade.setBackgroundColor(Color.RED);
+						exGrade.setCompoundDrawablePadding(2);
 
-					// array kopieren
-					final ArrayList<Exam> items = examsTest;
-					final int count = items.size();
-					final ArrayList<Exam> newItems = new ArrayList<Exam>(count);
-
-					if (prefix.equals(SORT_ACTUAL_FAILED)) {
-						for (int i = 0; i < count; i++) {
-							final Exam item = items.get(i);
-
-							// semester muss übereinstimmen und nicht bestanden
-							if (isActualExam(item) && !item.isPassed()) {
-								newItems.add(item);
-							}
-						}
-					} else if (prefix.equals(SORT_ALL_FAILED)) {
-						for (int i = 0; i < count; i++) {
-							final Exam item = items.get(i);
-
-							// nicht bestanden
-							if (!item.isPassed()) {
-								newItems.add(item);
-							}
-						}
-					} else if (prefix.equals(SORT_ACTUAL)) {
-						for (int i = 0; i < count; i++) {
-							final Exam item = items.get(i);
-							// semester muss übereinstimmen
-							if (isActualExam(item)) {
-								newItems.add(item);
-							}
-						}
+					} else {
+						exGrade.setTextColor(Color.RED);
+						exGrade.setBackgroundColor(Color.TRANSPARENT);
 					}
-					// Set and return
-					results.values = newItems;
-					results.count = newItems.size();
+				} else { // wenn bestanden
+					exGrade.setTextColor(Color.rgb(0x87, 0xeb, 0x0c));
+					// exGrade.setTextColor(Color.GREEN);
+					exGrade.setBackgroundColor(Color.TRANSPARENT);
 				}
 
-				return results;
+				if (grade.length() != 0) {
+					Log.d(TAG, "grade[" + grade + "]");
+					exGrade.setText(grade);
+				} else {
+					if (passed == 0) { // Wenn nicht bestanden
+						Log.d(TAG, "grade NB [" + grade + "]");
+						exGrade.setText("NB");
+					} else { // Wenn bestanden
+						Log.d(TAG, "grade BE [" + grade + "]");
+						exGrade.setText("BE");
+
+					}
+				}
 			}
 
-			@SuppressWarnings("unchecked")
-			protected void publishResults(CharSequence prefix, FilterResults results) {
-				// noinspection unchecked
-				examsList = (ArrayList<Exam>) results.values;
-				// Let the adapter know about the updated list
-				if (results.count > 0) {
-					notifyDataSetChanged();
-				} else {
-					notifyDataSetInvalidated();
-				}
+		}
+
+		public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
+			Log.d(TAG, "runQueryOnBackgroundThread");
+			Log.d(TAG, "rqbg constraint: " + constraint);
+			if (getFilterQueryProvider() != null) {
+				return getFilterQueryProvider().runQuery(constraint);
+			}
+			Log.d(TAG, "no FilterQueryProvider");
+			if (constraint.equals(SORT_ALL)) {
+				return getContentResolver().query(ExamsCol.CONTENT_URI, null, null, null, null);
+			} else if (constraint.equals(SORT_ALL_FAILED)) {
+
+				StringBuilder buffer = null;
+				String[] args = null;
+
+				buffer = new StringBuilder();
+				buffer.append("UPPER(");
+				buffer.append(ExamsCol.PASSED);
+				buffer.append(") LIKE ?");
+				args = new String[] { "0" };
+				Log.d(TAG, "buffer: " + buffer.toString());
+				Log.d(TAG, "args: " + args[0]);
+				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
+						buffer == null ? null : buffer.toString(), args, null);
+			} else if (constraint.equals(SORT_ACTUAL)) {
+
+				StringBuilder buffer = null;
+				String[] args = null;
+
+				buffer = new StringBuilder();
+				buffer.append("UPPER(");
+				buffer.append(ExamsCol.SEMESTER);
+				buffer.append(") LIKE ?");
+
+				args = new String[] { getLastExamSem() };
+				Log.d(TAG, "buffer: " + buffer.toString());
+				Log.d(TAG, "args: " + args[0]);
+				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
+						buffer == null ? null : buffer.toString(), args, null);
+			} else if (constraint.equals(SORT_ACTUAL_FAILED)) {
+
+				StringBuilder buffer = null;
+				String[] args = null;
+
+				buffer = new StringBuilder();
+				buffer.append("UPPER(");
+				buffer.append(ExamsCol.SEMESTER);
+				buffer.append(") LIKE ? AND UPPER(");
+				buffer.append(ExamsCol.PASSED);
+				buffer.append(") LIKE ?");
+				args = new String[] { getLastExamSem(), "0" };
+				Log.d(TAG, "buffer: " + buffer.toString());
+				Log.d(TAG, "args: " + args[0]);
+				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
+						buffer == null ? null : buffer.toString(), args, null);
+			} else {
+				return null;
 			}
 		}
 	}
+
+	// /**
+	// *
+	// * @param nExam
+	// * @return
+	// */
+	// private boolean isActualExam(Exam nExam) {
+	// return nExam.getSemester().equals(getLastExamSem());
+	// }
 
 	/**
 	 * 
 	 * @param nExam
 	 * @return
 	 */
-	private boolean isActualExam(Exam nExam) {
-		return nExam.getSemester().equals(getLastExamSem());
+	private boolean isActualExam(String sem) {
+		return sem.equals(getLastExamSem());
 	}
 
 }

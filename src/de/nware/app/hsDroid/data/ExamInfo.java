@@ -1,9 +1,8 @@
 package de.nware.app.hsDroid.data;
 
-
 public class ExamInfo {
 
-	private Exam exam;
+	// private Exam exam;
 	private String sehrGutAmount;
 	private String gutAmount;
 	private String befriedigendAmount;
@@ -11,14 +10,13 @@ public class ExamInfo {
 	private String nichtAusreichendAmount;
 	private String average;
 
-	public ExamInfo(Exam exam) {
-		this.exam = exam;
-	}
+	// public ExamInfo(Exam exam) {
+	// this.exam = exam;
+	// }
 
-	public ExamInfo(Exam exam, String sehrGutAmount, String gutAmount, String befriedigendAmount,
-			String ausreichendAmount, String nichtAusreichendAmount, String average) {
+	public ExamInfo(String sehrGutAmount, String gutAmount, String befriedigendAmount, String ausreichendAmount,
+			String nichtAusreichendAmount, String average) {
 		super();
-		this.exam = exam;
 		this.sehrGutAmount = sehrGutAmount;
 		this.gutAmount = gutAmount;
 		this.befriedigendAmount = befriedigendAmount;
@@ -49,10 +47,6 @@ public class ExamInfo {
 
 	public String getAverage() {
 		return average;
-	}
-
-	public Exam getExam() {
-		return exam;
 	}
 
 	public void setSehrGutAmount(String sehrGutAmount) {

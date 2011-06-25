@@ -50,21 +50,9 @@ public class Exam implements Parcelable {
 	 *            Vermerk zur Prüfung
 	 * @param attempts
 	 *            Versuche bis jetzt
+	 * @param infoID
+	 *            LinkID der Notenverteilung
 	 */
-	public Exam(String examNr, String examName, String semester, String examDate, String grade, boolean passed,
-			String notation, int attempts, String infoLink) {
-		super();
-		this.examNr = examNr;
-		this.examName = examName;
-		this.semester = semester;
-		this.examDate = examDate;
-		this.grade = grade;
-		this.passed = passed;
-		this.notation = notation;
-		this.attempts = attempts;
-		this.infoLink = infoLink;
-	}
-
 	public Exam(String examNr, String examName, String semester, String examDate, String grade, boolean passed,
 			String notation, int attempts, int infoID) {
 		super();
@@ -109,10 +97,6 @@ public class Exam implements Parcelable {
 
 	public int getAttempts() {
 		return attempts;
-	}
-
-	public String getInfoLink() {
-		return infoLink;
 	}
 
 	public int getInfoID() {

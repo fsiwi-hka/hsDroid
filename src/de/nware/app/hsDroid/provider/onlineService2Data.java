@@ -7,9 +7,10 @@ public class onlineService2Data {
 	public static final Uri baseUri = Uri.parse("content://" + onlineService2Provider.AUTHORITY);
 
 	public static final String EXAMS_TABLE_NAME = "exams";
-	public static final String CERTIFICATIONS_TABLE_NAME = "downloads";
+	public static final String EXAM_INFOS_NAME = "examinfo";
+	public static final String CERTIFICATIONS_NAME = "downloads";
 
-	public static final String EXAMS_UPDATE_TABLE_NAME = "examsupd";
+	public static final String EXAMS_UPDATE_NAME = "examsupd";
 
 	public static final class ExamsCol implements BaseColumns {
 
@@ -26,9 +27,20 @@ public class onlineService2Data {
 		public static final String LINKID = "linkid";
 	}
 
+	public static final class ExamInfos implements BaseColumns {
+		public static final Uri CONTENT_URI = Uri.withAppendedPath(baseUri, EXAM_INFOS_NAME);
+		public static final String CONTENT_TYPE = "vnd.android.cursor.item/vnd.hsdroid.examinfo";
+		public static final String SEHRGUT = "sg";
+		public static final String GUT = "g";
+		public static final String BEFRIEDIGEND = "b";
+		public static final String AUSREICHEND = "a";
+		public static final String NICHTAUSREICHEND = "na";
+		public static final String AVERAGE = "avg";
+	}
+
 	public static final class CertificationsCol implements BaseColumns {
 
-		public static final Uri CONTENT_URI = Uri.withAppendedPath(baseUri, CERTIFICATIONS_TABLE_NAME);
+		public static final Uri CONTENT_URI = Uri.withAppendedPath(baseUri, CERTIFICATIONS_NAME);
 		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.hsdroid.certifications";
 		public static final String TITLE = "title";
 		public static final String LINK = "link";
@@ -36,7 +48,7 @@ public class onlineService2Data {
 
 	public static final class ExamsUpdateCol implements BaseColumns {
 
-		public static final Uri CONTENT_URI = Uri.withAppendedPath(baseUri, EXAMS_UPDATE_TABLE_NAME);
+		public static final Uri CONTENT_URI = Uri.withAppendedPath(baseUri, EXAMS_UPDATE_NAME);
 		public static final String CONTENT_TYPE = "vnd.android.cursor.item/vnd.hsdroid.examsupdate";
 		public static final String AMOUNT = "amount";
 		public static final String NEWEXAMS = "newExams";

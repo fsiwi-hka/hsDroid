@@ -36,65 +36,115 @@ import android.provider.BaseColumns;
 import android.util.Log;
 import android.util.Xml;
 import de.nware.app.hsDroid.data.Exam;
+import de.nware.app.hsDroid.data.ExamInfo;
 import de.nware.app.hsDroid.data.StaticSessionData;
 import de.nware.app.hsDroid.provider.onlineService2Data.CertificationsCol;
+import de.nware.app.hsDroid.provider.onlineService2Data.ExamInfos;
 import de.nware.app.hsDroid.provider.onlineService2Data.ExamsCol;
 import de.nware.app.hsDroid.provider.onlineService2Data.ExamsUpdateCol;
 
+// TODO: Auto-generated Javadoc
+/**
+ * Der/Die/Das Class onlineService2Provider.
+ */
 public class onlineService2Provider extends ContentProvider {
 
+	/** Die Konstante TAG. */
 	private static final String TAG = "OnlineServiceContentProvider";
 
+	/** Die Konstante DATABASE_NAME. */
 	private static final String DATABASE_NAME = "hsdroid.db";
 
+	/** Die Konstante VERSION. */
 	private static final int VERSION = 1;
 
+	/** Die Konstante AUTHORITY. */
 	public static final String AUTHORITY = "de.nware.app.hsDroid.provider.onlineService2Provider";
 
+	/** Die Konstante mUriMatcher. */
 	private static final UriMatcher mUriMatcher;
 
+	/** Die Konstante EXAMS. */
 	private static final int EXAMS = 1;
+
+	/** Die Konstante EXAMS_UPDATE. */
 	private static final int EXAMS_UPDATE = 2;
+
+	/** Die Konstante CERTIFICATIONS. */
 	private static final int CERTIFICATIONS = 3;
 
+	/** Die Konstante EXAMINFOS. */
+	private static final int EXAMINFOS = 4;
+
+	/** Der/Die/Das exams projection map. */
 	private static HashMap<String, String> examsProjectionMap;
 
+	/** Die Konstante CERTIFICATIONS_COLUMNS. */
 	private static final String[] CERTIFICATIONS_COLUMNS = new String[] { BaseColumns._ID, CertificationsCol.TITLE,
 			CertificationsCol.LINK };
+
+	/** Die Konstante EXAMS_UPDATE_COLUMNS. */
 	private static final String[] EXAMS_UPDATE_COLUMNS = new String[] { BaseColumns._ID, ExamsUpdateCol.AMOUNT,
 			ExamsUpdateCol.NEWEXAMS };
 
+	/** Die Konstante EXAM_INFOS_COLUMNS. */
+	private static final String[] EXAM_INFOS_COLUMNS = new String[] { BaseColumns._ID, ExamInfos.SEHRGUT,
+			ExamInfos.GUT, ExamInfos.BEFRIEDIGEND, ExamInfos.AUSREICHEND, ExamInfos.NICHTAUSREICHEND, ExamInfos.AVERAGE };
+
 	// HTTP gedöns
+	/** Der/Die/Das url base. */
 	final String urlBase = "https://qis2.hs-karlsruhe.de/qisserver/rds";
 	// final String notenSpiegelURLTmpl =
 	// "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum|abschluss:abschl=58,stgnr=1&expand=1&asi=%s#auswahlBaum|abschluss:abschl=58,stgnr=1";
 
+	/** Der/Die/Das certification url tmpl. */
 	final String certificationURLTmpl = "%s?state=qissosreports&amp;besch=%s&amp;next=wait.vm&amp;asi=%s";
 
+	/** Der/Die/Das certification type. */
 	final String[] certificationType = { "stammdaten", "studbesch", "studbescheng", "bafoeg", "kvv", "studienzeit" };
+
+	/** Der/Die/Das certification name. */
 	final String[] certificationName = { "Datenkontrollblatt", "Immatrikulationsbescheinigung",
 			"Englische Immatrikulationsbescheinigung", "Bescheinigung nach § 9 BAföG", "KVV-Bescheinigung",
 			"Studienzeitbescheinigung" };
 
+	/** Der/Die/Das exam info url tmpl. */
 	final String examInfoURLTmpl = "%s?state=notenspiegelStudent&amp;next=list.vm&amp;nextdir=qispos/notenspiegel/student&amp;createInfos=Y&amp;struct=abschluss&amp;nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1%7Cstudiengang%3Astg%3DIB%7CpruefungOnTop%3Alabnr%3D%s&amp;expand=0&amp;asi=%s";
 	// baseurl/examID/asiKey
 	// + StaticSessionData.asiKey;
 
+	/** Die Konstante USER_AGENT. */
 	private static final String USER_AGENT = TAG + "/" + VERSION;
 
 	/** Temporärer Buffer zum halten der HTTP Get Antwort. */
-	private static byte[] mContentBuffer = new byte[1024];
+	private static byte[] mContentBuffer = new byte[2048];
 
 	/** Der http client. */
 	private final HttpClient mHttpClient = new DefaultHttpClient();
 
 	// DB
+	/**
+	 * Der/Die/Das Class DatabaseHelper.
+	 */
 	private class DatabaseHelper extends SQLiteOpenHelper {
 
+		/**
+		 * Instanziiert ein/e neue/s database helper.
+		 * 
+		 * @param context
+		 *            der/die/das context
+		 */
 		public DatabaseHelper(Context context) {
 			super(context, DATABASE_NAME, null, VERSION);
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * android.database.sqlite.SQLiteOpenHelper#onCreate(android.database
+		 * .sqlite.SQLiteDatabase)
+		 */
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			// db.setLocale(Locale.getDefault());
@@ -111,6 +161,13 @@ public class onlineService2Provider extends ContentProvider {
 			Log.d(TAG, "create table done");
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database
+		 * .sqlite.SQLiteDatabase, int, int)
+		 */
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			Log.w(TAG, "Datenbank Uupgrade von Version " + oldVersion + " zu " + newVersion
@@ -122,15 +179,18 @@ public class onlineService2Provider extends ContentProvider {
 
 	}
 
+	/** Der/Die/Das m open helper. */
 	private DatabaseHelper mOpenHelper;
 
 	static {
 		mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		mUriMatcher.addURI(AUTHORITY, onlineService2Data.EXAMS_TABLE_NAME, EXAMS);
-		mUriMatcher.addURI(AUTHORITY, onlineService2Data.CERTIFICATIONS_TABLE_NAME, CERTIFICATIONS);
-		mUriMatcher.addURI(AUTHORITY, onlineService2Data.EXAMS_UPDATE_TABLE_NAME, EXAMS_UPDATE);
+		mUriMatcher.addURI(AUTHORITY, onlineService2Data.CERTIFICATIONS_NAME, CERTIFICATIONS);
+		mUriMatcher.addURI(AUTHORITY, onlineService2Data.EXAMS_UPDATE_NAME, EXAMS_UPDATE);
+		mUriMatcher.addURI(AUTHORITY, onlineService2Data.EXAM_INFOS_NAME, EXAMINFOS);
 
 		examsProjectionMap = new HashMap<String, String>();
+		examsProjectionMap.put(BaseColumns._ID, BaseColumns._ID);
 		examsProjectionMap.put(onlineService2Data.ExamsCol.SEMESTER, onlineService2Data.ExamsCol.SEMESTER);
 		examsProjectionMap.put(onlineService2Data.ExamsCol.PASSED, onlineService2Data.ExamsCol.PASSED);
 		examsProjectionMap.put(onlineService2Data.ExamsCol.EXAMNAME, onlineService2Data.ExamsCol.EXAMNAME);
@@ -142,6 +202,12 @@ public class onlineService2Provider extends ContentProvider {
 		examsProjectionMap.put(onlineService2Data.ExamsCol.LINKID, onlineService2Data.ExamsCol.LINKID);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.content.ContentProvider#delete(android.net.Uri,
+	 * java.lang.String, java.lang.String[])
+	 */
 	@Override
 	public int delete(Uri uri, String whereClause, String[] whereArgs) {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
@@ -158,12 +224,20 @@ public class onlineService2Provider extends ContentProvider {
 		return count;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.content.ContentProvider#getType(android.net.Uri)
+	 */
 	@Override
 	public String getType(Uri uri) {
 		switch (mUriMatcher.match(uri)) {
 		case EXAMS:
 			return ExamsCol.CONTENT_TYPE;
-
+		case EXAMINFOS:
+			return ExamInfos.CONTENT_TYPE;
+		case EXAMS_UPDATE:
+			return ExamsUpdateCol.CONTENT_TYPE;
 		case CERTIFICATIONS:
 			return CertificationsCol.CONTENT_TYPE;
 		default:
@@ -171,6 +245,12 @@ public class onlineService2Provider extends ContentProvider {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.content.ContentProvider#insert(android.net.Uri,
+	 * android.content.ContentValues)
+	 */
 	@Override
 	public Uri insert(Uri uri, ContentValues initialValues) {
 		if (mUriMatcher.match(uri) != EXAMS) {
@@ -196,12 +276,24 @@ public class onlineService2Provider extends ContentProvider {
 		throw new SQLException("Konnte row nicht zu " + uri + " hinzufügen");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.content.ContentProvider#onCreate()
+	 */
 	@Override
 	public boolean onCreate() {
 		mOpenHelper = new DatabaseHelper(getContext());
 		return true;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.content.ContentProvider#query(android.net.Uri,
+	 * java.lang.String[], java.lang.String, java.lang.String[],
+	 * java.lang.String)
+	 */
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
@@ -220,6 +312,9 @@ public class onlineService2Provider extends ContentProvider {
 			Integer[] columnValues = updateGrades();
 			cur.addRow(new Object[] { 0, columnValues[0], columnValues[1] });
 			return cur;
+		case EXAMINFOS:
+			cursor = getExamInfos(selectionArgs[0]);
+			break;
 		case CERTIFICATIONS:
 			cursor = getCertifications();
 			break;
@@ -230,6 +325,110 @@ public class onlineService2Provider extends ContentProvider {
 		return cursor;
 	}
 
+	/**
+	 * Gibt exam infos.
+	 * 
+	 * @param infoID
+	 *            der/die/das info id
+	 * @return Der/Die/das exam infos
+	 */
+	private Cursor getExamInfos(String infoID) {
+		Log.d(TAG, "infoID:" + infoID + " asi:" + StaticSessionData.asiKey);
+
+		// FIXME Notenliste leer..?
+		// Könnte durch auto update beim start verhindert werden.. bzw wenn
+		// autoupdate beim start aktiviert ist..
+		// workaround start
+		final String notenSpiegelURLTmpl = urlBase
+				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=studiengang&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
+				+ StaticSessionData.asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";
+
+		String responseWorkaround = getResponse(notenSpiegelURLTmpl);
+		// Workaround end
+
+		final String examInfoURL = urlBase
+				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=abschluss&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1%7Cstudiengang%3Astg%3DIB%7CpruefungOnTop%3Alabnr%3D"
+				+ infoID + "&expand=0&asi=" + StaticSessionData.asiKey;
+
+		String response = getResponse(examInfoURL);
+		Log.d(TAG, "content(pre): " + response);
+		BufferedReader rd = new BufferedReader(new StringReader(response));
+
+		try {
+			String line;
+			Boolean record = false;
+			StringBuilder sb = new StringBuilder();
+			while ((line = rd.readLine()) != null) {
+
+				if (!record && line.contains("<table border=\"0\" align=\"left\"  width=\"60%\">")) {
+					record = true;
+				}
+				if (record && line.contains("</table>")) {
+					line = line.replaceAll("&nbsp;", "");
+					line.trim();
+					sb.append(line);
+					// System.out.println("last line: " + line);
+					record = false;
+					break;
+				}
+				if (record) {
+					// alle nicht anzeigbaren zeichen entfernen (\n,\t,\s...)
+					line = line.trim();
+
+					// alle html leerzeichen müssen raus, da der xml reader nix
+					// mit anfangen kann
+					line = line.replaceAll("&nbsp;", "");
+
+					// da die <img ..> tags nicht xml like "well formed" sind,
+					// muss man sie ein bissel anpassen ;)
+					if (line.contains("<img")) {
+						Log.d("examInfo parser", line);
+						line = line.substring(0, line.indexOf(">") + 1) + "</a>";
+					}
+					sb.append(line);
+					// System.out.println("line: " + line);
+				}
+			}
+			rd.close();
+			String htmlContentString = sb.toString();
+			Log.d(TAG, "content: " + htmlContentString);
+			return parseExamInfo(htmlContentString);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			Log.d(TAG, e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * Parses the exam info.
+	 * 
+	 * @param htmlContentString
+	 *            der/die/das html content string
+	 * @return der/die/das cursor
+	 */
+	private Cursor parseExamInfo(String htmlContentString) {
+		final MatrixCursor cursor = new MatrixCursor(EXAM_INFOS_COLUMNS);
+		try {
+			ExamInfoParser handler = new ExamInfoParser();
+			Xml.parse(htmlContentString, handler);
+			ExamInfo exInfos = handler.getExamInfos();
+			cursor.addRow(new Object[] { 0, exInfos.getSehrGutAmount(), exInfos.getGutAmount(),
+					exInfos.getBefriedigendAmount(), exInfos.getAusreichendAmount(),
+					exInfos.getNichtAusreichendAmount(), exInfos.getAverage() });
+		} catch (SAXException e) {
+			Log.e("read:SAXException:", e.getMessage());
+			e.printStackTrace();
+		}
+		return cursor;
+	}
+
+	/**
+	 * Gibt certifications.
+	 * 
+	 * @return Der/Die/das certifications
+	 */
 	private Cursor getCertifications() {
 
 		final MatrixCursor cursor = new MatrixCursor(CERTIFICATIONS_COLUMNS);
@@ -244,6 +443,12 @@ public class onlineService2Provider extends ContentProvider {
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.content.ContentProvider#update(android.net.Uri,
+	 * android.content.ContentValues, java.lang.String, java.lang.String[])
+	 */
 	@Override
 	public int update(Uri uri, ContentValues values, String whereClause, String[] whereArgs) {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
@@ -294,10 +499,16 @@ public class onlineService2Provider extends ContentProvider {
 			// content.
 			final InputStream inputStream = entity.getContent();
 			final ByteArrayOutputStream content = new ByteArrayOutputStream();
-			Log.d("SMWData", "http read content: " + contentType.getValue());
+
+			final ByteArrayOutputStream contentT = new ByteArrayOutputStream();
+
 			// response lesen in ByteArrayOutputStream.
 			int readBytes = 0;
 			while ((readBytes = inputStream.read(mContentBuffer)) != -1) {
+
+				contentT.write(mContentBuffer, 0, readBytes);
+				Log.d(TAG, "http read: " + new String(contentT.toByteArray()));
+				contentT.reset();
 				content.write(mContentBuffer, 0, readBytes);
 			}
 
@@ -310,6 +521,15 @@ public class onlineService2Provider extends ContentProvider {
 
 	}
 
+	/**
+	 * Exam exists.
+	 * 
+	 * @param examnr
+	 *            der/die/das examnr
+	 * @param examdate
+	 *            der/die/das examdate
+	 * @return true, wenn erfolgreich
+	 */
 	public boolean examExists(String examnr, String examdate) {
 		SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
 		Cursor cursor = mDb.rawQuery("select 1 from " + onlineService2Data.EXAMS_TABLE_NAME + " where "
@@ -320,12 +540,17 @@ public class onlineService2Provider extends ContentProvider {
 		return exists;
 	}
 
+	/**
+	 * Update grades.
+	 * 
+	 * @return der/die/das integer[]
+	 */
 	public Integer[] updateGrades() {
 		// String url = String.format(notenSpiegelURLTmpl,
 		// StaticSessionData.asiKey);
 		// Log.d(TAG, "url: " + urlBase + URLEncoder.encode(url));
 		final String notenSpiegelURLTmpl = urlBase
-				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
+				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=studiengang&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
 				+ StaticSessionData.asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";
 
 		String response = getResponse(notenSpiegelURLTmpl);
@@ -378,6 +603,13 @@ public class onlineService2Provider extends ContentProvider {
 
 	}
 
+	/**
+	 * Read.
+	 * 
+	 * @param htmlContent
+	 *            der/die/das html content
+	 * @return der/die/das integer[]
+	 */
 	private Integer[] read(String htmlContent) {
 		Integer[] counter = { 0, 0 };
 		try {
@@ -386,6 +618,7 @@ public class onlineService2Provider extends ContentProvider {
 			Xml.parse(htmlContent, handler);
 
 			for (Exam iterable_element : handler.getExams()) {
+				Log.d(TAG, "update: lid: " + iterable_element.getInfoID());
 				if (!examExists(iterable_element.getExamNr(), iterable_element.getExamDate())) {
 					counter[1]++;
 					Log.d(TAG, "exam: insert " + iterable_element.getExamName() + " into DB");
@@ -401,6 +634,7 @@ public class onlineService2Provider extends ContentProvider {
 					values.put(onlineService2Data.ExamsCol.ATTEMPTS, iterable_element.getAttempts());
 					values.put(onlineService2Data.ExamsCol.GRADE, iterable_element.getGrade());
 					values.put(onlineService2Data.ExamsCol.LINKID, iterable_element.getInfoID());
+
 					Log.d(TAG, "insert..");
 					insert(onlineService2Data.ExamsCol.CONTENT_URI, values);
 				} else {
