@@ -339,6 +339,7 @@ public class onlineService2Provider extends ContentProvider {
 		// Könnte durch auto update beim start verhindert werden.. bzw wenn
 		// autoupdate beim start aktiviert ist..
 		// workaround start
+
 		final String notenSpiegelURLTmpl = urlBase
 				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=studiengang&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
 				+ StaticSessionData.asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";

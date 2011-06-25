@@ -59,6 +59,8 @@ public class GradesList extends ListActivity {
 
 	private SharedPreferences mPreferences;
 
+	private boolean autoUpdate;
+
 	private static final byte DIALOG_PROGRESS = 1;
 
 	private final int HANDLER_MSG_REFRESH = 1;
@@ -75,7 +77,6 @@ public class GradesList extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		System.out.println("test onCreate");
 
 		// einstellungne holen
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -127,6 +128,11 @@ public class GradesList extends ListActivity {
 		final int[] to = new int[] { R.id.examName, R.id.examNr, R.id.examGrade, R.id.examAttempts, R.id.examGrade };
 		mExamAdapter = new ExamDBAdapter(GradesList.this, R.layout.grade_row_item, cursor, from, to);
 		lv.setAdapter(mExamAdapter);
+
+		autoUpdate = mPreferences.getBoolean("autoUpdatePref", true);
+		if (mExamAdapter.getCount() == 0 || autoUpdate) {
+			updateGrades();
+		}
 
 		this.mExamAdapter.getFilter().filter(getDefaultListSort());
 
@@ -321,19 +327,12 @@ public class GradesList extends ListActivity {
 	protected void onPause() {
 		super.onPause();
 		System.out.println("test onPause");
-		// fistStart = false;
-
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 		ACTUAL_SORT = getDefaultListSort();
-		// if (examsTest == null || examsTest.size() == 0) {
-		// System.out.println("test onResume:empty");
-		// } else {
-		// System.out.println("test onResume:data found");
-		// }
 	}
 
 	@Override
@@ -362,17 +361,14 @@ public class GradesList extends ListActivity {
 			new AboutDialog(this);
 			return true;
 		case R.id.view_menu_refresh:
-			showDialog(DIALOG_PROGRESS);
+
 			updateGrades();
 
 			return true;
 		case R.id.view_menu_preferences:
 			Intent settingsActivity = new Intent(getBaseContext(), Preferences.class);
 			startActivity(settingsActivity);
-			// update??
 			mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-			// checkBoxChecked =
-			// mPreferences.getBoolean("SaveLoginToggle", false);
 			ACTUAL_SORT = getDefaultListSort();
 			return true;
 		case R.id.view_submenu_examViewAll:
@@ -419,6 +415,7 @@ public class GradesList extends ListActivity {
 
 	private void updateGrades() {
 		// Thread, update grades progress
+		showDialog(DIALOG_PROGRESS);
 		mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_LOADING));
 		setRequestedOrientation(2);
 		Thread t = new Thread() {

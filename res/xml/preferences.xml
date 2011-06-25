@@ -13,7 +13,7 @@
 	</PreferenceCategory>
 	<PreferenceCategory android:title="Notenspiegel">
 		<CheckBoxPreference android:title="Auto Update"
-			android:defaultValue="false" android:summary="Automatisch nach neuen Noten schauen?"
+			android:defaultValue="true" android:summary="Beim Start automatisch nach neuen Noten schauen?"
 			android:key="autoUpdatePref" />
 	<ListPreference
                         android:title="Standard Ansicht"
