@@ -137,13 +137,13 @@ public class GradesList extends nActivity {
 					final String name = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.EXAMNAME)).toString();
 					final String nr = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.EXAMNR)).toString();
 					final String semester = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.SEMESTER)).toString();
-
-					if (!out.equals("0")) { // FIXME
+					final String grade = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.GRADE)).toString();
+					if (!out.equals("0") && !grade.equals("0,0")) { // FIXME
 
 						Log.d(TAG, "show examInfo");
 						// showDialog(DIALOG_PROGRESS);
 						showTitleProgress();
-						showToast("Lade Notenverteilung...");
+						showToast("Lade Notenverteilung für " + name + ".");
 						// mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_INFO_GET));
 						setRequestedOrientation(2);
 						Thread t = new Thread() {
@@ -184,16 +184,9 @@ public class GradesList extends nActivity {
 							}
 						};
 						t.start();
-
-						// showDialog(DIALOG_PROGRESS);
-						// mExamInfoParserThread = new
-						// ExamInfoParserThread(mProgressHandle,
-						// GradesList.this.m_examAdapter
-						// .getItem(position));
-						// mExamInfoParserThread.start();
+					} else {
+						showToast("Keine Notenverteilung für " + name + " verfügbar.");
 					}
-				} else {
-					Log.d("list onClick", "keine url. todo: alertDialog");
 				}
 
 			}

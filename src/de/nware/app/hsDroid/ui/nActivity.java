@@ -11,7 +11,8 @@ import de.nware.app.hsDroid.R;
 public class nActivity extends Activity {
 
 	private boolean customTitleSupported;
-	private ProgressBar titleProgressBar;
+	private ProgressBar titleProgressBar = null;
+	private Toast toast = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,15 @@ public class nActivity extends Activity {
 	}
 
 	public void showToast(String text) {
-		Toast test = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
-		test.show();
+		// XXX Test, wenn toast schon angezeigt wird
+		// löschen und neu anzeigen..
+		if (toast != null) {
+			toast.setText(text);
+			toast.show();
+		} else {
+			toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+			toast.show();
+		}
+
 	}
 }
