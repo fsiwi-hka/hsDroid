@@ -468,19 +468,19 @@ public class GradesList extends nActivity {
 	 * 
 	 * @return ein {@link String} ("WiSe XX/XX" oder "SoSe XX")
 	 */
-	private String getLastExamSem() {
+	private String getActualExamSem() {
 		String semString = "";
 		Date dt = new Date();
 		int year = dt.getYear() - 100;
 		int month = dt.getMonth() + 1;
-		// if (month > 1 && month < 7) { // zwischen jan und jul ws anzeigen
-		if (month > 10 && month < 3) {
-			semString = "WiSe " + (year - 1) + "/" + year;
-		} else {// ansonsten ss
-			// wenn januar is, dann jahr-1
-			if (month == 1) {
-				year--;
+		// Log.d(TAG, "actualSemTest: mon:" + month + " yr:" + year);
+		if (month > 9 && month < 3) { // zwischen okt und feb ist WS
+			// wenn nicht januar oder februar ist, jahr+1
+			if (month != (1 | 2)) {
+				year++;
 			}
+			semString = "WiSe " + (year - 1) + "/" + year;
+		} else {// ansonsten SS
 			semString = "SoSe " + year;
 		}
 		return semString;
@@ -710,7 +710,7 @@ public class GradesList extends nActivity {
 				buffer.append(ExamsCol.SEMESTER);
 				buffer.append(") LIKE ?");
 
-				args = new String[] { getLastExamSem() };
+				args = new String[] { getActualExamSem() };
 				// Log.d(TAG, "buffer: " + buffer.toString());
 				// Log.d(TAG, "args: " + args[0]);
 				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
@@ -726,7 +726,7 @@ public class GradesList extends nActivity {
 				buffer.append(") LIKE ? AND UPPER(");
 				buffer.append(ExamsCol.PASSED);
 				buffer.append(") LIKE ?");
-				args = new String[] { getLastExamSem(), "0" };
+				args = new String[] { getActualExamSem(), "0" };
 				// Log.d(TAG, "buffer: " + buffer.toString());
 				// Log.d(TAG, "args: " + args[0]);
 				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
@@ -752,7 +752,7 @@ public class GradesList extends nActivity {
 	 * @return
 	 */
 	private boolean isActualExam(String sem) {
-		return sem.equals(getLastExamSem());
+		return sem.equals(getActualExamSem());
 	}
 
 }
