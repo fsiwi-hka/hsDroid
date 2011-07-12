@@ -2,7 +2,7 @@
 
 <resources>
 	<string name="app_name">hsDroid</string>
-	<string name="app_version">0.1.9-git</string>
+	<string name="app_version">0.2.0-git</string>
 	
 	<string name="username">HS-Benutzername</string>
 	<string name="password">Passwort</string>
@@ -64,6 +64,15 @@
 		<item>1</item>
 		<item>2</item>
 		<item>3</item>
+	</string-array>
+		<string-array name="orderEntryArray">
+		<item>Aufsteigend</item>
+		<item>Absteigend</item>
+	</string-array>
+	
+	<string-array name="orderValueArray">
+		<item>ASC</item>
+		<item>DESC</item>
 	</string-array>
 
 

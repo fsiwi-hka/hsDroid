@@ -24,6 +24,7 @@ import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -32,6 +33,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.util.Log;
 import android.util.Xml;
@@ -134,8 +136,27 @@ public class onlineService2Provider extends ContentProvider {
 		 * @param context
 		 *            der/die/das context
 		 */
+		private String username;
+		private String tablename;
+		private SharedPreferences mPreferences;
+
 		public DatabaseHelper(Context context) {
 			super(context, DATABASE_NAME, null, VERSION);
+			mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+			username = mPreferences.getString("UserSave", "");
+			tablename = onlineService2Data.EXAMS_TABLE_NAME;
+			// tablename = username;
+			// Log.d(TAG, "username:[" + username + "]");
+		}
+
+		public String getTableName() {
+			return tablename;
+		}
+
+		public void updateDBUser() {
+			SharedPreferences.Editor editor = mPreferences.edit();
+			editor.putString("dbUser", username);
+			editor.commit();
 		}
 
 		/*
@@ -152,12 +173,12 @@ public class onlineService2Provider extends ContentProvider {
 			// db.setVersion(VERSION);
 
 			Log.d(TAG, "create table");
-			db.execSQL("CREATE TABLE " + onlineService2Data.EXAMS_TABLE_NAME + " (" + BaseColumns._ID
-					+ " INTEGER PRIMARY KEY AUTOINCREMENT," + ExamsCol.SEMESTER + " VARCHAR(255)," + ExamsCol.PASSED
-					+ " INTEGER," + ExamsCol.EXAMNAME + " VARCHAR(255)," + ExamsCol.EXAMNR + " VARCHAR(255),"
-					+ ExamsCol.EXAMDATE + " VARCHAR(255)," + ExamsCol.NOTATION + " VARCHAR(255)," + ExamsCol.ATTEMPTS
-					+ " VARCHAR(255)," + ExamsCol.GRADE + " VARCHAR(255)," + ExamsCol.LINKID + " INTEGER" + ");");
 
+			db.execSQL("CREATE TABLE " + tablename + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+					+ ExamsCol.SEMESTER + " VARCHAR(255)," + ExamsCol.PASSED + " INTEGER," + ExamsCol.EXAMNAME
+					+ " VARCHAR(255)," + ExamsCol.EXAMNR + " VARCHAR(255)," + ExamsCol.EXAMDATE + " VARCHAR(255),"
+					+ ExamsCol.NOTATION + " VARCHAR(255)," + ExamsCol.ATTEMPTS + " VARCHAR(255)," + ExamsCol.GRADE
+					+ " VARCHAR(255)," + ExamsCol.LINKID + " INTEGER" + ");");
 			Log.d(TAG, "create table done");
 		}
 
@@ -170,9 +191,9 @@ public class onlineService2Provider extends ContentProvider {
 		 */
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			Log.w(TAG, "Datenbank Uupgrade von Version " + oldVersion + " zu " + newVersion
+			Log.w(TAG, "Datenbank Upgrade von Version " + oldVersion + " zu " + newVersion
 					+ ". Alle alten Daten gehen verloren");
-			db.execSQL("DROP TABLE IF EXISTS " + onlineService2Data.EXAMS_TABLE_NAME);
+			db.execSQL("DROP TABLE IF EXISTS " + tablename);
 			onCreate(db);
 
 		}
@@ -184,7 +205,7 @@ public class onlineService2Provider extends ContentProvider {
 
 	static {
 		mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		mUriMatcher.addURI(AUTHORITY, onlineService2Data.EXAMS_TABLE_NAME, EXAMS);
+		mUriMatcher.addURI(AUTHORITY, "exams", EXAMS);
 		mUriMatcher.addURI(AUTHORITY, onlineService2Data.CERTIFICATIONS_NAME, CERTIFICATIONS);
 		mUriMatcher.addURI(AUTHORITY, onlineService2Data.EXAMS_UPDATE_NAME, EXAMS_UPDATE);
 		mUriMatcher.addURI(AUTHORITY, onlineService2Data.EXAM_INFOS_NAME, EXAMINFOS);
@@ -214,7 +235,7 @@ public class onlineService2Provider extends ContentProvider {
 		int count;
 		switch (mUriMatcher.match(uri)) {
 		case EXAMS:
-			count = db.delete(onlineService2Data.EXAMS_TABLE_NAME, whereClause, whereArgs);
+			count = db.delete(mOpenHelper.getTableName(), whereClause, whereArgs);
 			break;
 
 		default:
@@ -267,7 +288,7 @@ public class onlineService2Provider extends ContentProvider {
 			Log.d(TAG, "mOpenHelper NULL");
 		}
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-		long rowID = db.insert(onlineService2Data.EXAMS_TABLE_NAME, ExamsCol.EXAMNAME, contentValues);
+		long rowID = db.insert(mOpenHelper.getTableName(), ExamsCol.EXAMNAME, contentValues);
 		if (rowID > 0) {
 			Uri examsUri = ContentUris.withAppendedId(ExamsCol.CONTENT_URI, rowID);
 			getContext().getContentResolver().notifyChange(examsUri, null); // Observer?
@@ -301,10 +322,15 @@ public class onlineService2Provider extends ContentProvider {
 		switch (mUriMatcher.match(uri)) {
 		case EXAMS:
 			SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-			qb.setTables(onlineService2Data.EXAMS_TABLE_NAME);
+			qb.setTables(mOpenHelper.getTableName());
 			qb.setProjectionMap(examsProjectionMap);
 			SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-			cursor = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+			try {
+				cursor = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				Log.d(TAG, "SqlError: " + e.getMessage());
+			}
 			cursor.setNotificationUri(getContext().getContentResolver(), uri);
 			break;
 		case EXAMS_UPDATE:
@@ -339,11 +365,12 @@ public class onlineService2Provider extends ContentProvider {
 		// Könnte durch auto update beim start verhindert werden.. bzw wenn
 		// autoupdate beim start aktiviert ist..
 		// workaround start
+
 		final String notenSpiegelURLTmpl = urlBase
 				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=studiengang&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
 				+ StaticSessionData.asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";
 
-		String responseWorkaround = getResponse(notenSpiegelURLTmpl);
+		getResponse(notenSpiegelURLTmpl);
 		// Workaround end
 
 		final String examInfoURL = urlBase
@@ -351,7 +378,6 @@ public class onlineService2Provider extends ContentProvider {
 				+ infoID + "&expand=0&asi=" + StaticSessionData.asiKey;
 
 		String response = getResponse(examInfoURL);
-		Log.d(TAG, "content(pre): " + response);
 		BufferedReader rd = new BufferedReader(new StringReader(response));
 
 		try {
@@ -391,7 +417,6 @@ public class onlineService2Provider extends ContentProvider {
 			}
 			rd.close();
 			String htmlContentString = sb.toString();
-			Log.d(TAG, "content: " + htmlContentString);
 			return parseExamInfo(htmlContentString);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -455,7 +480,7 @@ public class onlineService2Provider extends ContentProvider {
 		int count;
 		switch (mUriMatcher.match(uri)) {
 		case EXAMS:
-			count = db.update(onlineService2Data.EXAMS_TABLE_NAME, values, whereClause, whereArgs);
+			count = db.update(mOpenHelper.getTableName(), values, whereClause, whereArgs);
 			break;
 
 		default:
@@ -500,15 +525,9 @@ public class onlineService2Provider extends ContentProvider {
 			final InputStream inputStream = entity.getContent();
 			final ByteArrayOutputStream content = new ByteArrayOutputStream();
 
-			final ByteArrayOutputStream contentT = new ByteArrayOutputStream();
-
 			// response lesen in ByteArrayOutputStream.
 			int readBytes = 0;
 			while ((readBytes = inputStream.read(mContentBuffer)) != -1) {
-
-				contentT.write(mContentBuffer, 0, readBytes);
-				Log.d(TAG, "http read: " + new String(contentT.toByteArray()));
-				contentT.reset();
 				content.write(mContentBuffer, 0, readBytes);
 			}
 
@@ -532,7 +551,7 @@ public class onlineService2Provider extends ContentProvider {
 	 */
 	public boolean examExists(String examnr, String examdate) {
 		SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
-		Cursor cursor = mDb.rawQuery("select 1 from " + onlineService2Data.EXAMS_TABLE_NAME + " where "
+		Cursor cursor = mDb.rawQuery("select 1 from " + mOpenHelper.getTableName() + " where "
 				+ onlineService2Data.ExamsCol.EXAMNR + "=? AND " + onlineService2Data.ExamsCol.EXAMDATE + "=?",
 				new String[] { examnr, examdate });
 		boolean exists = (cursor.getCount() > 0);
@@ -549,6 +568,7 @@ public class onlineService2Provider extends ContentProvider {
 		// String url = String.format(notenSpiegelURLTmpl,
 		// StaticSessionData.asiKey);
 		// Log.d(TAG, "url: " + urlBase + URLEncoder.encode(url));
+		mOpenHelper.updateDBUser();
 		final String notenSpiegelURLTmpl = urlBase
 				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=studiengang&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
 				+ StaticSessionData.asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";

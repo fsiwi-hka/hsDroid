@@ -15,6 +15,8 @@ public class onlineService2Data {
 	public static final class ExamsCol implements BaseColumns {
 
 		public static final Uri CONTENT_URI = Uri.withAppendedPath(baseUri, EXAMS_TABLE_NAME);
+		// public static final Uri CONTENT_URI = Uri.withAppendedPath(baseUri,
+		// "exams");
 		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.hsdroid.exams";
 		public static final String SEMESTER = "semester";
 		public static final String PASSED = "passed";

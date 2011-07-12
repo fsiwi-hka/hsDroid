@@ -5,28 +5,38 @@
 			android:defaultValue="false" android:summary="Beim Start automatische anmelden?"
 			android:key="autoLoginPref" />
 		<CheckBoxPreference android:title="Passwort Speichern"
-			android:defaultValue="false" android:summary="Passwort speichern? Hinweis: Wird unverschlüsselt gespeichert!"
+			android:defaultValue="false"
+			android:summary="Passwort speichern? Hinweis: Wird unverschlüsselt gespeichert!"
 			android:key="saveLoginDataPref" />
- 		<CheckBoxPreference android:title="Delete UserData"
+		<CheckBoxPreference android:title="Delete UserData"
 			android:defaultValue="false" android:summary="Lokale Einstellungen beim Beenden löschen?"
 			android:key="autoCleanUpPref" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="Notenspiegel">
 		<CheckBoxPreference android:title="Auto Update"
-			android:defaultValue="false" android:summary="Automatisch nach neuen Noten schauen?"
+			android:defaultValue="true"
+			android:summary="Beim Start automatisch nach neuen Noten schauen?"
 			android:key="autoUpdatePref" />
-	<ListPreference
-                        android:title="Standard Ansicht"
-                        android:summary="Legt fest in welcher Ansicht der Notenspiegel Standartmäßig angezeigt werden soll."
-                        android:key="defaultViewPref"
-                        android:defaultValue=""
-                        android:entries="@array/defaultViewListArray"
-                        android:entryValues="@array/defaultViewListValues" />
+		<ListPreference android:title="Reihenfolge"
+			android:summary="Sortierreihenfolge, Aufsteigend oder Absteigend?"
+			android:key="defaultOrderPref" android:defaultValue=""
+			android:entries="@array/orderEntryArray" android:entryValues="@array/orderValueArray" />
 
-	</PreferenceCategory>
-	<CheckBoxPreference android:title="Hervorheben"
-			android:defaultValue="false" android:summary="Prüfungsleistung des letzten Semesters hervorheben?"
+		<ListPreference android:title="Standard Ansicht"
+			android:summary="Legt fest in welcher Ansicht der Notenspiegel Standartmäßig angezeigt werden soll."
+			android:key="defaultViewPref" android:defaultValue=""
+			android:entries="@array/defaultViewListArray" android:entryValues="@array/defaultViewListValues" />
+
+
+		<CheckBoxPreference android:title="Hervorheben"
+			android:defaultValue="false"
+			android:summary="Prüfungsleistung des letzten Semesters hervorheben?"
 			android:key="highlightActualExamsPref" />
-	<Preference android:title="Farbe" android:summary="Farbe zum Hervorheben auswählen"
-			android:key="highlightColorPref"/>
+		<Preference android:title="Farbe" android:summary="Farbe zum Hervorheben auswählen"
+			android:key="highlightColorPref" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="Daten">
+		<Preference android:title="DB Löschen"
+			android:summary="Alle daten aus der Datenbank Löschen" android:key="clearDBPref" />
+	</PreferenceCategory>
 </PreferenceScreen>

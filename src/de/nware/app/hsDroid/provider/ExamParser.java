@@ -1,7 +1,6 @@
 package de.nware.app.hsDroid.provider;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -176,6 +175,6 @@ class ExamParser extends DefaultHandler {
 	public void endDocument() throws SAXException {
 		super.endDocument();
 		// array umdrehen
-		Collections.reverse(lecList);
+		// Collections.reverse(lecList);
 	}
 }

@@ -20,6 +20,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import de.nware.app.hsDroid.data.StaticSessionData;
 import de.nware.app.hsDroid.logic.LoginThread;
 import de.nware.app.hsDroid.ui.AboutDialog;
 import de.nware.app.hsDroid.ui.GradesList;
@@ -40,7 +41,7 @@ public class HsDroidMain extends Activity {
 	private EditText PassEditText;
 	private CheckBox LoginCheckBox;
 
-	private boolean checkBoxChecked = false;
+	private boolean savePassword = false;
 	private SharedPreferences notenapp_preferences;
 
 	public void onCreate(Bundle savedInstanceState) {
@@ -55,14 +56,15 @@ public class HsDroidMain extends Activity {
 		notenapp_preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		String savedUser = notenapp_preferences.getString("UserSave", "");
 		String savedPass = notenapp_preferences.getString("PassSave", "");
-		checkBoxChecked = notenapp_preferences.getBoolean("saveLoginDataPref", false);
+		savePassword = notenapp_preferences.getBoolean("saveLoginDataPref", false);
 
-		LoginCheckBox.setChecked(checkBoxChecked);
+		LoginCheckBox.setChecked(savePassword);
 
-		if (checkBoxChecked && !savedUser.equals("")) {
-			UserEditText.setText(savedUser);
+		if (savePassword && !savedUser.equals("")) {
 			PassEditText.setText(savedPass);
+			UserEditText.setText(savedUser);
 		}
+
 		boolean autoLogin = notenapp_preferences.getBoolean("autoLoginPref", false);
 		if (autoLogin) {
 			doLogin(getCurrentFocus());
@@ -101,12 +103,13 @@ public class HsDroidMain extends Activity {
 		String username = UserEditText.getText().toString().trim().toLowerCase();
 		// Password: nicht anzeigbare Zeichen entfernen
 		String password = PassEditText.getText().toString().trim();
-		// if (StaticSessionData.cookies != null) { // prüfen wie alt das cookie
-		// // ist!!! und nach ca 30min
-		// // löschen
-		// mProgressHandle.sendEmptyMessage(LoginThread.MESSAGE_COMPLETE);
-		// return;
-		// }
+		if (StaticSessionData.cookies != null && StaticSessionData.isCookieValid()) {
+			// prüfen wie alt das cookie
+			// // ist!!! und nach ca 30min
+			// // löschen
+			// mProgressHandle.sendEmptyMessage(LoginThread.MESSAGE_COMPLETE);
+			// return;
+		}
 		// FIXME zu unsicher.. wird alles im plaintext gespeichert..
 		// eventuell sqlite mit encryption..
 		// speichern von user und passwort
@@ -140,6 +143,7 @@ public class HsDroidMain extends Activity {
 			showDialog(DIALOG_PROGRESS);
 			mLoginThread = new LoginThread(mProgressHandle, username, password);
 			mLoginThread.start();
+			StaticSessionData.cookieMillis = System.currentTimeMillis();
 			mLoginThread.login();
 
 		}
@@ -149,8 +153,8 @@ public class HsDroidMain extends Activity {
 	public void onWindowFocusChanged(boolean hasFocus) {
 		if (hasFocus) {
 			notenapp_preferences = PreferenceManager.getDefaultSharedPreferences(this);
-			checkBoxChecked = notenapp_preferences.getBoolean("saveLoginDataPref", false);
-			LoginCheckBox.setChecked(checkBoxChecked);
+			savePassword = notenapp_preferences.getBoolean("saveLoginDataPref", false);
+			LoginCheckBox.setChecked(savePassword);
 		}
 	}
 
