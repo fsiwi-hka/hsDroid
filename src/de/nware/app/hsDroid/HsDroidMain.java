@@ -55,7 +55,7 @@ public class HsDroidMain extends nActivity {
 		// requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 
 		setContentView(R.layout.main);
-		customTitle(getText(R.string.app_name).toString(), getText(R.string.app_version).toString());
+		customTitle("Anmeldung");
 
 		// CustomTitle setzen
 		// customTitle(getText(R.string.app_name).toString(),

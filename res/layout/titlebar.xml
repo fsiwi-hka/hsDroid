@@ -1,19 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout android:id="@+id/RelativeLayout01"
 	android:layout_width="fill_parent" android:layout_height="wrap_content"
-	xmlns:android="http://schemas.android.com/apk/res/android">
+	xmlns:android="http://schemas.android.com/apk/res/android" android:padding="3dip">
+
+	<ImageView android:src="@drawable/icon" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/appIconImageView"></ImageView>
+
+	<LinearLayout android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:orientation="vertical"
+		android:id="@+id/appTitleLinearLayout" android:layout_centerVertical="true"
+		android:layout_toRightOf="@+id/appIconImageView">
+
+		<TextView android:layout_width="wrap_content"
+				android:textSize="12dip"
+			android:layout_height="wrap_content" android:id="@+id/titleTvAppName"
+			android:text="@string/app_name" >
+			</TextView>
+		<TextView android:layout_width="wrap_content"
+		android:textSize="10dip"
+			android:layout_height="wrap_content" android:id="@+id/titleTvAppVersion"
+			android:text="@string/app_version" ></TextView>
+	</LinearLayout>
 
 	<TextView android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:id="@+id/titleTvLeft"
-		android:text="left"></TextView>
-		
-	<TextView android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:id="@+id/titleTvRight"
-		android:text="right" android:layout_alignParentRight="true"></TextView>
+		android:textStyle="bold"
+		android:layout_height="wrap_content" android:id="@+id/titleTvActivityTitle"
+		android:layout_centerVertical="true"
+		android:text="Activity Title" android:layout_toRightOf="@+id/appTitleLinearLayout"
+		android:paddingLeft="10dip"></TextView>
 
 	<ProgressBar android:id="@+id/leadProgressBar"
 		style="?android:attr/progressBarStyleSmall" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:layout_centerVertical="true"
-		android:layout_toRightOf="@+id/titleTvLeft" android:paddingLeft="3dip"></ProgressBar>
+		android:paddingLeft="3dip" android:layout_alignParentRight="true"></ProgressBar>
+
 
 </RelativeLayout>

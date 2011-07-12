@@ -81,7 +81,7 @@ public class GradesList extends nActivity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.grade_list_view);
-		customTitle(getText(R.string.app_name).toString(), getText(R.string.app_version).toString());
+		customTitle(getText(R.string.grades_view).toString());
 
 		// einstellungne holen
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -143,6 +143,7 @@ public class GradesList extends nActivity {
 						Log.d(TAG, "show examInfo");
 						// showDialog(DIALOG_PROGRESS);
 						showTitleProgress();
+						showToast("Lade Notenverteilung...");
 						// mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_INFO_GET));
 						setRequestedOrientation(2);
 						Thread t = new Thread() {
@@ -427,6 +428,7 @@ public class GradesList extends nActivity {
 		// Thread, update grades progress
 		// showDialog(DIALOG_PROGRESS);
 		showTitleProgress();
+		showToast("Aktualisiere Notenblatt...");
 		mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_LOADING));
 		setRequestedOrientation(2);
 		Thread t = new Thread() {

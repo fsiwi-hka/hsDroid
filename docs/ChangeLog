@@ -3,23 +3,30 @@ Changelog und ToDo Liste für hsDroid
 
 _____
 ToDo:
+	-userdaten verschlüßelt speichern!
+	
 	-weniger traffic
-	 	- sqlite um noten zu speichern (optional)
-	 		+keine wartezeit um zur listActivity zu wechseln
-	 		=>connect thread als service
-	 	- http session daten endlich mal nutzen ;) und solange cookie gültig ist => bypass login
-	 		30min gültig
-	 		=> cookie löschen option/knopf...
-	 
-	-weg mit der progressbar!!!
-		Inhalt der Liste updaten, sobald daten verfügbar sind..
-		
+	
+	- sqlite (optional)
+		service erstellen der im hintergrund die noten abfrägt, info bei neuen noten
+		als update service eintragen
+			
+	- http session daten endlich mal nutzen ;) und solange cookie gültig ist => bypass login
+		30min gültig
+	 	=> cookie löschen option/knopf...
+	
 	-layout!!
 
 __________
 Changelog:
+
+12.jul.2011 - v0.2.0
+	eigene titlebar mit integrierter progress anzeige
+
 25.jun.2011 - v0.2.0
-	
+	noten in sqlite datenbank
+	aktualisierung im hintergrund beim starten (optional)
+	 
 
 27.apr.2011 - v0.1.9
 	+fixes: strings, cleanup

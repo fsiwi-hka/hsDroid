@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-	<string name="app_name">hsDroid</string>
-	<string name="app_version">0.1.7-svn</string>
 	<string name="username">HS-Username</string>
 	<string name="password">Password</string>
 	<string name="login">Login</string>
@@ -26,7 +24,7 @@
 	<string name="title_head_exam">Exam</string>
 	<string name="title_head_mark">Grade</string>
 	<string name="login_checkBox">Save login data</string>
-	<string name="grades_view">hsDroid - Grades</string>
+	<string name="grades_view">Grades</string>
 	<string name="grades_view_attempt">Attempt: </string>
 	<string name="grades_view_semester">Semester: </string>
 	<string name="menu_preferences">Preferences</string>
