@@ -41,7 +41,7 @@ import de.nware.app.hsDroid.provider.onlineService2Data.ExamsUpdateCol;
  * @author Oliver Eichner
  * 
  */
-public class GradesList extends ListActivity {
+public class GradesList extends nActivity {
 
 	private static final String TAG = "GradesListActivity";
 	// private ExamAdapter m_examAdapter;
@@ -74,9 +74,14 @@ public class GradesList extends ListActivity {
 	private static final String SORT_ACTUAL_FAILED = "actfail";
 	private static String ACTUAL_SORT = SORT_ALL;
 
+	// private boolean customTitleSupported;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		setContentView(R.layout.grade_list_view);
+		customTitle(getText(R.string.app_name).toString(), getText(R.string.app_version).toString());
 
 		// einstellungne holen
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -91,7 +96,8 @@ public class GradesList extends ListActivity {
 		Log.d(TAG, "create resolver");
 		final ContentResolver resolver = getContentResolver();
 
-		lv = getListView();
+		// lv = getListView();
+		lv = (ListView) findViewById(R.id.gradesListView);
 
 		cursor = resolver.query(ExamsCol.CONTENT_URI, null, null, null, null);
 		startManagingCursor(cursor);
@@ -135,8 +141,9 @@ public class GradesList extends ListActivity {
 					if (!out.equals("0")) { // FIXME
 
 						Log.d(TAG, "show examInfo");
-						showDialog(DIALOG_PROGRESS);
-						mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_INFO_GET));
+						// showDialog(DIALOG_PROGRESS);
+						showTitleProgress();
+						// mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_INFO_GET));
 						setRequestedOrientation(2);
 						Thread t = new Thread() {
 							public void run() {
@@ -237,15 +244,16 @@ public class GradesList extends ListActivity {
 				refreshList();
 				// Bildschirm Orientierung wieder dem User überlassen
 				setRequestedOrientation(-1);
-				dismissDialog(DIALOG_PROGRESS);
+				// dismissDialog(DIALOG_PROGRESS);
+				hideTitleProgress();
 				break;
 
 			case HANDLER_MSG_LOADING:
-				mProgressDialog.setMessage(GradesList.this.getString(R.string.progress_loading));
+				// mProgressDialog.setMessage(GradesList.this.getString(R.string.progress_loading));
 				break;
 
 			case HANDLER_MSG_INFO_GET:
-				mProgressDialog.setMessage(GradesList.this.getString(R.string.progress_loading));
+				// mProgressDialog.setMessage(GradesList.this.getString(R.string.progress_loading));
 				break;
 			case HANDLER_MSG_INFO_READY:
 				if (examinfoCursor == null) {
@@ -254,14 +262,16 @@ public class GradesList extends ListActivity {
 
 				new ExamInfoDialog(GradesList.this, msg.getData().getString("Name"), msg.getData().getString("Nr"), msg
 						.getData().getString("Semester"), examinfoCursor);
-				dismissDialog(DIALOG_PROGRESS);
+				// dismissDialog(DIALOG_PROGRESS);
+				hideTitleProgress();
 				// schließe progress und zeige infodialog
 				break;
 
 			default:
 				// Log.d("onCreate should not happen",
 				// String.valueOf(mGradeParserThread.getStatus()));
-				dismissDialog(DIALOG_PROGRESS);
+				// dismissDialog(DIALOG_PROGRESS);
+				hideTitleProgress();
 				// Get rid of the sending thread
 				// mGradeParserThread.stopThread();
 				// mGradeParserThread = null;
@@ -415,7 +425,8 @@ public class GradesList extends ListActivity {
 
 	private void updateGrades() {
 		// Thread, update grades progress
-		showDialog(DIALOG_PROGRESS);
+		// showDialog(DIALOG_PROGRESS);
+		showTitleProgress();
 		mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_LOADING));
 		setRequestedOrientation(2);
 		Thread t = new Thread() {

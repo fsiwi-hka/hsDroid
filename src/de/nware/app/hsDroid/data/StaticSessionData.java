@@ -12,13 +12,15 @@ public class StaticSessionData {
 
 	public static String asiKey;
 
+	public final static int cookieValTimeMin = 29;
+
 	public static boolean isCookieValid() {
 		long now = System.currentTimeMillis();
-		long nowMin = now / 60000;
-		long cookieMin = cookieMillis / 60000;
+		long nowMin = (now / 60000);
+		long cookieMin = (cookieMillis / 60000);
 		Log.d("static test:", "millis:" + cookieMillis + " now millis:" + now);
 		Log.d("static test:", "min:" + cookieMin + " now min:" + nowMin);
 		Log.d("static test:", "diff: " + (nowMin - cookieMin));
-		return ((nowMin - cookieMin) < 30);
+		return ((nowMin - cookieMin) < cookieValTimeMin);
 	}
 }

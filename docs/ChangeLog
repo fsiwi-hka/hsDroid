@@ -8,6 +8,7 @@ ToDo:
 	 		+keine wartezeit um zur listActivity zu wechseln
 	 		=>connect thread als service
 	 	- http session daten endlich mal nutzen ;) und solange cookie gültig ist => bypass login
+	 		30min gültig
 	 		=> cookie löschen option/knopf...
 	 
 	-weg mit der progressbar!!!
@@ -17,6 +18,9 @@ ToDo:
 
 __________
 Changelog:
+25.jun.2011 - v0.2.0
+	
+
 27.apr.2011 - v0.1.9
 	+fixes: strings, cleanup
 26.mar.2011
@@ -43,6 +47,6 @@ v0.1.5
 	
 1.mar.2011 - v.0.1
 	+ login
-	+ user und password Speichern (SharedPreferences)
+	+ user und password speichern (SharedPreferences)
 	+ SAXParser für "Notenspiegel"
 	+ TableLayout für Noten

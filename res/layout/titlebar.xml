@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/RelativeLayout01"
+	android:layout_width="fill_parent" android:layout_height="wrap_content"
+	xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<TextView android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/titleTvLeft"
+		android:text="left"></TextView>
+		
+	<TextView android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/titleTvRight"
+		android:text="right" android:layout_alignParentRight="true"></TextView>
+
+	<ProgressBar android:id="@+id/leadProgressBar"
+		style="?android:attr/progressBarStyleSmall" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:layout_centerVertical="true"
+		android:layout_toRightOf="@+id/titleTvLeft" android:paddingLeft="3dip"></ProgressBar>
+
+</RelativeLayout>

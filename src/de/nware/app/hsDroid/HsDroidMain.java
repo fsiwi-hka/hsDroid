@@ -1,6 +1,5 @@
 package de.nware.app.hsDroid;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -25,13 +24,14 @@ import de.nware.app.hsDroid.logic.LoginThread;
 import de.nware.app.hsDroid.ui.AboutDialog;
 import de.nware.app.hsDroid.ui.GradesList;
 import de.nware.app.hsDroid.ui.Preferences;
+import de.nware.app.hsDroid.ui.nActivity;
 
 /**
  * 
  * @author Oliver Eichner
  * 
  */
-public class HsDroidMain extends Activity {
+public class HsDroidMain extends nActivity {
 
 	private LoginThread mLoginThread = null;
 
@@ -44,9 +44,22 @@ public class HsDroidMain extends Activity {
 	private boolean savePassword = false;
 	private SharedPreferences notenapp_preferences;
 
+	// private boolean customTitleSupported;
+
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		// prüfen ob CUSTOM_TITLE unterstützt wird bevor ContentView gesetzt
+		// wird
+		// customTitleSupported =
+		// requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+
 		setContentView(R.layout.main);
+		customTitle(getText(R.string.app_name).toString(), getText(R.string.app_version).toString());
+
+		// CustomTitle setzen
+		// customTitle(getText(R.string.app_name).toString(),
+		// getText(R.string.app_version).toString());
 
 		UserEditText = (EditText) findViewById(R.id.username);
 		PassEditText = (EditText) findViewById(R.id.password);
