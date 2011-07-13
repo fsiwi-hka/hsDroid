@@ -49,17 +49,8 @@ public class HsDroidMain extends nActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// prüfen ob CUSTOM_TITLE unterstützt wird bevor ContentView gesetzt
-		// wird
-		// customTitleSupported =
-		// requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
-
 		setContentView(R.layout.main);
 		customTitle("Anmeldung");
-
-		// CustomTitle setzen
-		// customTitle(getText(R.string.app_name).toString(),
-		// getText(R.string.app_version).toString());
 
 		UserEditText = (EditText) findViewById(R.id.username);
 		PassEditText = (EditText) findViewById(R.id.password);
@@ -75,12 +66,15 @@ public class HsDroidMain extends nActivity {
 
 		if (savePassword && !savedUser.equals("")) {
 			PassEditText.setText(savedPass);
-			UserEditText.setText(savedUser);
 		}
 
+		UserEditText.setText(savedUser);
+
 		boolean autoLogin = notenapp_preferences.getBoolean("autoLoginPref", false);
-		if (autoLogin) {
+		if (autoLogin && savePassword) {
 			doLogin(getCurrentFocus());
+		} else {
+			showToast("Autologin nur mit gespeichertem Passwort möglich");
 		}
 
 		LoginCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -116,7 +110,20 @@ public class HsDroidMain extends nActivity {
 		String username = UserEditText.getText().toString().trim().toLowerCase();
 		// Password: nicht anzeigbare Zeichen entfernen
 		String password = PassEditText.getText().toString().trim();
-		if (StaticSessionData.cookies != null && StaticSessionData.isCookieValid()) {
+
+		// Prüfeung falls sich ein anderer user anmeldet. damit nicht das
+		// session cookie vom vorherigen user übernommen wird..
+		if (!username.equals("") && !username.equals(notenapp_preferences.getString("UserSave", ""))) {
+			if (StaticSessionData.cookies != null) {
+				// StaticSessionData.cookies.clear();
+				StaticSessionData.cookies = null;
+			}
+		}
+
+		// prüfen ob Cookie Vorhanden und gültig ist..wenn ja, login
+		// überspringen
+		if (StaticSessionData.cookies != null && !StaticSessionData.cookies.isEmpty()
+				&& StaticSessionData.isCookieValid()) {
 			Log.d("hsDroidMain", "Cookie still valid!!");
 			// prüfen wie alt das cookie
 			// // ist!!! und nach ca 30min
@@ -124,20 +131,6 @@ public class HsDroidMain extends nActivity {
 			mProgressHandle.sendEmptyMessage(LoginThread.MESSAGE_COMPLETE);
 			return;
 		}
-		// FIXME zu unsicher.. wird alles im plaintext gespeichert..
-		// eventuell sqlite mit encryption..
-		// speichern von user und passwort
-		SharedPreferences.Editor editor = notenapp_preferences.edit();
-		if (LoginCheckBox.isChecked()) {
-			editor.putString("UserSave", username);
-			editor.putString("PassSave", password);
-			editor.putBoolean("saveLoginDataPref", true);
-		} else {
-			editor.remove("UserSave");
-			editor.remove("PassSave");
-			editor.putBoolean("saveLoginDataPref", false);
-		}
-		editor.commit(); // Very important
 
 		if (username.length() == 0) {
 			createDialog(v.getContext().getString(R.string.error), v.getContext()
@@ -154,10 +147,25 @@ public class HsDroidMain extends nActivity {
 					v.getContext().getString(R.string.error_password_missing));
 			return;
 		} else {
+
+			// FIXME zu unsicher.. wird alles im plaintext gespeichert..
+			// eventuell sqlite mit encryption..
+			// speichern von user und passwort
+			SharedPreferences.Editor editor = notenapp_preferences.edit();
+			if (LoginCheckBox.isChecked()) {
+				editor.putString("PassSave", password);
+				editor.putBoolean("saveLoginDataPref", true);
+			} else {
+				// editor.remove("UserSave");
+				editor.remove("PassSave");
+				editor.putBoolean("saveLoginDataPref", false);
+			}
+			editor.putString("UserSave", username);
+			editor.commit(); // Very important
+
 			showDialog(DIALOG_PROGRESS);
 			mLoginThread = new LoginThread(mProgressHandle, username, password);
 			mLoginThread.start();
-			StaticSessionData.cookieMillis = System.currentTimeMillis();
 			mLoginThread.login();
 
 		}

@@ -136,14 +136,14 @@ public class onlineService2Provider extends ContentProvider {
 		 * @param context
 		 *            der/die/das context
 		 */
-		private String username;
+
 		private String tablename;
 		private SharedPreferences mPreferences;
 
 		public DatabaseHelper(Context context) {
 			super(context, DATABASE_NAME, null, VERSION);
 			mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-			username = mPreferences.getString("UserSave", "");
+
 			tablename = onlineService2Data.EXAMS_TABLE_NAME;
 			// tablename = username;
 			// Log.d(TAG, "username:[" + username + "]");
@@ -154,6 +154,8 @@ public class onlineService2Provider extends ContentProvider {
 		}
 
 		public void updateDBUser() {
+			String username = mPreferences.getString("UserSave", "");
+			Log.d(TAG, "dbUser update: " + username);
 			SharedPreferences.Editor editor = mPreferences.edit();
 			editor.putString("dbUser", username);
 			editor.commit();

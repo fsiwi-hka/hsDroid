@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -250,26 +249,37 @@ public class LoginThread extends Thread {
 		cookieMessage.what = MESSAGE_PROGRESS_COOKIE;
 		mParentHandler.sendMessage(cookieMessage);
 		if (client.getCookieStore().getCookies().size() != 0) {
+			// Speichere Login zeit
+			StaticSessionData.cookieMillis = System.currentTimeMillis();
 
 			StaticSessionData.cookies = client.getCookieStore().getCookies();
-			for (int i = 0; i < StaticSessionData.cookies.size(); i++) {
-				if (StaticSessionData.cookies.get(i) == null) {
-					Log.e("login", "cookie:" + i + "empty");
-				}
-
-				Log.d("login: " + i + " domain", "" + StaticSessionData.cookies.get(i).getDomain());
-				Log.d("login: " + i + " name", "" + StaticSessionData.cookies.get(i).getName());
-				Log.d("login: " + i + " path", "" + StaticSessionData.cookies.get(i).getPath());
-				Log.d("login: " + i + " value", "" + StaticSessionData.cookies.get(i).getValue());
-				Log.d("login: " + i + " version", "" + StaticSessionData.cookies.get(i).getVersion());
-				Log.d("login: " + i + " secure", "" + (StaticSessionData.cookies.get(i).isSecure() ? "yes" : "no"));
-				Log.d("login: " + i + " expired", ""
-						+ (StaticSessionData.cookies.get(i).isExpired(new Date()) ? "yes" : "no"));
-				Log.d("login: " + i + " persistent", ""
-						+ (StaticSessionData.cookies.get(i).isPersistent() ? "yes" : "no"));
-				Log.d("login: " + i + " expire Date", "" + StaticSessionData.cookies.get(i).getExpiryDate());
-
-			}
+			// for (int i = 0; i < StaticSessionData.cookies.size(); i++) {
+			// if (StaticSessionData.cookies.get(i) == null) {
+			// Log.e("login", "cookie:" + i + "empty");
+			// }
+			//
+			// Log.d("login: " + i + " domain", "" +
+			// StaticSessionData.cookies.get(i).getDomain());
+			// Log.d("login: " + i + " name", "" +
+			// StaticSessionData.cookies.get(i).getName());
+			// Log.d("login: " + i + " path", "" +
+			// StaticSessionData.cookies.get(i).getPath());
+			// Log.d("login: " + i + " value", "" +
+			// StaticSessionData.cookies.get(i).getValue());
+			// Log.d("login: " + i + " version", "" +
+			// StaticSessionData.cookies.get(i).getVersion());
+			// Log.d("login: " + i + " secure", "" +
+			// (StaticSessionData.cookies.get(i).isSecure() ? "yes" : "no"));
+			// Log.d("login: " + i + " expired", ""
+			// + (StaticSessionData.cookies.get(i).isExpired(new Date()) ? "yes"
+			// : "no"));
+			// Log.d("login: " + i + " persistent", ""
+			// + (StaticSessionData.cookies.get(i).isPersistent() ? "yes" :
+			// "no"));
+			// Log.d("login: " + i + " expire Date", "" +
+			// StaticSessionData.cookies.get(i).getExpiryDate());
+			//
+			// }
 			// cookies darf nicht leer sein
 		} else {
 			throw new HSLoginException(ERROR_MSG_COOKIE_MISSING);
