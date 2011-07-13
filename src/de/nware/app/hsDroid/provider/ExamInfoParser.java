@@ -4,7 +4,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import android.util.Log;
 import de.nware.app.hsDroid.data.ExamInfo;
 
 // TODO: Auto-generated Javadoc
@@ -138,7 +137,7 @@ public class ExamInfoParser extends DefaultHandler {
 		if (fetch) {
 			switch (tdCount) {
 			case 0:
-				Log.d("first:" + trCount + ":", text);
+				// Log.d("first:" + trCount + ":", text);
 				switch (trCount) {
 				case 10:
 					average += text;
@@ -151,7 +150,7 @@ public class ExamInfoParser extends DefaultHandler {
 				break;
 			case 1:
 				// XXX +=text.. wegen zeilenumbrüchen im html code..
-				Log.d("second:" + trCount + ":", text);
+				// Log.d("second:" + trCount + ":", text);
 				switch (trCount) {
 				case 4:
 					sehrGutAmount += text;
@@ -178,7 +177,7 @@ public class ExamInfoParser extends DefaultHandler {
 				break;
 
 			default:
-				Log.d("parser default", text + " element:" + tdCount);
+				// Log.d("parser default", text + " element:" + tdCount);
 				break;
 			}
 		}

@@ -638,10 +638,11 @@ public class onlineService2Provider extends ContentProvider {
 			Xml.parse(htmlContent, handler);
 
 			for (Exam iterable_element : handler.getExams()) {
-				Log.d(TAG, "update: lid: " + iterable_element.getInfoID());
+				// Log.d(TAG, "update: lid: " + iterable_element.getInfoID());
 				if (!examExists(iterable_element.getExamNr(), iterable_element.getExamDate())) {
 					counter[1]++;
-					Log.d(TAG, "exam: insert " + iterable_element.getExamName() + " into DB");
+					// Log.d(TAG, "exam: insert " +
+					// iterable_element.getExamName() + " into DB");
 					ContentValues values = new ContentValues();
 					values.put(onlineService2Data.ExamsCol.SEMESTER, iterable_element.getSemester());
 					// values.put(onlineService2Data.ExamsCol.PASSED,
@@ -655,10 +656,11 @@ public class onlineService2Provider extends ContentProvider {
 					values.put(onlineService2Data.ExamsCol.GRADE, iterable_element.getGrade());
 					values.put(onlineService2Data.ExamsCol.LINKID, iterable_element.getInfoID());
 
-					Log.d(TAG, "insert..");
+					// Log.d(TAG, "insert..");
 					insert(onlineService2Data.ExamsCol.CONTENT_URI, values);
 				} else {
-					Log.d(TAG, "exam: " + iterable_element.getExamName() + " already in DB");
+					// Log.d(TAG, "exam: " + iterable_element.getExamName() +
+					// " already in DB");
 				}
 				counter[0]++;
 			}

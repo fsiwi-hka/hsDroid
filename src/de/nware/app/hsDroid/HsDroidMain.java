@@ -117,11 +117,12 @@ public class HsDroidMain extends nActivity {
 		// Password: nicht anzeigbare Zeichen entfernen
 		String password = PassEditText.getText().toString().trim();
 		if (StaticSessionData.cookies != null && StaticSessionData.isCookieValid()) {
+			Log.d("hsDroidMain", "Cookie still valid!!");
 			// prüfen wie alt das cookie
 			// // ist!!! und nach ca 30min
 			// // löschen
-			// mProgressHandle.sendEmptyMessage(LoginThread.MESSAGE_COMPLETE);
-			// return;
+			mProgressHandle.sendEmptyMessage(LoginThread.MESSAGE_COMPLETE);
+			return;
 		}
 		// FIXME zu unsicher.. wird alles im plaintext gespeichert..
 		// eventuell sqlite mit encryption..

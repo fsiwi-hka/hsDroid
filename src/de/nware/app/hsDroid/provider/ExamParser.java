@@ -76,8 +76,8 @@ class ExamParser extends DefaultHandler {
 			String searchString = "labnr%3D";
 			int stringLength = infoLink.indexOf(searchString) + 8;
 			infoID = Integer.valueOf(infoLink.substring(stringLength, stringLength + 7));
-			Log.d(TAG, "infoLink: " + infoLink);
-			Log.d(TAG, "infoID: " + infoID);
+			// Log.d(TAG, "infoLink: " + infoLink);
+			// Log.d(TAG, "infoID: " + infoID);
 		}
 
 	}
@@ -86,7 +86,7 @@ class ExamParser extends DefaultHandler {
 	public void endElement(String n, String l, String q) throws SAXException {
 		super.endElement(n, l, q);
 		if (l == "tr" && fetch == true) {
-			Log.d(TAG, "infoID: " + infoID);
+			// Log.d(TAG, "infoID: " + infoID);
 			lecList.add(new Exam(examNr, examName, semester, examDate, grade, passed, notation, attempts, infoID));
 
 			waitForTd = false;
