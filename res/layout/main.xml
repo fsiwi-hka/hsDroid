@@ -10,10 +10,10 @@
 		
 		<EditText android:id="@+id/username" android:layout_width="match_parent" android:layout_height="wrap_content"
 			android:hint="@string/username" android:layout_alignParentLeft="true"
-			android:layout_alignParentRight="true"></EditText>
+			android:layout_alignParentRight="true" android:imeOptions="actionNext" android:inputType="text|textPersonName"></EditText>
 		<EditText android:id="@+id/password" android:layout_height="wrap_content" android:layout_width="match_parent"
 			android:hint="@string/password" android:password="true"
-			android:layout_below="@+id/username"></EditText>
+			android:layout_below="@+id/username" android:imeOptions="actionDone" android:inputType="textPassword"></EditText>
 		<CheckBox android:layout_height="wrap_content" android:id="@+id/login_checkBox"
 			android:text="@string/savePW_checkBox" android:layout_width="match_parent"
 			android:layout_below="@+id/password"></CheckBox>
