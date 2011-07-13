@@ -16,6 +16,7 @@
 		<CheckBoxPreference android:title="Auto Update"
 			android:defaultValue="true"
 			android:summary="Beim Start automatisch nach neuen Noten schauen?"
+
 			android:key="autoUpdatePref" />
 		<ListPreference android:title="Reihenfolge"
 			android:summary="Sortierreihenfolge, Aufsteigend oder Absteigend?"

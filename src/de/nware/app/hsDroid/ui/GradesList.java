@@ -56,6 +56,7 @@ public class GradesList extends nActivity {
 
 	private boolean autoUpdate;
 	private boolean forceAutoUpdate = false;
+
 	private static final byte DIALOG_PROGRESS = 1;
 
 	private final int HANDLER_MSG_REFRESH = 1;
@@ -379,6 +380,7 @@ public class GradesList extends nActivity {
 		// showDialog(DIALOG_PROGRESS);
 		showTitleProgress();
 		showToast("Aktualisiere Notenblatt...");
+
 		setRequestedOrientation(2);
 		Thread t = new Thread() {
 			public void run() {
