@@ -40,10 +40,10 @@
 	<string name="menu_about">Info</string>
 	<string name="menu_refresh">Aktualisieren</string>
 	<string name="menu_view">Ansicht</string>
-	<string name="submenu_examViewAll">Alle Prüfungen</string>
-	<string name="submenu_examViewOnlyLast">Aktuelle Prüfungen</string>
-	<string name="submenu_examViewOnlyLastFailed">Nicht bestandene Prüfungen</string>
-	<string name="submenu_examViewAllFailed">Alle nicht bestandenen Prüfungen</string>
+	<string name="submenu_examViewAll">Alle</string>
+	<string name="submenu_examViewOnlyLast">Aktuelle</string>
+	<string name="submenu_examViewOnlyLastFailed">Aktuelle, nicht Bestanden</string>
+	<string name="submenu_examViewAllFailed">Alle, nicht Bestanden</string>
 	
 	<string name="empty_list_view">Keine Daten vorhanden</string>
 	
@@ -54,12 +54,18 @@
 	<string name="label_set_preferences">Einstellungen</string>
 	<string-array name="defaultViewListArray">
 		<item>Alle</item>
-		<item>Letzte</item>
-		<item>Letzte, nicht Bestanden</item>
+		<item>Aktuelle</item>
+		<item>Aktuelle, nicht Bestanden</item>
 		<item>Alle, nicht Bestanden</item>
 	</string-array>
 	
 	<string-array name="defaultViewListValues">
+		<item>all</item>
+		<item>act</item>
+		<item>actfail</item>
+		<item>allfail</item>
+	</string-array>
+	<string-array name="defaultViewListValuesOld">
 		<item>0</item>
 		<item>1</item>
 		<item>2</item>

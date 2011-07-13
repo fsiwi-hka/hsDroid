@@ -44,12 +44,7 @@ import de.nware.app.hsDroid.provider.onlineService2Data.ExamsUpdateCol;
 public class GradesList extends nActivity {
 
 	private static final String TAG = "GradesListActivity";
-	// private ExamAdapter m_examAdapter;
 	private ListView lv;
-	// private ArrayList<Exam> examsTest;
-	// private ExamInfo currentEInfo;
-	// private GradeParserThread mGradeParserThread = null;
-	// private ExamInfoParserThread mExamInfoParserThread = null;
 	private Cursor cursor = null;
 	private Cursor examinfoCursor = null;
 
@@ -64,17 +59,13 @@ public class GradesList extends nActivity {
 	private static final byte DIALOG_PROGRESS = 1;
 
 	private final int HANDLER_MSG_REFRESH = 1;
-	private final int HANDLER_MSG_LOADING = 2;
-	private final int HANDLER_MSG_INFO_GET = 3;
 	private final int HANDLER_MSG_INFO_READY = 4;
 
-	private static final String SORT_ALL = "";
+	private static final String SORT_ALL = "all";
 	private static final String SORT_ALL_FAILED = "allfail";
 	private static final String SORT_ACTUAL = "act";
 	private static final String SORT_ACTUAL_FAILED = "actfail";
 	private static String ACTUAL_SORT = SORT_ALL;
-
-	// private boolean customTitleSupported;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -89,6 +80,8 @@ public class GradesList extends nActivity {
 		String user = mPreferences.getString("UserSave", "");
 		Log.d(TAG, "dbUser:" + dbUser + " user:" + user);
 		if (!dbUser.equals(user)) {
+			showTitleProgress();
+			showToast("Initialisiren..");
 			clearDB();
 			forceAutoUpdate = true;
 		}
@@ -96,7 +89,6 @@ public class GradesList extends nActivity {
 		Log.d(TAG, "create resolver");
 		final ContentResolver resolver = getContentResolver();
 
-		// lv = getListView();
 		lv = (ListView) findViewById(R.id.gradesListView);
 
 		cursor = resolver.query(ExamsCol.CONTENT_URI, null, null, null, null);
@@ -119,11 +111,8 @@ public class GradesList extends nActivity {
 
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				// url muss vorhanden sein
-				// if
-				// (!GradesList.this.m_examAdapter.getItem(position).getInfoLink().equals(""))
-				// {
-				Log.d(TAG, "itemid: " + mExamAdapter.getItemId(position));
+
+				// Log.d(TAG, "itemid: " + mExamAdapter.getItemId(position));
 				long itemID = mExamAdapter.getItemId(position);
 				String selection = BaseColumns._ID + " LIKE ?";
 
@@ -133,18 +122,16 @@ public class GradesList extends nActivity {
 				final String out;
 				if (cur.moveToFirst()) {
 					out = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.LINKID)).toString();
-					Log.d(TAG, "out: [" + out + "]");
+					// Log.d(TAG, "out: [" + out + "]");
 					final String name = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.EXAMNAME)).toString();
 					final String nr = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.EXAMNR)).toString();
 					final String semester = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.SEMESTER)).toString();
 					final String grade = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.GRADE)).toString();
 					if (!out.equals("0") && !grade.equals("0,0")) { // FIXME
 
-						Log.d(TAG, "show examInfo");
-						// showDialog(DIALOG_PROGRESS);
+						// Log.d(TAG, "show examInfo");
 						showTitleProgress();
 						showToast("Lade Notenverteilung für " + name + ".");
-						// mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_INFO_GET));
 						setRequestedOrientation(2);
 						Thread t = new Thread() {
 							public void run() {
@@ -194,32 +181,14 @@ public class GradesList extends nActivity {
 
 	}
 
-	// helper, get rid of....
-	// hashmap??
 	private String getDefaultListOrder() {
 		String prefOrder = mPreferences.getString("defaultOrderPref", "DESC");
 		return prefOrder;
 	}
 
 	private String getDefaultListSort() {
-
-		String prefView = mPreferences.getString("defaultViewPref", "1");
-		if (prefView.equals("")) {
-			prefView = "1";
-		}
-		switch (Integer.valueOf(prefView)) {
-		case 0:
-			return SORT_ALL;
-		case 1:
-			return SORT_ACTUAL;
-		case 2:
-			return SORT_ACTUAL_FAILED;
-		case 3:
-			return SORT_ALL_FAILED;
-
-		default:
-			return prefView;
-		}
+		String prefView = mPreferences.getString("defaultViewPref", ACTUAL_SORT);
+		return prefView;
 	}
 
 	/**
@@ -238,16 +207,7 @@ public class GradesList extends nActivity {
 				refreshList();
 				// Bildschirm Orientierung wieder dem User überlassen
 				setRequestedOrientation(-1);
-				// dismissDialog(DIALOG_PROGRESS);
 				hideTitleProgress();
-				break;
-
-			case HANDLER_MSG_LOADING:
-				// mProgressDialog.setMessage(GradesList.this.getString(R.string.progress_loading));
-				break;
-
-			case HANDLER_MSG_INFO_GET:
-				// mProgressDialog.setMessage(GradesList.this.getString(R.string.progress_loading));
 				break;
 			case HANDLER_MSG_INFO_READY:
 				if (examinfoCursor == null) {
@@ -262,13 +222,8 @@ public class GradesList extends nActivity {
 				break;
 
 			default:
-				// Log.d("onCreate should not happen",
-				// String.valueOf(mGradeParserThread.getStatus()));
-				// dismissDialog(DIALOG_PROGRESS);
+				Log.d(TAG, "default hide()");
 				hideTitleProgress();
-				// Get rid of the sending thread
-				// mGradeParserThread.stopThread();
-				// mGradeParserThread = null;
 				break;
 			}
 		}
@@ -323,9 +278,11 @@ public class GradesList extends nActivity {
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
+
 		if (hasFocus) {
 			this.mExamAdapter.getFilter().filter(ACTUAL_SORT);
 		}
+		refreshList();
 	}
 
 	/**
@@ -422,7 +379,6 @@ public class GradesList extends nActivity {
 		// showDialog(DIALOG_PROGRESS);
 		showTitleProgress();
 		showToast("Aktualisiere Notenblatt...");
-		mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_LOADING));
 		setRequestedOrientation(2);
 		Thread t = new Thread() {
 			public void run() {
@@ -441,7 +397,7 @@ public class GradesList extends nActivity {
 					mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_REFRESH));
 
 				} catch (Exception e) {
-					dismissDialog(DIALOG_PROGRESS);
+					hideTitleProgress();
 					createDialog(GradesList.this.getString(R.string.error), e.getMessage());
 					e.printStackTrace();
 				}
@@ -605,18 +561,8 @@ public class GradesList extends nActivity {
 			int passedCol = c.getColumnIndex(ExamsCol.PASSED);
 			int passed = c.getInt(passedCol);
 
-			/**
-			 * Next set the name of the entry.
-			 */
 			TextView exName = (TextView) v.findViewById(R.id.examName);
-			// if (exName != null) {
-			// exName.setText(name);
-			// }
-
 			TextView exNr = (TextView) v.findViewById(R.id.examNr);
-			// if (exNr != null) {
-			// exNr.setText(exNr);
-			// }
 			TextView exAtt = (TextView) v.findViewById(R.id.examAttempts);
 			TextView exGrade = (TextView) v.findViewById(R.id.examGrade);
 			TextView exSemester = (TextView) v.findViewById(R.id.examSemester);
@@ -641,7 +587,7 @@ public class GradesList extends nActivity {
 			if (exGrade != null) {
 				if (passed == 0) { // wenn nicht bestanden
 					// FIXME wenn möglich.. farben gedöns is ziemlich tricky
-					// wegen "recycler" von ListActivity
+					// wegen "recycler" von ListView
 					if (att > 1) {
 						exGrade.setTextColor(Color.BLACK);
 						exGrade.setBackgroundColor(Color.RED);
@@ -736,15 +682,6 @@ public class GradesList extends nActivity {
 			}
 		}
 	}
-
-	// /**
-	// *
-	// * @param nExam
-	// * @return
-	// */
-	// private boolean isActualExam(Exam nExam) {
-	// return nExam.getSemester().equals(getLastExamSem());
-	// }
 
 	/**
 	 * 
