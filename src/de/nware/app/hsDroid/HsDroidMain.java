@@ -22,7 +22,7 @@ import android.widget.EditText;
 import de.nware.app.hsDroid.data.StaticSessionData;
 import de.nware.app.hsDroid.logic.LoginThread;
 import de.nware.app.hsDroid.ui.AboutDialog;
-import de.nware.app.hsDroid.ui.GradesList;
+import de.nware.app.hsDroid.ui.Dashboard;
 import de.nware.app.hsDroid.ui.Preferences;
 import de.nware.app.hsDroid.ui.nActivity;
 
@@ -252,7 +252,7 @@ public class HsDroidMain extends nActivity {
 
 				removeDialog(DIALOG_PROGRESS);
 
-				Intent i = new Intent(HsDroidMain.this, GradesList.class);
+				Intent i = new Intent(HsDroidMain.this, Dashboard.class);
 				startActivity(i);
 				break;
 			case LoginThread.MESSAGE_ERROR:
