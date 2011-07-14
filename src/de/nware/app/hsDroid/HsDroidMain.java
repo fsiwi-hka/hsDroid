@@ -71,6 +71,7 @@ public class HsDroidMain extends nActivity {
 		UserEditText.setText(savedUser);
 
 		boolean autoLogin = notenapp_preferences.getBoolean("autoLoginPref", false);
+
 		if (autoLogin && savePassword) {
 			doLogin(getCurrentFocus());
 		} else {

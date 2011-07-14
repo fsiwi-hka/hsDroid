@@ -4,7 +4,8 @@
 		android:icon="@drawable/view">
 		<menu>
 			<group android:checkableBehavior="single">
-				<item android:id="@+id/view_submenu_examViewAll" android:title="@string/submenu_examViewAll" />
+				<item android:id="@+id/view_submenu_examViewAll" 
+					android:title="@string/submenu_examViewAll" />
 				<item android:id="@+id/view_submenu_examViewOnlyLast"
 					android:title="@string/submenu_examViewOnlyLast" />
 				<item android:id="@+id/view_submenu_examViewOnlyLastFailed"
@@ -16,10 +17,10 @@
 	</item>
 	<item android:id="@+id/view_menu_refresh" android:title="@string/menu_refresh"
 		android:icon="@drawable/refresh"></item>
-	
+
 	<item android:id="@+id/view_menu_preferences" android:title="@string/menu_preferences"
 		android:icon="@drawable/preferences"></item>
-	
+
 	<item android:id="@+id/menu_about" android:title="@string/menu_about"
-			android:icon="@drawable/about"></item>
+		android:icon="@drawable/about"></item>
 </menu>

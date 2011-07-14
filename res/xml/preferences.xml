@@ -2,41 +2,38 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory android:title="Allgemein">
 		<CheckBoxPreference android:title="AutoLogin"
-			android:defaultValue="false" android:summary="Beim Start automatische anmelden?"
+			android:defaultValue="false" android:summary="Automatische Anmeldung beim Start."
 			android:key="autoLoginPref" />
 		<CheckBoxPreference android:title="Passwort Speichern"
 			android:defaultValue="false"
-			android:summary="Hinweis: Wird unverschlüsselt gespeichert!"
+			android:summary="Passwort wird unverschlüsselt gespeichert!"
 			android:key="saveLoginDataPref" />
-		<CheckBoxPreference android:title="Delete UserData"
-			android:defaultValue="false" android:summary="Lokale Einstellungen beim Beenden löschen?"
-			android:key="autoCleanUpPref" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="Notenspiegel">
 		<CheckBoxPreference android:title="Auto Update"
 			android:defaultValue="true"
-			android:summary="Beim Start automatisch nach neuen Noten schauen?"
+			android:summary="Notenspiegel automatisch aktualisieren."
 			android:key="autoUpdatePref" />
-		<ListPreference android:title="Reihenfolge"
-			android:summary="Sortierreihenfolge, Aufsteigend oder Absteigend?"
+		<ListPreference android:title="Sortierreihenfolge"
+			android:summary="Aufsteigend oder absteigend Anordnung der Noten."
 			android:key="defaultOrderPref" android:defaultValue=""
 			android:entries="@array/orderEntryArray" android:entryValues="@array/orderValueArray" />
 
-		<ListPreference android:title="Standard Ansicht"
-			android:summary="Legt fest in welcher Ansicht der Notenspiegel Standartmäßig angezeigt werden soll."
+		<ListPreference android:title="Standartansicht"
+			android:summary="Legt fest in welcher Ansicht der Notenspiegel standartmäßig angezeigt wird."
 			android:key="defaultViewPref" android:defaultValue=""
 			android:entries="@array/defaultViewListArray" android:entryValues="@array/defaultViewListValues" />
 		<CheckBoxPreference android:title="Hervorheben"
 			android:defaultValue="false"
-			android:summary="Prüfungsleistung des letzten Semesters hervorheben?"
+			android:summary="Prüfungsleistung des aktuellen Semesters hervorheben."
 			android:key="highlightActualExamsPref" />
-		<Preference android:title="Farbe" android:summary="Farbe zum Hervorheben auswählen"
+		<Preference android:title="Farbe" android:summary="Farbe der Hervorhebung auswählen."
 			android:key="highlightColorPref" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="Daten">
 		<Preference android:title="DB löschen"
-			android:summary="Alle Daten aus der Datenbank löschen" android:key="clearDBPref" />
+			android:summary="Alle Daten aus der Datenbank löschen." android:key="clearDBPref" />
 		<Preference android:title="Cookie löschen"
-			android:summary="Entfernt HTTP Cookie aus dem Speicher" android:key="delCookiePref" />
+			android:summary="Entfernt Cookie aus dem Speicher." android:key="delCookiePref" />
 	</PreferenceCategory>
 </PreferenceScreen>
