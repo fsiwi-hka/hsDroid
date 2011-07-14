@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -112,6 +115,34 @@ public class Dashboard extends nActivity {
 		private Integer[] mDashIcon = { R.drawable.view, R.drawable.refresh, R.drawable.preferences };
 		private String[] mDashText = { "Notenspiegel", "Bescheinigungen", "Einstellungen" };
 		private Class[] mDashClass = { GradesList.class, Certifications.class, Preferences.class };
+
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_preferences:
+			Intent settingsActivity = new Intent(getBaseContext(), Preferences.class);
+			startActivity(settingsActivity);
+
+			return true;
+		case R.id.menu_about:
+			Log.d("Main menu:", "about");
+			new AboutDialog(this);
+
+			return true;
+		default:
+			Log.d("Main menu:", "default");
+			System.out.println("id:" + item.getItemId() + " about: " + R.id.menu_about);
+			return super.onOptionsItemSelected(item);
+		}
 
 	}
 }

@@ -23,6 +23,7 @@ import org.apache.http.impl.cookie.CookieSpecBase;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -32,6 +33,9 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -161,7 +165,7 @@ public class Certifications extends nActivity {
 					// Cursor setzen
 
 					Log.d(TAG, "URI: " + url);
-					String downloadPath = mPreferences.getString("downloadPath", "/sdcard/download/");
+					String downloadPath = mPreferences.getString("downloadPathPref", "/sdcard/download/");
 					DownloadFromUrl(url, downloadPath, filename);
 
 				} catch (Exception e) {
@@ -264,5 +268,33 @@ public class Certifications extends nActivity {
 		default:
 			return null;
 		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_preferences:
+			Intent settingsActivity = new Intent(getBaseContext(), Preferences.class);
+			startActivity(settingsActivity);
+
+			return true;
+		case R.id.menu_about:
+			Log.d("Main menu:", "about");
+			new AboutDialog(this);
+
+			return true;
+		default:
+			Log.d("Main menu:", "default");
+			System.out.println("id:" + item.getItemId() + " about: " + R.id.menu_about);
+			return super.onOptionsItemSelected(item);
+		}
+
 	}
 }
