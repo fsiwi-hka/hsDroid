@@ -6,25 +6,31 @@ ToDo:
 	-userdaten verschlüßelt speichern!
 	
 	-weniger traffic
+		-fix für abrufen von notenverteilung... notenspiegel muss einmal aufgerufen worde sein um die notenverteilung abzufragen!?!
 	
-	- sqlite (optional)
+	-sqlite (optional)
 		service erstellen der im hintergrund die noten abfrägt, info bei neuen noten
 		als update service eintragen
-			
-	- http session daten endlich mal nutzen ;) und solange cookie gültig ist => bypass login
-		30min gültig
-	 	=> cookie löschen option/knopf...
+	-Download abbrechbar machen.. Steuerbarkeit ;)
+		-cancelabel -> thread unterbrechen, teildownload löschen
+	-Offline Modus, wenn keine Internetverbindung verfügbar ist..
 	
 	-layout!!
 
 __________
 Changelog:
 
-12.jul.2011 - v0.2.0
+14 jul.2011 - v0.2.0
+	cookie reuse fix
+	fix für anmeldung von anderem benutzer (cookie löschen, datenbank neu aufbauen)
+	dashboard
+	download von bescheinigungen (immma, kvv, etc.)
+	
+12.jul.2011 
 	eigene titlebar mit integrierter progress anzeige
 
-25.jun.2011 - v0.2.0
-	noten in sqlite datenbank
+25.jun.2011
+	noten in sqlite datenbank (contentprovider)
 	aktualisierung im hintergrund beim starten (optional)
 	 
 
@@ -44,7 +50,7 @@ Changelog:
 v0.1.6
 	+menu preferences,view,about
 	+Threads ausgelagert
-	+locals en
+	+locales en
 	+screen orientation fix
 
 v0.1.5

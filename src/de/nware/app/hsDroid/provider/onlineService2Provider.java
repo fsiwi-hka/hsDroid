@@ -100,7 +100,7 @@ public class onlineService2Provider extends ContentProvider {
 	// "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum|abschluss:abschl=58,stgnr=1&expand=1&asi=%s#auswahlBaum|abschluss:abschl=58,stgnr=1";
 
 	/** Der/Die/Das certification url tmpl. */
-	final String certificationURLTmpl = "%s?state=qissosreports&amp;besch=%s&amp;next=wait.vm&amp;asi=%s";
+	final String certificationURLTmpl = "%s?state=qissosreports&besch=%s&next=wait.vm&asi=%s";
 
 	/** Der/Die/Das certification type. */
 	final String[] certificationType = { "stammdaten", "studbesch", "studbescheng", "bafoeg", "kvv", "studienzeit" };
@@ -368,18 +368,22 @@ public class onlineService2Provider extends ContentProvider {
 		// autoupdate beim start aktiviert ist..
 		// workaround start
 
-		final String notenSpiegelURLTmpl = urlBase
-				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=studiengang&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
-				+ StaticSessionData.asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";
-
-		getResponse(notenSpiegelURLTmpl);
+		// final String notenSpiegelURLTmpl = urlBase
+		// +
+		// "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=studiengang&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
+		// + StaticSessionData.asiKey +
+		// "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";
+		//
+		// getResponse(notenSpiegelURLTmpl);
 		// Workaround end
 
 		final String examInfoURL = urlBase
 				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=abschluss&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1%7Cstudiengang%3Astg%3DIB%7CpruefungOnTop%3Alabnr%3D"
 				+ infoID + "&expand=0&asi=" + StaticSessionData.asiKey;
 
+		// FIXME Workaround
 		String response = getResponse(examInfoURL);
+
 		BufferedReader rd = new BufferedReader(new StringReader(response));
 
 		try {
@@ -419,7 +423,21 @@ public class onlineService2Provider extends ContentProvider {
 			}
 			rd.close();
 			String htmlContentString = sb.toString();
-			return parseExamInfo(htmlContentString);
+			Cursor returnCursor = null;
+			try {
+				returnCursor = parseExamInfo(htmlContentString);
+			} catch (Exception e) {
+				Log.d(TAG, "examInfoParser Error: " + e.getMessage());
+				final String notenSpiegelURLTmpl = urlBase
+						+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=studiengang&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
+						+ StaticSessionData.asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";
+
+				getResponse(notenSpiegelURLTmpl);
+				return getExamInfos(infoID);
+
+			}
+
+			return returnCursor;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			Log.d(TAG, e.getMessage());
@@ -434,8 +452,9 @@ public class onlineService2Provider extends ContentProvider {
 	 * @param htmlContentString
 	 *            der/die/das html content string
 	 * @return der/die/das cursor
+	 * @throws SAXException
 	 */
-	private Cursor parseExamInfo(String htmlContentString) {
+	private Cursor parseExamInfo(String htmlContentString) throws SAXException {
 		final MatrixCursor cursor = new MatrixCursor(EXAM_INFOS_COLUMNS);
 		try {
 			ExamInfoParser handler = new ExamInfoParser();
@@ -447,6 +466,7 @@ public class onlineService2Provider extends ContentProvider {
 		} catch (SAXException e) {
 			Log.e("read:SAXException:", e.getMessage());
 			e.printStackTrace();
+			throw new SAXException(e);
 		}
 		return cursor;
 	}
@@ -498,6 +518,7 @@ public class onlineService2Provider extends ContentProvider {
 	 * @param url
 	 *            die formatierte URL
 	 * @return die HTML/XML Antwort
+	 * @throws Exception
 	 */
 	private synchronized String getResponse(String url) {
 
@@ -513,6 +534,7 @@ public class onlineService2Provider extends ContentProvider {
 
 			// Prüfen ob HTTP Antwort ok ist.
 			final StatusLine status = response.getStatusLine();
+
 			if (status.getStatusCode() != HttpStatus.SC_OK) {
 				throw new RuntimeException("Ungültige Antwort vom Server: " + status.toString());
 			}
@@ -533,7 +555,8 @@ public class onlineService2Provider extends ContentProvider {
 				content.write(mContentBuffer, 0, readBytes);
 			}
 
-			return new String(content.toByteArray());
+			String output = new String(content.toByteArray());
+			return output;
 
 		} catch (IOException e) {
 			Log.d(TAG, e.getMessage());
@@ -576,6 +599,7 @@ public class onlineService2Provider extends ContentProvider {
 				+ StaticSessionData.asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";
 
 		String response = getResponse(notenSpiegelURLTmpl);
+
 		BufferedReader rd = new BufferedReader(new StringReader(response));
 
 		try {
