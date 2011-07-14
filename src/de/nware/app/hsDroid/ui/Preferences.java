@@ -2,9 +2,12 @@ package de.nware.app.hsDroid.ui;
 
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Looper;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.util.Log;
@@ -21,6 +24,28 @@ public class Preferences extends PreferenceActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
+
+		CheckBoxPreference saveLoginDataPref = (CheckBoxPreference) findPreference("saveLoginDataPref");
+		saveLoginDataPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				CheckBoxPreference cbr = (CheckBoxPreference) preference;
+				Editor ed = preference.getEditor();
+				if ((Boolean) newValue == false) {
+					ed.remove(preference.getKey());
+					CheckBoxPreference autoLogin = (CheckBoxPreference) findPreference("autoLoginPref");
+					autoLogin.setChecked(false);
+					ed.putBoolean("autoLoginPref", false);
+					Log.d(TAG, "autologin:" + newValue);
+				}
+				ed.putBoolean(preference.getKey(), (Boolean) newValue);
+				ed.commit();
+				Log.d(TAG, "savePW:" + newValue);
+				cbr.setChecked((Boolean) newValue);
+				return (Boolean) newValue;
+			}
+		});
 
 		Preference customPref = (Preference) findPreference("highlightColorPref");
 		customPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {

@@ -33,6 +33,8 @@ import de.nware.app.hsDroid.ui.nActivity;
  */
 public class HsDroidMain extends nActivity {
 
+	private final static String TAG = "hsDroid-main";
+
 	private LoginThread mLoginThread = null;
 
 	private ProgressDialog mProgressDialog = null;
@@ -70,11 +72,14 @@ public class HsDroidMain extends nActivity {
 
 		UserEditText.setText(savedUser);
 
-		boolean autoLogin = notenapp_preferences.getBoolean("autoLoginPref", false);
+		final boolean autoLogin = notenapp_preferences.getBoolean("autoLoginPref", false);
+
+		Log.d(TAG, "autologin:" + autoLogin);
+		Log.d(TAG, "savePW:" + savePassword);
 
 		if (autoLogin && savePassword) {
 			doLogin(getCurrentFocus());
-		} else {
+		} else if (autoLogin && !savePassword) {
 			showToast("Autologin nur mit gespeichertem Passwort möglich");
 		}
 
@@ -87,6 +92,11 @@ public class HsDroidMain extends nActivity {
 					editor.putBoolean("saveLoginDataPref", true);
 				} else {
 					editor.putBoolean("saveLoginDataPref", false);
+					if (notenapp_preferences.getBoolean("autoLoginPref", false)) {
+						editor.putBoolean("autoLoginPref", false);
+						showToast("Autologin wurde deaktiviert.");
+					}
+
 				}
 				editor.commit();
 			}

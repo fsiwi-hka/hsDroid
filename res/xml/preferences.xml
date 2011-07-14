@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory android:title="Allgemein">
-		<CheckBoxPreference android:title="AutoLogin"
-			android:defaultValue="false" android:summary="Automatische Anmeldung beim Start."
-			android:key="autoLoginPref" />
-		<CheckBoxPreference android:title="Passwort Speichern"
-			android:defaultValue="false"
+		<CheckBoxPreference android:defaultValue="false"
 			android:summary="Passwort wird unverschlüsselt gespeichert!"
-			android:key="saveLoginDataPref" />
+			android:key="saveLoginDataPref" android:title="@string/savePW_checkBox" android:disableDependentsState="false"/>
+			<CheckBoxPreference android:title="AutoLogin"
+			android:defaultValue="false" android:summary="Automatische Anmeldung beim Start."
+			android:key="autoLoginPref" android:dependency="saveLoginDataPref"/>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="Notenspiegel">
 		<CheckBoxPreference android:title="Auto Update"
-			android:defaultValue="true"
 			android:summary="Notenspiegel automatisch aktualisieren."
-			android:key="autoUpdatePref" />
+			android:key="autoUpdatePref" android:defaultValue="false"/>
 		<ListPreference android:title="Sortierreihenfolge"
 			android:summary="Aufsteigend oder absteigend Anordnung der Noten."
-			android:key="defaultOrderPref" android:defaultValue=""
-			android:entries="@array/orderEntryArray" android:entryValues="@array/orderValueArray" />
+			android:key="defaultOrderPref" android:entries="@array/orderEntryArray" android:entryValues="@array/orderValueArray" android:defaultValue="DESC"/>
 
 		<ListPreference android:title="Standartansicht"
 			android:summary="Legt fest in welcher Ansicht der Notenspiegel standartmäßig angezeigt wird."
-			android:key="defaultViewPref" android:defaultValue=""
-			android:entries="@array/defaultViewListArray" android:entryValues="@array/defaultViewListValues" />
+			android:key="defaultViewPref" android:entries="@array/defaultViewListArray" android:entryValues="@array/defaultViewListValues" android:defaultValue="all"/>
 		<CheckBoxPreference android:title="Hervorheben"
 			android:defaultValue="false"
 			android:summary="Prüfungsleistung des aktuellen Semesters hervorheben."
 			android:key="highlightActualExamsPref" />
 		<Preference android:title="Farbe" android:summary="Farbe der Hervorhebung auswählen."
 			android:key="highlightColorPref" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="Bescheinigungen">
+			<Preference android:defaultValue="/sdcard/download/"
+			android:key="downloadPathPref" android:summary="Verzeichnis in dem die Bescheinigungne gespeichert werden." android:title="Download Verzeichnis"/>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="Daten">
 		<Preference android:title="DB löschen"
