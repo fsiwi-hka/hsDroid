@@ -32,15 +32,16 @@
 				<action android:name="android.intent.action.VIEW"></action>
 			</intent-filter>
 		</activity>
-	<activity android:name=".ui.Certifications">
-	<intent-filter>
-		<action android:name="android.intent.action.VIEW"></action>
-	</intent-filter>
-	</activity>
+		<activity android:name=".ui.Certifications">
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW"></action>
+			</intent-filter>
+		</activity>
+		<activity android:name=".ui.DirChooser"></activity>
 
 
 	</application>
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
-	<uses-sdk android:minSdkVersion="8" />
+	<uses-sdk android:minSdkVersion="8" android:targetSdkVersion="8"/>
 </manifest>

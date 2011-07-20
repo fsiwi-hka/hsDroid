@@ -112,7 +112,8 @@ public class Dashboard extends nActivity {
 			return view;
 		}
 
-		private Integer[] mDashIcon = { R.drawable.view, R.drawable.refresh, R.drawable.preferences };
+		private Integer[] mDashIcon = { R.drawable.ic_launcher_notenspiegel, R.drawable.ic_launcher_paper2,
+				R.drawable.ic_launcher_preferences };
 		private String[] mDashText = { "Notenspiegel", "Bescheinigungen", "Einstellungen" };
 		private Class[] mDashClass = { GradesList.class, Certifications.class, Preferences.class };
 
