@@ -3,28 +3,68 @@ Changelog und ToDo Liste für hsDroid
 
 _____
 ToDo:
+	
 	-userdaten verschlüßelt speichern!
 	
-	-weniger traffic
-		-fix für abrufen von notenverteilung... notenspiegel muss einmal aufgerufen worde sein um die notenverteilung abzufragen!?!
+	weniger traffic
+	-	fix für abrufen von notenverteilung... notenspiegel muss einmal 
+		aufgerufen worde sein um die notenverteilung abzufragen!?!
 	
-	-sqlite (optional)
-		service erstellen der im hintergrund die noten abfrägt, info bei neuen noten
+	Login/Logout
+	-	Beim ersten Start Logindaten abfragen, speichern (pw optional) 
+		ansonsten über menü->abmelden oder optionen logindaten ändern
+		
+		-Login in Contentprovider Integrieren
+		-Relogin über Contentprovider
+		
+	
+	sqlite 
+	-	optional machen
+	-	service erstellen der im hintergrund die noten abfrägt, info bei neuen noten
 		als update service eintragen
-	-Download abbrechbar machen.. Steuerbarkeit ;)
-		-cancelabel -> thread unterbrechen, teildownload löschen
-	-Offline Modus, wenn keine Internetverbindung verfügbar ist..
 	
+	Download von Bescheinigungen
+	-	Downloads abbrechbar machen.. Steuerbarkeit ;)
+		cancel im dialog -> thread unterbrechen, Teildownload löschen
+	-	Name + akt. Semester
+	-	Speicherort wählbar, unterverzeichnisse. erstellen von verzeichnissen
+		
+	Offline Modus, wenn keine Internetverbindung verfügbar ist..
+	
+	Notenverteilung
+		-TitleBar Progress aus, dafür im Textfeld des Dialogs Fortschritsanzeige
+	
+	Erweiterter/Debug Modus
+		-Debug Log eigene Log erweiterung
+		-Löschen einzelner Prüfungen
+		
+	NiceToHave
+	==========
+	Passwort eingabe feld, copy/paste unterbinden? geht warscheinlich nicht..
+		man kann LongPress deaktivieren, aber im landscape geht es dan doch wieder, 
+		wegen fullscreen textview 
 	-layout!!
 
 __________
 Changelog:
-
-14 jul.2011 - v0.2.0
+20 jul.2011 - v0.2.0-git
+	bescheinigungen
+		-handling von mehreren dateien.. noch stark verbesserungs bedürftig ;)
+		
+19 jul.2011
+	versenden von pdfs
+	öffnen von pdfs
+	löschen von pdfs
+18 jul.2011
+	löschen aller lokalen einstellungen
+	downloadverzeichnis wählbar, aber nur root der sd karte
+	
+14 jul.2011
+	autologin hängt jetzt von gespeichertem passwort ab.
 	cookie reuse fix
 	fix für anmeldung von anderem benutzer (cookie löschen, datenbank neu aufbauen)
 	dashboard
-	download von bescheinigungen (immma, kvv, etc.)
+	download von bescheinigungen (imma, kvv, etc.)
 	
 12.jul.2011 
 	eigene titlebar mit integrierter progress anzeige
