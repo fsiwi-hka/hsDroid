@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:title="Download" android:id="@+id/item_cert_menu_Download"></item>
+	<item android:title="Öffnen" android:id="@+id/item_cert_menu_open"></item>
+	<item android:title="Versenden" android:id="@+id/item_cert_menu_send"></item>
+	<item android:title="Löschen" android:id="@+id/item_cert_menu_del"></item>
+
+</menu>

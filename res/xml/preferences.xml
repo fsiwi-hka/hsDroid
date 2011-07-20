@@ -12,11 +12,11 @@
 		<CheckBoxPreference android:title="Auto Update"
 			android:summary="Notenspiegel automatisch aktualisieren."
 			android:key="autoUpdatePref" android:defaultValue="false"/>
-		<ListPreference android:title="Sortierreihenfolge"
-			android:summary="Aufsteigend oder absteigend Anordnung der Noten."
+		<ListPreference android:title="Sortierreihenfolge ändern"
+			android:summary="Aufsteigende oder absteigende Anordnung der Noten."
 			android:key="defaultOrderPref" android:entries="@array/orderEntryArray" android:entryValues="@array/orderValueArray" android:defaultValue="DESC"/>
 
-		<ListPreference android:title="Standartansicht"
+		<ListPreference android:title="Ansicht ändern"
 			android:summary="Legt fest in welcher Ansicht der Notenspiegel standartmäßig angezeigt wird."
 			android:key="defaultViewPref" android:entries="@array/defaultViewListArray" android:entryValues="@array/defaultViewListValues" android:defaultValue="all"/>
 		<CheckBoxPreference android:title="Hervorheben"
@@ -24,16 +24,18 @@
 			android:summary="Prüfungsleistung des aktuellen Semesters hervorheben."
 			android:key="highlightActualExamsPref" />
 		<Preference android:title="Farbe" android:summary="Farbe der Hervorhebung auswählen."
-			android:key="highlightColorPref" />
+			android:key="highlightColorPref" android:dependency="highlightActualExamsPref"/>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="Bescheinigungen">
 			<Preference android:defaultValue="/sdcard/download/"
-			android:key="downloadPathPref" android:summary="Verzeichnis in dem die Bescheinigungne gespeichert werden." android:title="Download Verzeichnis"/>
+			android:key="downloadPathPref" android:title="Download Verzeichnis" android:summary=""/>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="Daten">
 		<Preference android:title="DB löschen"
 			android:summary="Alle Daten aus der Datenbank löschen." android:key="clearDBPref" />
 		<Preference android:title="Cookie löschen"
 			android:summary="Entfernt Cookie aus dem Speicher." android:key="delCookiePref" />
+		<Preference android:title="Einstellungen zurücksetzen"
+			android:summary="Löscht alle Einstellungen." android:key="delPref" />
 	</PreferenceCategory>
 </PreferenceScreen>

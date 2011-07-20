@@ -2,8 +2,10 @@ package de.nware.app.hsDroid.ui;
 
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Looper;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
@@ -24,6 +26,8 @@ public class Preferences extends PreferenceActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
+
+		updateSummaries();
 
 		CheckBoxPreference saveLoginDataPref = (CheckBoxPreference) findPreference("saveLoginDataPref");
 		saveLoginDataPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -69,6 +73,28 @@ public class Preferences extends PreferenceActivity {
 
 		});
 
+		Preference selectFolderPref = (Preference) findPreference("downloadPathPref");
+		selectFolderPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			// TODO möglichkeit über OI Dateimanager, AndExplorer.. etc..
+			// verzeichnis aufrufen
+			public boolean onPreferenceClick(Preference preference) {
+
+				// showToast("Implement me :)");
+				// Log.d(TAG, "dl dir: " + Environment.DIRECTORY_DOWNLOADS);
+				// Log.d(TAG, "ext DirStat: " +
+				// Environment.getExternalStorageState());
+
+				Intent intent = new Intent(getApplicationContext(), DirChooser.class);
+				startActivity(intent);
+				// Preference pref = (Preference)
+				// findPreference("downloadPathPref");
+				// pref.setSummary("Pfad: " +
+				// pref.getSharedPreferences().getString(pref.getKey(), ""));
+				return true;
+			}
+
+		});
+
 		Preference delCookiePref = (Preference) findPreference("delCookiePref");
 		delCookiePref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
@@ -85,6 +111,22 @@ public class Preferences extends PreferenceActivity {
 					showToast("Kein Cookie vorhanden.");
 				}
 
+				return true;
+			}
+
+		});
+
+		Preference delPref = (Preference) findPreference("delPref");
+		delPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+			public boolean onPreferenceClick(Preference preference) {
+				Editor ed = preference.getEditor();
+				ed.clear();
+				ed.commit();
+				showToast("Einstellunge zurückgesetzt.");
+				// FIXME Invalidate View geht nich??
+				// main updaten.. user und pw löschen..
+				finish();
 				return true;
 			}
 
@@ -131,5 +173,18 @@ public class Preferences extends PreferenceActivity {
 		bla.show();
 		Log.d("prefs", "stop dialog");
 
+	}
+
+	private void updateSummaries() {
+		Preference pref = (Preference) findPreference("downloadPathPref");
+		pref.setSummary("Pfad: "
+				+ pref.getSharedPreferences().getString(pref.getKey(), Environment.DIRECTORY_DOWNLOADS));
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		updateSummaries();
 	}
 }

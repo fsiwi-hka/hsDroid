@@ -3,7 +3,8 @@
 	android:orientation="vertical" android:layout_width="match_parent"
 	android:layout_height="match_parent" >
 	<TextView android:id="@+id/cert_textView"
-		android:textAppearance="?android:attr/textAppearanceLarge"
-		android:text="ImmatrikulationsBescheinigung" android:layout_height="wrap_content"
-		android:paddingTop="3dp" android:paddingBottom="3dp" android:layout_width="match_parent"></TextView>
+		android:textSize="20dp"
+		android:text="ImmatrikulationsBescheinigung" android:layout_height="wrap_content" android:minHeight="72dp"
+		android:padding="5dp"
+		android:layout_width="match_parent" android:gravity="center_vertical"></TextView>
 </LinearLayout>

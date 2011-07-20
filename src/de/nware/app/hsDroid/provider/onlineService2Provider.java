@@ -103,7 +103,7 @@ public class onlineService2Provider extends ContentProvider {
 	final String certificationURLTmpl = "%s?state=qissosreports&besch=%s&next=wait.vm&asi=%s";
 
 	/** Der/Die/Das certification type. */
-	final String[] certificationType = { "stammdaten", "studbesch", "studbescheng", "bafoeg", "kvv", "studienzeit" };
+	final String[] certificationType = { "stammdaten", "studbesch", "studbeschengl", "bafoeg", "kvv", "studienzeit" };
 
 	/** Der/Die/Das certification name. */
 	final String[] certificationName = { "Datenkontrollblatt", "Immatrikulationsbescheinigung",

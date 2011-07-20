@@ -60,6 +60,7 @@ public class GradesList extends nActivity {
 	private static final byte DIALOG_PROGRESS = 1;
 
 	private final int HANDLER_MSG_REFRESH = 1;
+	private final int HANDLER_MSG_ERROR = 99;
 	private final int HANDLER_MSG_INFO_READY = 4;
 
 	private static final String SORT_ALL = "all";
@@ -206,6 +207,12 @@ public class GradesList extends nActivity {
 			case HANDLER_MSG_REFRESH:
 				// ListView wieder neu laden
 				refreshList();
+				// Bildschirm Orientierung wieder dem User überlassen
+				setRequestedOrientation(-1);
+				hideTitleProgress();
+				break;
+			case HANDLER_MSG_ERROR:
+				showToast("Error, check logcat.");
 				// Bildschirm Orientierung wieder dem User überlassen
 				setRequestedOrientation(-1);
 				hideTitleProgress();
@@ -399,7 +406,8 @@ public class GradesList extends nActivity {
 					mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_REFRESH));
 
 				} catch (Exception e) {
-					hideTitleProgress();
+					mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_ERROR));
+					// hideTitleProgress();
 					createDialog(GradesList.this.getString(R.string.error), e.getMessage());
 					e.printStackTrace();
 				}
