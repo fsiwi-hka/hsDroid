@@ -119,8 +119,9 @@ public class Certifications extends nActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Log.d(TAG, "pos:" + position + " id:" + id + " adapterID:" + listView.getAdapter().getItemId(position));
-
-				getFileByPos(position, true, false);
+				if (isSdCardAvailable()) {
+					getFileByPos(position, true, false);
+				}
 
 			}
 
@@ -136,6 +137,15 @@ public class Certifications extends nActivity {
 
 	}
 
+	private boolean isSdCardAvailable() {
+		if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+			return true;
+		} else {
+			showToast("SD-Karte nicht verfügbar. Status: " + Environment.getExternalStorageState());
+			return false;
+		}
+	}
+
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		super.onContextItemSelected(item);
@@ -145,98 +155,103 @@ public class Certifications extends nActivity {
 		int position = menuInfo.position;
 
 		// Switch über die MenuItem ID, um die Gewünschte Selektion zu erhalten
-		switch (item.getItemId()) {
-		case R.id.item_cert_menu_Download:
-			getFileByPos(position, true, false);
-			return true;
-		case R.id.item_cert_menu_del:
-			getFileByPos(position, false, false);
 
-			if (currentFile.exists()) {
-				final String[] files1 = getFilesWithName(currentCertName);
-				if (files1.length > 1) {
-					AlertDialog.Builder builder = new AlertDialog.Builder(this);
-					builder.setTitle(R.string.text_chooseFile);
-					builder.setItems(files1, new DialogInterface.OnClickListener() {
+		if (isSdCardAvailable()) {
 
-						@Override
-						public void onClick(DialogInterface dialogInterface, int pos) {
-							new File(mPreferences.getString("downloadPathPref", defaultDLPath), files1[pos]).delete();
-							// TODO String format %s...
-							showToast(getString(R.string.text_file) + " \"" + files1[pos] + "\" "
-									+ getString(R.string.text_deleted));
-						}
-					});
-					AlertDialog alert = builder.create();
-					alert.show();
+			switch (item.getItemId()) {
+			case R.id.item_cert_menu_Download:
+				getFileByPos(position, true, false);
+				return true;
+			case R.id.item_cert_menu_del:
+				getFileByPos(position, false, false);
 
-				} else if (files1.length == 1) {
-					Log.d(TAG, "Filename [" + files1[0] + "]");
-					new File(mPreferences.getString("downloadPathPref", defaultDLPath), files1[0]).delete();
-					// TODO String format %s...
-					showToast(getString(R.string.text_file) + " \"" + files1[0] + "\""
-							+ getString(R.string.text_deleted));
+				if (currentFile.exists()) {
+					final String[] files1 = getFilesWithName(currentCertName);
+					if (files1.length > 1) {
+						AlertDialog.Builder builder = new AlertDialog.Builder(this);
+						builder.setTitle(R.string.text_chooseFile);
+						builder.setItems(files1, new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialogInterface, int pos) {
+								new File(mPreferences.getString("downloadPathPref", defaultDLPath), files1[pos])
+										.delete();
+								// TODO String format %s...
+								showToast(getString(R.string.text_file) + " \"" + files1[pos] + "\" "
+										+ getString(R.string.text_deleted));
+							}
+						});
+						AlertDialog alert = builder.create();
+						alert.show();
+
+					} else if (files1.length == 1) {
+						Log.d(TAG, "Filename [" + files1[0] + "]");
+						new File(mPreferences.getString("downloadPathPref", defaultDLPath), files1[0]).delete();
+						// TODO String format %s...
+						showToast(getString(R.string.text_file) + " \"" + files1[0] + "\""
+								+ getString(R.string.text_deleted));
+					}
+				} else {
+					showToast(getString(R.string.fileNotFound));
 				}
-			} else {
-				showToast(getString(R.string.fileNotFound));
-			}
 
-			return true;
-		case R.id.item_cert_menu_open:
+				return true;
+			case R.id.item_cert_menu_open:
 
-			getFileByPos(position, false, false);
-			if (currentFile.exists()) {
-				final String[] files = getFilesWithName(currentCertName);
-				if (files.length > 1) {
-					AlertDialog.Builder builder = new AlertDialog.Builder(this);
-					builder.setTitle(R.string.text_chooseFile);
-					builder.setItems(files, new DialogInterface.OnClickListener() {
+				getFileByPos(position, false, false);
+				if (currentFile.exists()) {
+					final String[] files = getFilesWithName(currentCertName);
+					if (files.length > 1) {
+						AlertDialog.Builder builder = new AlertDialog.Builder(this);
+						builder.setTitle(R.string.text_chooseFile);
+						builder.setItems(files, new DialogInterface.OnClickListener() {
 
-						@Override
-						public void onClick(DialogInterface dialogInterface, int pos) {
-							openPDF(new File(mPreferences.getString("downloadPathPref", defaultDLPath), files[pos]));
-						}
-					});
-					AlertDialog alert = builder.create();
-					alert.show();
+							@Override
+							public void onClick(DialogInterface dialogInterface, int pos) {
+								openPDF(new File(mPreferences.getString("downloadPathPref", defaultDLPath), files[pos]));
+							}
+						});
+						AlertDialog alert = builder.create();
+						alert.show();
 
-				} else if (files.length == 1) {
-					Log.d(TAG, "Filename [" + files[0] + "]");
-					openPDF(new File(mPreferences.getString("downloadPathPref", defaultDLPath), files[0]));
+					} else if (files.length == 1) {
+						Log.d(TAG, "Filename [" + files[0] + "]");
+						openPDF(new File(mPreferences.getString("downloadPathPref", defaultDLPath), files[0]));
+					}
+				} else {
+					showDialog(DIALOG_OPEN_FILE_NOT_FOUND);
 				}
-			} else {
-				showDialog(DIALOG_OPEN_FILE_NOT_FOUND);
-			}
 
-			return true;
-		case R.id.item_cert_menu_send:
-			getFileByPos(position, false, false);
+				return true;
+			case R.id.item_cert_menu_send:
+				getFileByPos(position, false, false);
 
-			if (currentFile.exists()) {
-				final String[] filesCouldBeSend = getFilesWithName(currentCertName);
-				if (filesCouldBeSend.length > 1) {
-					AlertDialog.Builder builder = new AlertDialog.Builder(this);
-					builder.setTitle(R.string.text_chooseFile);
-					builder.setItems(filesCouldBeSend, new DialogInterface.OnClickListener() {
+				if (currentFile.exists()) {
+					final String[] filesCouldBeSend = getFilesWithName(currentCertName);
+					if (filesCouldBeSend.length > 1) {
+						AlertDialog.Builder builder = new AlertDialog.Builder(this);
+						builder.setTitle(R.string.text_chooseFile);
+						builder.setItems(filesCouldBeSend, new DialogInterface.OnClickListener() {
 
-						@Override
-						public void onClick(DialogInterface dialogInterface, int pos) {
-							sendEmailWithAttachment(new File(mPreferences.getString("downloadPathPref", defaultDLPath),
-									filesCouldBeSend[pos]));
-						}
-					});
-					AlertDialog alert = builder.create();
-					alert.show();
+							@Override
+							public void onClick(DialogInterface dialogInterface, int pos) {
+								sendEmailWithAttachment(new File(mPreferences.getString("downloadPathPref",
+										defaultDLPath), filesCouldBeSend[pos]));
+							}
+						});
+						AlertDialog alert = builder.create();
+						alert.show();
 
-				} else if (filesCouldBeSend.length == 1) {
-					Log.d(TAG, "Filename [" + filesCouldBeSend[0] + "]");
-					sendEmailWithAttachment(new File(mPreferences.getString("downloadPathPref", defaultDLPath),
-							filesCouldBeSend[0]));
+					} else if (filesCouldBeSend.length == 1) {
+						Log.d(TAG, "Filename [" + filesCouldBeSend[0] + "]");
+						sendEmailWithAttachment(new File(mPreferences.getString("downloadPathPref", defaultDLPath),
+								filesCouldBeSend[0]));
+					}
+				} else {
+					showDialog(DIALOG_SEND_FILE_NOT_FOUND);
 				}
-			} else {
-				showDialog(DIALOG_SEND_FILE_NOT_FOUND);
+				return true;
 			}
-			return true;
 		}
 		return false;
 	}
