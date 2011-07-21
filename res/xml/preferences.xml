@@ -7,6 +7,9 @@
 			<CheckBoxPreference android:title="AutoLogin"
 			android:defaultValue="false" android:summary="Automatische Anmeldung beim Start."
 			android:key="autoLoginPref" android:dependency="saveLoginDataPref"/>
+			<ListPreference android:title="Abschluß"
+			android:summary="Angestrebter Abschluß."
+			android:key="degreePref" android:entries="@array/degreeEntryArray" android:entryValues="@array/degreeValueArray"/>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="Notenspiegel">
 		<CheckBoxPreference android:title="Auto Update"
@@ -27,7 +30,7 @@
 			android:key="highlightColorPref" android:dependency="highlightActualExamsPref"/>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="Bescheinigungen">
-			<Preference android:defaultValue="/sdcard/download/"
+			<Preference android:defaultValue="/mnt/sdcard/download/"
 			android:key="downloadPathPref" android:title="Download Verzeichnis" android:summary=""/>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="Daten">

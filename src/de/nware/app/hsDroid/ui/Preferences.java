@@ -178,7 +178,8 @@ public class Preferences extends PreferenceActivity {
 	private void updateSummaries() {
 		Preference pref = (Preference) findPreference("downloadPathPref");
 		pref.setSummary("Pfad: "
-				+ pref.getSharedPreferences().getString(pref.getKey(), Environment.DIRECTORY_DOWNLOADS));
+				+ pref.getSharedPreferences().getString(pref.getKey(),
+						Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS));
 	}
 
 	@Override

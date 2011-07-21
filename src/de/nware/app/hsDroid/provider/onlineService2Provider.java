@@ -108,11 +108,6 @@ public class onlineService2Provider extends ContentProvider {
 			"Englische Immatrikulationsbescheinigung", "Bescheinigung nach § 9 BAföG", "KVV-Bescheinigung",
 			"Studienzeitbescheinigung" };
 
-	/** Der/Die/Das exam info url tmpl. */
-	final String examInfoURLTmpl = "%s?state=notenspiegelStudent&amp;next=list.vm&amp;nextdir=qispos/notenspiegel/student&amp;createInfos=Y&amp;struct=abschluss&amp;nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1%7Cstudiengang%3Astg%3DIB%7CpruefungOnTop%3Alabnr%3D%s&amp;expand=0&amp;asi=%s";
-	// baseurl/examID/asiKey
-	// + StaticSessionData.asiKey;
-
 	/** Die Konstante USER_AGENT. */
 	private static final String USER_AGENT = TAG + "/" + VERSION;
 
@@ -121,6 +116,8 @@ public class onlineService2Provider extends ContentProvider {
 
 	/** Der http client. */
 	private final HttpClient mHttpClient = new DefaultHttpClient();
+
+	private SharedPreferences mPreferences;
 
 	// DB
 	/**
@@ -305,6 +302,7 @@ public class onlineService2Provider extends ContentProvider {
 	@Override
 	public boolean onCreate() {
 		mOpenHelper = new DatabaseHelper(getContext());
+		mPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 		return true;
 	}
 
@@ -362,22 +360,12 @@ public class onlineService2Provider extends ContentProvider {
 		Log.d(TAG, "infoID:" + infoID + " asi:" + StaticSessionData.asiKey);
 
 		// FIXME Notenliste leer..?
-		// Könnte durch auto update beim start verhindert werden.. bzw wenn
-		// autoupdate beim start aktiviert ist..
-		// workaround start
-
-		// final String notenSpiegelURLTmpl = urlBase
-		// +
-		// "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=studiengang&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
-		// + StaticSessionData.asiKey +
-		// "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";
-		//
-		// getResponse(notenSpiegelURLTmpl);
-		// Workaround end
 
 		final String examInfoURL = urlBase
-				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=abschluss&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1%7Cstudiengang%3Astg%3DIB%7CpruefungOnTop%3Alabnr%3D"
-				+ infoID + "&expand=0&asi=" + StaticSessionData.asiKey;
+				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=abschluss&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D"
+				+ mPreferences.getString("degreePref", "58")
+				+ "%2Cstgnr%3D1%7Cstudiengang%3Astg%3DIB%7CpruefungOnTop%3Alabnr%3D" + infoID + "&expand=0&asi="
+				+ StaticSessionData.asiKey;
 
 		// FIXME Workaround
 		String response = getResponse(examInfoURL);
@@ -427,8 +415,10 @@ public class onlineService2Provider extends ContentProvider {
 			} catch (Exception e) {
 				Log.d(TAG, "examInfoParser Error: " + e.getMessage());
 				final String notenSpiegelURLTmpl = urlBase
-						+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=studiengang&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
-						+ StaticSessionData.asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";
+						+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=studiengang&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D"
+						+ mPreferences.getString("degreePref", "58") + "%2Cstgnr%3D1&expand=1&asi="
+						+ StaticSessionData.asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D"
+						+ mPreferences.getString("degreePref", "58") + "%2Cstgnr%3D1";
 
 				getResponse(notenSpiegelURLTmpl);
 				return getExamInfos(infoID);
@@ -540,9 +530,6 @@ public class onlineService2Provider extends ContentProvider {
 			// Hole Content Stream
 			final HttpEntity entity = response.getEntity();
 
-			// content typ.
-			final Header contentType = entity.getContentType();
-
 			// content.
 			final InputStream inputStream = entity.getContent();
 			final ByteArrayOutputStream content = new ByteArrayOutputStream();
@@ -592,9 +579,15 @@ public class onlineService2Provider extends ContentProvider {
 		// StaticSessionData.asiKey);
 		// Log.d(TAG, "url: " + urlBase + URLEncoder.encode(url));
 		mOpenHelper.updateDBUser();
+
 		final String notenSpiegelURLTmpl = urlBase
-				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=studiengang&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1&expand=1&asi="
-				+ StaticSessionData.asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1";
+				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=studiengang&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D"
+				+ mPreferences.getString("degreePref", "58") + "%2Cstgnr%3D1&expand=1&asi=" + StaticSessionData.asiKey
+				+ "#auswahlBaum%7Cabschluss%3Aabschl%3D" + mPreferences.getString("degreePref", "58") + "%2Cstgnr%3D1";
+		// Master 59
+		final String notenSpiegelMasterURLTmpl = urlBase
+				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=studiengang&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D59%2Cstgnr%3D1&expand=1&asi="
+				+ StaticSessionData.asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D59%2Cstgnr%3D1";
 
 		String response = getResponse(notenSpiegelURLTmpl);
 
