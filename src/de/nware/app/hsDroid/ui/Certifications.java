@@ -86,6 +86,8 @@ public class Certifications extends nActivity {
 	int writtenBytes;
 	int contentLengthPercent;
 
+	private String defaultDLPath;
+
 	private String currentCertName = null;
 	private File currentFile = null;
 	private String currentURL = null;
@@ -95,6 +97,8 @@ public class Certifications extends nActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.certifications);
 		customTitle(getString(R.string.title_Certifications));
+
+		defaultDLPath = Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS;
 
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -148,30 +152,31 @@ public class Certifications extends nActivity {
 		case R.id.item_cert_menu_del:
 			getFileByPos(position, false, false);
 
-			final String[] files1 = getFilesWithName(currentCertName);
-			if (files1.length > 1) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setTitle(R.string.text_chooseFile);
-				builder.setItems(files1, new DialogInterface.OnClickListener() {
+			if (currentFile.exists()) {
+				final String[] files1 = getFilesWithName(currentCertName);
+				if (files1.length > 1) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(this);
+					builder.setTitle(R.string.text_chooseFile);
+					builder.setItems(files1, new DialogInterface.OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialogInterface, int pos) {
-						new File(mPreferences.getString("downloadPathPref", Environment.DIRECTORY_DOWNLOADS),
-								files1[pos]).delete();
-						// TODO String format %s...
-						showToast(getString(R.string.text_file) + " \"" + files1[pos] + "\" "
-								+ getString(R.string.text_deleted));
-					}
-				});
-				AlertDialog alert = builder.create();
-				alert.show();
+						@Override
+						public void onClick(DialogInterface dialogInterface, int pos) {
+							new File(mPreferences.getString("downloadPathPref", defaultDLPath), files1[pos]).delete();
+							// TODO String format %s...
+							showToast(getString(R.string.text_file) + " \"" + files1[pos] + "\" "
+									+ getString(R.string.text_deleted));
+						}
+					});
+					AlertDialog alert = builder.create();
+					alert.show();
 
-			} else if (files1.length == 1) {
-				Log.d(TAG, "Filename [" + files1[0] + "]");
-				new File(mPreferences.getString("downloadPathPref", Environment.DIRECTORY_DOWNLOADS), files1[0])
-						.delete();
-				// TODO String format %s...
-				showToast(getString(R.string.text_file) + " \"" + files1[0] + "\"" + getString(R.string.text_deleted));
+				} else if (files1.length == 1) {
+					Log.d(TAG, "Filename [" + files1[0] + "]");
+					new File(mPreferences.getString("downloadPathPref", defaultDLPath), files1[0]).delete();
+					// TODO String format %s...
+					showToast(getString(R.string.text_file) + " \"" + files1[0] + "\""
+							+ getString(R.string.text_deleted));
+				}
 			} else {
 				showToast(getString(R.string.fileNotFound));
 			}
@@ -180,25 +185,25 @@ public class Certifications extends nActivity {
 		case R.id.item_cert_menu_open:
 
 			getFileByPos(position, false, false);
+			if (currentFile.exists()) {
+				final String[] files = getFilesWithName(currentCertName);
+				if (files.length > 1) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(this);
+					builder.setTitle(R.string.text_chooseFile);
+					builder.setItems(files, new DialogInterface.OnClickListener() {
 
-			final String[] files = getFilesWithName(currentCertName);
-			if (files.length > 1) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setTitle(R.string.text_chooseFile);
-				builder.setItems(files, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface, int pos) {
+							openPDF(new File(mPreferences.getString("downloadPathPref", defaultDLPath), files[pos]));
+						}
+					});
+					AlertDialog alert = builder.create();
+					alert.show();
 
-					@Override
-					public void onClick(DialogInterface dialogInterface, int pos) {
-						openPDF(new File(mPreferences.getString("downloadPathPref", Environment.DIRECTORY_DOWNLOADS),
-								files[pos]));
-					}
-				});
-				AlertDialog alert = builder.create();
-				alert.show();
-
-			} else if (files.length == 1) {
-				Log.d(TAG, "Filename [" + files[0] + "]");
-				openPDF(new File(mPreferences.getString("downloadPathPref", Environment.DIRECTORY_DOWNLOADS), files[0]));
+				} else if (files.length == 1) {
+					Log.d(TAG, "Filename [" + files[0] + "]");
+					openPDF(new File(mPreferences.getString("downloadPathPref", defaultDLPath), files[0]));
+				}
 			} else {
 				showDialog(DIALOG_OPEN_FILE_NOT_FOUND);
 			}
@@ -207,25 +212,27 @@ public class Certifications extends nActivity {
 		case R.id.item_cert_menu_send:
 			getFileByPos(position, false, false);
 
-			final String[] filesCouldBeSend = getFilesWithName(currentCertName);
-			if (filesCouldBeSend.length > 1) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setTitle(R.string.text_chooseFile);
-				builder.setItems(filesCouldBeSend, new DialogInterface.OnClickListener() {
+			if (currentFile.exists()) {
+				final String[] filesCouldBeSend = getFilesWithName(currentCertName);
+				if (filesCouldBeSend.length > 1) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(this);
+					builder.setTitle(R.string.text_chooseFile);
+					builder.setItems(filesCouldBeSend, new DialogInterface.OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialogInterface, int pos) {
-						sendEmailWithAttachment(new File(mPreferences.getString("downloadPathPref",
-								Environment.DIRECTORY_DOWNLOADS), filesCouldBeSend[pos]));
-					}
-				});
-				AlertDialog alert = builder.create();
-				alert.show();
+						@Override
+						public void onClick(DialogInterface dialogInterface, int pos) {
+							sendEmailWithAttachment(new File(mPreferences.getString("downloadPathPref", defaultDLPath),
+									filesCouldBeSend[pos]));
+						}
+					});
+					AlertDialog alert = builder.create();
+					alert.show();
 
-			} else if (filesCouldBeSend.length == 1) {
-				Log.d(TAG, "Filename [" + filesCouldBeSend[0] + "]");
-				sendEmailWithAttachment(new File(mPreferences.getString("downloadPathPref",
-						Environment.DIRECTORY_DOWNLOADS), filesCouldBeSend[0]));
+				} else if (filesCouldBeSend.length == 1) {
+					Log.d(TAG, "Filename [" + filesCouldBeSend[0] + "]");
+					sendEmailWithAttachment(new File(mPreferences.getString("downloadPathPref", defaultDLPath),
+							filesCouldBeSend[0]));
+				}
 			} else {
 				showDialog(DIALOG_SEND_FILE_NOT_FOUND);
 			}
@@ -247,7 +254,7 @@ public class Certifications extends nActivity {
 
 	private String[] getFilesWithName(final String name) {
 		// ArrayList<File> files = new ArrayList<File>();
-		File dlPath = new File(mPreferences.getString("downloadPathPref", Environment.DIRECTORY_DOWNLOADS));
+		File dlPath = new File(mPreferences.getString("downloadPathPref", defaultDLPath));
 
 		FilenameFilter filter = new FilenameFilter() {
 			@Override
@@ -356,7 +363,7 @@ public class Certifications extends nActivity {
 		Log.d(TAG, "link: " + currentURL);
 		Log.d(TAG, "certname: " + currentCertName);
 
-		String downloadPath = mPreferences.getString("downloadPathPref", Environment.DIRECTORY_DOWNLOADS);
+		String downloadPath = mPreferences.getString("downloadPathPref", defaultDLPath);
 		currentFile = new File(downloadPath, currentCertName + ".pdf");
 
 		if (downloadFile) {

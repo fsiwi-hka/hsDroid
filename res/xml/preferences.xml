@@ -27,7 +27,7 @@
 			android:key="highlightColorPref" android:dependency="highlightActualExamsPref"/>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="Bescheinigungen">
-			<Preference android:defaultValue="/sdcard/download/"
+			<Preference android:defaultValue="/mnt/sdcard/download/"
 			android:key="downloadPathPref" android:title="Download Verzeichnis" android:summary=""/>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="Daten">
