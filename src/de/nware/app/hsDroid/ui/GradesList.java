@@ -8,8 +8,10 @@ import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -82,12 +84,21 @@ public class GradesList extends nActivity {
 		String dbUser = mPreferences.getString("dbUser", "0");
 		String user = mPreferences.getString("UserSave", "");
 		Log.d(TAG, "dbUser:" + dbUser + " user:" + user);
+
 		if (!dbUser.equals(user)) {
 			showTitleProgress();
 			showToast(getString(R.string.text_initialize));
 			clearDB();
 			forceAutoUpdate = true;
 		}
+
+		boolean noDegreeSelected = false;
+		if (mPreferences.getString("degreePref", "").equals("")) {
+			selectDegree();
+			forceAutoUpdate = false;
+			noDegreeSelected = true;
+		}
+
 		ACTUAL_SORT = getDefaultListSort();
 		Log.d(TAG, "create resolver");
 		final ContentResolver resolver = getContentResolver();
@@ -106,7 +117,7 @@ public class GradesList extends nActivity {
 		lv.setAdapter(mExamAdapter);
 
 		autoUpdate = mPreferences.getBoolean("autoUpdatePref", false);
-		if (mExamAdapter.getCount() == 0 || autoUpdate || forceAutoUpdate) {
+		if (!noDegreeSelected && (mExamAdapter.getCount() == 0 || autoUpdate || forceAutoUpdate)) {
 			updateGrades();
 			if (forceAutoUpdate) {
 				forceAutoUpdate = false;
@@ -187,6 +198,33 @@ public class GradesList extends nActivity {
 			}
 		});
 
+	}
+
+	private void selectDegree() {
+		AlertDialog.Builder builderSelectDegree = new AlertDialog.Builder(this);
+		builderSelectDegree.setTitle("Abschluß wählen");
+		final int BACHELOR = 0;
+		final int MASTER = 1;
+		builderSelectDegree.setItems(R.array.degreeEntryArray, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				Editor ed = mPreferences.edit();
+				switch (which) {
+				case BACHELOR:
+					ed.putString("degreePref", "58");
+					break;
+				case MASTER:
+					ed.putString("degreePref", "59");
+					break;
+				default:
+					break;
+				}
+				ed.commit();
+				updateGrades();
+			}
+		});
+		builderSelectDegree.create().show();
 	}
 
 	private String getDefaultListOrder() {
