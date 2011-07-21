@@ -4,6 +4,10 @@ Changelog und ToDo Liste für hsDroid
 _____
 ToDo:
 	
+	Notenverteilung
+	- Trennlinien pro Semester
+	- Aktuelle Ansichtsmodues im Titel Anzeigen
+	
 	-userdaten verschlüßelt speichern!
 	
 	weniger traffic
@@ -47,7 +51,10 @@ ToDo:
 
 __________
 Changelog:
-20 jul.2011 - v0.2.0-git
+21 jul.2011 - v0.2.1
+	unterstützung für master studiengänge
+	
+20 jul.2011 - v0.2.0
 	bescheinigungen
 		-handling von mehreren dateien.. noch stark verbesserungs bedürftig ;)
 		
