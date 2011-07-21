@@ -29,7 +29,7 @@
 	<TextView android:id="@+id/about_maintext"
 		android:text="TEst Text für main TExt, mit ganz viel text, der nix bringt.. huhu haha foo bar \n asd asd asd asd "
 		android:layout_below="@+id/linearLayoutTitle" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:layout_margin="10dp" 
+		android:layout_height="wrap_content" android:layout_margin="10dp" android:textColor="@android:color/darker_gray"
 		android:autoLink="all"></TextView>
 	<Button android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:id="@+id/about_cancel"
