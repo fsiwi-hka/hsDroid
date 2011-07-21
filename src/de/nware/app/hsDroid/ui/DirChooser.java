@@ -10,7 +10,6 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -36,8 +35,8 @@ public class DirChooser extends nListActivity {
 		final ArrayList<File> sdDirs = new ArrayList<File>();
 		if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 			File extDir = Environment.getExternalStorageDirectory();
-			Log.d(TAG, "absolutePath:" + extDir.getAbsolutePath());
-			Log.d(TAG, "canonicalPath:" + extDir.getAbsolutePath());
+			// Log.d(TAG, "absolutePath:" + extDir.getAbsolutePath());
+			// Log.d(TAG, "canonicalPath:" + extDir.getAbsolutePath());
 			FileFilter dirFilter = new FileFilter() {
 
 				@Override
@@ -62,7 +61,9 @@ public class DirChooser extends nListActivity {
 
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-					showToast("pos:" + pos + " name: " + sdDirs.get(pos).getAbsolutePath());
+					// showToast("pos:" + pos + " name: " +
+					// sdDirs.get(pos).getAbsolutePath());
+					showToast(sdDirs.get(pos).getAbsolutePath());
 
 					Editor ed = mPreferences.edit();
 					ed.putString("downloadPathPref", sdDirs.get(pos).getAbsolutePath());
