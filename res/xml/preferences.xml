@@ -3,7 +3,7 @@
 	<PreferenceCategory android:title="Allgemein">
 		<CheckBoxPreference android:defaultValue="false"
 			android:summary="Passwort wird unverschlüsselt gespeichert!"
-			android:key="saveLoginDataPref" android:title="@string/savePW_checkBox" android:disableDependentsState="false"/>
+			android:key="saveLoginDataPref" android:title="@string/text_savePWcheckBox" android:disableDependentsState="false"/>
 			<CheckBoxPreference android:title="AutoLogin"
 			android:defaultValue="false" android:summary="Automatische Anmeldung beim Start."
 			android:key="autoLoginPref" android:dependency="saveLoginDataPref"/>
