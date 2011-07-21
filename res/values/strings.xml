@@ -2,7 +2,7 @@
 
 <resources>
 	<string name="app_name">hsDroid</string>
-	<string name="app_version">0.2.0-git</string>
+	<string name="app_version">0.2.0</string>
 	
 	<string name="username">HS-Benutzername</string>
 	<string name="password">Passwort</string>
@@ -89,11 +89,11 @@
 	</string-array>
 		<string name="fileExists">Datei existiert bereits</string>
 		<string name="fileNotFound">Datei nicht gefunden</string>
-		<string name="downloadFileQuestion">Soll die Datei Heruntergeladen werden?</string>
+		<string name="downloadFileQuestion">Soll die Datei heruntergeladen werden?</string>
 		<string name="error_invalidServerResponse">Ungültige Antwort vom Server</string>
 		<string name="error_DownloadFailed">Download fehlgeschlagen</string>
 		<string name="success_downloadComplete">Download erfolgreich.</string>
-		<string name="error_NoPdfApp">Keine Anwendung vorhanden um PDF Dateien zu Öffnen</string>
+		<string name="error_NoPdfApp">Keine Anwendung vorhanden um PDF Dateien zu öffnen</string>
 		<string name="text_file">Datei</string>
 		<string name="text_NotFound">nicht gefunden</string>
 		<string name="text_selectSendDestination">Versenden über</string>
