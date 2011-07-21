@@ -46,8 +46,6 @@ public class HsDroidMain extends nActivity {
 	private boolean savePassword = false;
 	private SharedPreferences notenapp_preferences;
 
-	// private boolean customTitleSupported;
-
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -78,7 +76,7 @@ public class HsDroidMain extends nActivity {
 		Log.d(TAG, "savePW:" + savePassword);
 
 		if (autoLogin && savePassword) {
-			doLogin(getCurrentFocus());
+			doLogin();
 		} else if (autoLogin && !savePassword) {
 			showToast("Autologin nur mit gespeichertem Passwort möglich");
 		}
@@ -106,13 +104,13 @@ public class HsDroidMain extends nActivity {
 
 		button.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				doLogin(v);
+				doLogin();
 			}
 		});
 
 	}
 
-	private void doLogin(View v) {
+	public void doLogin() {
 		// Benutzernamen: nicht anzeigbare Zeichen entfernen, alles
 		// klein schreiben
 		// (leerzeichen killen und Buchstaben klein,
@@ -144,18 +142,15 @@ public class HsDroidMain extends nActivity {
 		}
 
 		if (username.length() == 0) {
-			createDialog(v.getContext().getString(R.string.error), v.getContext()
-					.getString(R.string.error_name_missing));
+			createDialog(getText(R.string.error), getText(R.string.error_name_missing));
 			return;
 		} else if (!username.matches("^[a-zA-Z]{4}(00|10){1}[0-9]{2}")) {
-			createDialog(v.getContext().getString(R.string.error),
-					v.getContext().getString(R.string.error_name_incorrect));
+			createDialog(getText(R.string.error), getText(R.string.error_name_incorrect));
 			return;
 		} else
 
 		if (password.length() == 0) {
-			createDialog(v.getContext().getString(R.string.error),
-					v.getContext().getString(R.string.error_password_missing));
+			createDialog(getText(R.string.error), getText(R.string.error_password_missing));
 			return;
 		} else {
 
@@ -181,6 +176,70 @@ public class HsDroidMain extends nActivity {
 
 		}
 	}
+
+	/**
+	 * ProgresDialog Handler
+	 */
+	final Handler mProgressHandle = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			Log.d("handler msg.what:", String.valueOf(msg.what));
+			switch (msg.what) {
+			case LoginThread.MESSAGE_COMPLETE:
+				Log.d("handler", "Login_complete");
+
+				if (mLoginThread != null) {
+					mLoginThread.stopThread();
+					// mLoginThread.kill();
+					mLoginThread = null;
+				}
+
+				removeDialog(DIALOG_PROGRESS);
+
+				Intent i = new Intent(HsDroidMain.this, Dashboard.class);
+				startActivity(i);
+				break;
+			case LoginThread.MESSAGE_ERROR:
+				Log.d("handler login error", msg.getData().getString("Message"));
+
+				removeDialog(DIALOG_PROGRESS);
+
+				String errorMessage = msg.getData().getString("Message");
+
+				if (errorMessage.equals(LoginThread.ERROR_MSG_SITE_MAINTENANCE)) {
+					errorMessage = HsDroidMain.this.getString(R.string.error_site_down);
+				} else if (errorMessage.equals(LoginThread.ERROR_MSG_LOGIN_FAILED)) {
+					errorMessage = HsDroidMain.this.getString(R.string.error_login_failed);
+				} else if (errorMessage.equals(LoginThread.ERROR_MSG_COOKIE_MISSING)) {
+					errorMessage = HsDroidMain.this.getString(R.string.error_cookie_empty);
+				}
+
+				createDialog(HsDroidMain.this.getString(R.string.error_couldnt_connect), errorMessage);
+
+				mLoginThread.stopThread();
+				mLoginThread.kill();
+				mLoginThread = null;
+				break;
+			case LoginThread.MESSAGE_PROGRESS_CONNECT:
+				mProgressDialog.setMessage(HsDroidMain.this.getString(R.string.progress_connect));
+				break;
+			case LoginThread.MESSAGE_PROGRESS_PARSE:
+				mProgressDialog.setMessage(HsDroidMain.this.getString(R.string.progress_parse));
+				break;
+			case LoginThread.MESSAGE_PROGRESS_COOKIE:
+				mProgressDialog.setMessage(HsDroidMain.this.getString(R.string.progress_cookie));
+				break;
+			default:
+				Log.d("progressHandler Main", "unknown message");
+				removeDialog(DIALOG_PROGRESS);
+
+				mLoginThread.stopThread();
+				mLoginThread = null;
+				break;
+			}
+		}
+	};
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
@@ -242,70 +301,6 @@ public class HsDroidMain extends nActivity {
 		new AboutDialog(this);
 	}
 
-	/**
-	 * ProgresDialog Handler
-	 */
-	final Handler mProgressHandle = new Handler() {
-
-		@Override
-		public void handleMessage(Message msg) {
-			Log.d("handler msg.what:", String.valueOf(msg.what));
-			switch (msg.what) {
-			case LoginThread.MESSAGE_COMPLETE:
-				Log.d("handler", "Login_complete");
-
-				if (mLoginThread != null) {
-					mLoginThread.stopThread();
-					mLoginThread.kill();
-					mLoginThread = null;
-				}
-
-				removeDialog(DIALOG_PROGRESS);
-
-				Intent i = new Intent(HsDroidMain.this, Dashboard.class);
-				startActivity(i);
-				break;
-			case LoginThread.MESSAGE_ERROR:
-				Log.d("handler login error", msg.getData().getString("Message"));
-
-				removeDialog(DIALOG_PROGRESS);
-
-				String errorMessage = msg.getData().getString("Message");
-
-				if (errorMessage.equals(LoginThread.ERROR_MSG_SITE_MAINTENANCE)) {
-					errorMessage = HsDroidMain.this.getString(R.string.error_site_down);
-				} else if (errorMessage.equals(LoginThread.ERROR_MSG_LOGIN_FAILED)) {
-					errorMessage = HsDroidMain.this.getString(R.string.error_login_failed);
-				} else if (errorMessage.equals(LoginThread.ERROR_MSG_COOKIE_MISSING)) {
-					errorMessage = HsDroidMain.this.getString(R.string.error_cookie_empty);
-				}
-
-				createDialog(HsDroidMain.this.getString(R.string.error_couldnt_connect), errorMessage);
-
-				mLoginThread.stopThread();
-				mLoginThread.kill();
-				mLoginThread = null;
-				break;
-			case LoginThread.MESSAGE_PROGRESS_CONNECT:
-				mProgressDialog.setMessage(HsDroidMain.this.getString(R.string.progress_connect));
-				break;
-			case LoginThread.MESSAGE_PROGRESS_PARSE:
-				mProgressDialog.setMessage(HsDroidMain.this.getString(R.string.progress_parse));
-				break;
-			case LoginThread.MESSAGE_PROGRESS_COOKIE:
-				mProgressDialog.setMessage(HsDroidMain.this.getString(R.string.progress_cookie));
-				break;
-			default:
-				Log.d("progressHandler Main", "unknown message");
-				removeDialog(DIALOG_PROGRESS);
-
-				mLoginThread.stopThread();
-				mLoginThread = null;
-				break;
-			}
-		}
-	};
-
 	private void quit(boolean success, Intent i) {
 		setResult((success) ? -1 : 0, i);
 		finish();
@@ -319,8 +314,8 @@ public class HsDroidMain extends nActivity {
 	 * @param text
 	 *            {@link String} dialog text
 	 */
-	private void createDialog(String title, String text) {
-		AlertDialog ad = new AlertDialog.Builder(this).setPositiveButton(this.getString(R.string.error_ok), null)
+	private void createDialog(CharSequence title, CharSequence text) {
+		AlertDialog ad = new AlertDialog.Builder(this).setPositiveButton(getText(R.string.error_ok), null)
 				.setTitle(title).setMessage(text).create();
 		ad.show();
 	}

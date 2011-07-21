@@ -96,8 +96,6 @@ public class onlineService2Provider extends ContentProvider {
 	// HTTP gedöns
 	/** Der/Die/Das url base. */
 	final String urlBase = "https://qis2.hs-karlsruhe.de/qisserver/rds";
-	// final String notenSpiegelURLTmpl =
-	// "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum|abschluss:abschl=58,stgnr=1&expand=1&asi=%s#auswahlBaum|abschluss:abschl=58,stgnr=1";
 
 	/** Der/Die/Das certification url tmpl. */
 	final String certificationURLTmpl = "%s?state=qissosreports&besch=%s&next=wait.vm&asi=%s";

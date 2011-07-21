@@ -4,7 +4,7 @@
 	<string name="username">HS-Username</string>
 	<string name="password">Password</string>
 	<string name="login">Login</string>
-	<string name="cancel">Close</string>
+	<string name="cancel">Cancel</string>
 	<string name="error">Error</string>
 	<string name="error_name_missing">Please enter HS-Username.</string>
 	<string name="error_name_incorrect">Wrong HS-Username. ex.: mami1011</string>
@@ -23,7 +23,7 @@
 	<string name="title_view_marks">Grades</string>
 	<string name="title_head_exam">Exam</string>
 	<string name="title_head_mark">Grade</string>
-	<string name="login_checkBox">Save login data</string>
+	<string name="text_savePWcheckBox">Save password</string>
 	<string name="grades_view">Grades</string>
 	<string name="grades_view_attempt">Attempt: </string>
 	<string name="grades_view_semester">Semester: </string>
@@ -41,7 +41,7 @@
 	<string name="error_cookie_empty">Got no cookie</string>
 
 	<string name="about_subtitle">Gradesviewer</string>
-	<string name="about_maintext">App to login at &quot;Online Service 2 für Studierende&quot; and grab your grades.\n\nFor more informations visit:\nhttps://github.com/n0iz/hsDroid\n\nEmail: eiol0011@hs-karlsruhe.de</string>
+	<string name="about_maintext">App to login at \"Online Service 2\" at the HSKA, to view your grades.\n\nFor more informations visit:\nhttps://github.com/n0iz/hsDroid\n\nEmail: eiol0011@hs-karlsruhe.de</string>
 
 
 

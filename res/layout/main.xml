@@ -15,7 +15,7 @@
 			android:hint="@string/password" android:password="true"
 			android:layout_below="@+id/username" android:imeOptions="actionDone" android:inputType="textPassword"></EditText>
 		<CheckBox android:layout_height="wrap_content" android:id="@+id/login_checkBox"
-			android:text="@string/savePW_checkBox" android:layout_width="match_parent"
+			android:text="@string/text_savePWcheckBox" android:layout_width="match_parent"
 			android:layout_below="@+id/password"></CheckBox>
 		<Button android:text="@string/login" android:id="@+id/login"
 			android:layout_alignParentBottom="true" android:layout_width="match_parent"

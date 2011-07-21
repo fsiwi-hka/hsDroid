@@ -31,6 +31,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import de.nware.app.hsDroid.R;
+import de.nware.app.hsDroid.data.StaticSessionData;
 import de.nware.app.hsDroid.provider.onlineService2Data.ExamInfos;
 import de.nware.app.hsDroid.provider.onlineService2Data.ExamsCol;
 import de.nware.app.hsDroid.provider.onlineService2Data.ExamsUpdateCol;
@@ -83,7 +84,7 @@ public class GradesList extends nActivity {
 		Log.d(TAG, "dbUser:" + dbUser + " user:" + user);
 		if (!dbUser.equals(user)) {
 			showTitleProgress();
-			showToast("Initialisiren..");
+			showToast(getString(R.string.text_initialize));
 			clearDB();
 			forceAutoUpdate = true;
 		}
@@ -92,7 +93,10 @@ public class GradesList extends nActivity {
 		final ContentResolver resolver = getContentResolver();
 
 		lv = (ListView) findViewById(R.id.gradesListView);
-
+		if (!StaticSessionData.isCookieValid()) {
+			// ToDo
+			// doLogin();
+		}
 		cursor = resolver.query(ExamsCol.CONTENT_URI, null, null, null, null);
 		startManagingCursor(cursor);
 
@@ -174,7 +178,9 @@ public class GradesList extends nActivity {
 						};
 						t.start();
 					} else {
-						showToast("Keine Notenverteilung für " + name + " verfügbar.");
+						String gradeDistribError = String.format(
+								getString(R.string.error_noGradeDistributionAvailableForX), name);
+						showToast(gradeDistribError);
 					}
 				}
 
@@ -386,7 +392,7 @@ public class GradesList extends nActivity {
 		// Thread, update grades progress
 		// showDialog(DIALOG_PROGRESS);
 		showTitleProgress();
-		showToast("Aktualisiere Notenblatt...");
+		showToast(getString(R.string.info_updateGradesList));
 
 		setRequestedOrientation(2);
 		Thread t = new Thread() {
@@ -461,11 +467,13 @@ public class GradesList extends nActivity {
 
 		private Context context;
 		private int layout;
+		private String currentSem;
 
 		public ExamDBAdapter(Context context, int layout, Cursor cursor, String[] from, int[] to) {
 			super(context, layout, cursor, from, to);
 			this.context = context;
 			this.layout = layout;
+			Log.d(TAG, "Create ExamAdapter");
 		}
 
 		@Override

@@ -66,6 +66,18 @@ public class Certifications extends nActivity {
 	private final int DIALOG_OPEN_FILE_NOT_FOUND = 3;
 	private final int DIALOG_SEND_FILE_NOT_FOUND = 4;
 
+	private Thread t;
+
+	private final int MSG_INIT_DOWNLOAD = 0;
+	private final int MSG_SET_DOWNLOAD_SIZE = 10;
+	private final int MSG_UPDATE_DOWNLOAD_PROGRESS = 11;
+	private final int MSG_DOWNLOAD_FINISHED = 20;
+	private final int MSG_DOWNLOAD_FINISHED_AND_OPEN_FILE = 21;
+	private final int MSG_DOWNLOAD_FINISHED_AND_SEND_FILE = 22;
+	private final int MSG_IO_ERROR = 90;
+	private final int MSG_URL_ERROR = 91;
+	private final int MSG_DOWNLOAD_CANCELED = 99;
+
 	private final int FE_RENAME = 1;
 	private final int FE_OVERWRITE = 2;
 
@@ -82,7 +94,7 @@ public class Certifications extends nActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.certifications);
-		customTitle("Bescheinigungen");
+		customTitle(getString(R.string.title_Certifications));
 
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -113,7 +125,7 @@ public class Certifications extends nActivity {
 
 			@Override
 			public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
-				menu.setHeaderTitle("context menu"); // TODO String
+				menu.setHeaderTitle(R.string.title_certContextMenu_selectAction);
 				getMenuInflater().inflate(R.menu.cert_menu, menu);
 			}
 		});
@@ -139,14 +151,16 @@ public class Certifications extends nActivity {
 			final String[] files1 = getFilesWithName(currentCertName);
 			if (files1.length > 1) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setTitle("Datei wählen");
+				builder.setTitle(R.string.text_chooseFile);
 				builder.setItems(files1, new DialogInterface.OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface dialogInterface, int pos) {
 						new File(mPreferences.getString("downloadPathPref", Environment.DIRECTORY_DOWNLOADS),
 								files1[pos]).delete();
-						showToast("Datei \"" + files1[pos] + "\" gelöscht");
+						// TODO String format %s...
+						showToast(getString(R.string.text_file) + " \"" + files1[pos] + "\" "
+								+ getString(R.string.text_deleted));
 					}
 				});
 				AlertDialog alert = builder.create();
@@ -156,9 +170,10 @@ public class Certifications extends nActivity {
 				Log.d(TAG, "Filename [" + files1[0] + "]");
 				new File(mPreferences.getString("downloadPathPref", Environment.DIRECTORY_DOWNLOADS), files1[0])
 						.delete();
-				showToast("Datei \"" + files1[0] + "\" gelöscht");
+				// TODO String format %s...
+				showToast(getString(R.string.text_file) + " \"" + files1[0] + "\"" + getString(R.string.text_deleted));
 			} else {
-				showToast("Datei nicht gefunden");
+				showToast(getString(R.string.fileNotFound));
 			}
 
 			return true;
@@ -169,7 +184,7 @@ public class Certifications extends nActivity {
 			final String[] files = getFilesWithName(currentCertName);
 			if (files.length > 1) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setTitle("Datei wählen");
+				builder.setTitle(R.string.text_chooseFile);
 				builder.setItems(files, new DialogInterface.OnClickListener() {
 
 					@Override
@@ -195,7 +210,7 @@ public class Certifications extends nActivity {
 			final String[] filesCouldBeSend = getFilesWithName(currentCertName);
 			if (filesCouldBeSend.length > 1) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setTitle("Datei wählen");
+				builder.setTitle(R.string.text_chooseFile);
 				builder.setItems(filesCouldBeSend, new DialogInterface.OnClickListener() {
 
 					@Override
@@ -224,9 +239,9 @@ public class Certifications extends nActivity {
 		sendIntent.setType("application/pdf");
 		sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
 		sendIntent.putExtra(Intent.EXTRA_SUBJECT, currentCertName);
-		sendIntent.putExtra(Intent.EXTRA_TEXT, "Anhang: " + currentCertName);
+		sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.text_asAttachment) + currentCertName);
 
-		startActivity(Intent.createChooser(sendIntent, "Select Destination"));
+		startActivity(Intent.createChooser(sendIntent, getString(R.string.text_selectSendDestination)));
 
 	}
 
@@ -257,17 +272,17 @@ public class Certifications extends nActivity {
 			try {
 				startActivity(intent);
 			} catch (ActivityNotFoundException e) {
-				showToast("Keine Anwendung vorhanden um PDF Dateien zu Öffnen");
+				showToast(getString(R.string.error_NoPdfApp));
 			}
 		} else {
-			showToast("Datei \"" + file + "\" nicht gefunden.");
+			showToast(getString(R.string.text_file) + " \"" + file + "\" " + getString(R.string.text_NotFound));
 		}
 	}
 
 	private Handler downloadHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case 0:
+			case MSG_INIT_DOWNLOAD:
 				mProgressDialog.setProgress(0);
 				break;
 			case 1:
@@ -276,32 +291,40 @@ public class Certifications extends nActivity {
 			case 2:
 				// mProgressDialog.setMessage("Connection established");
 				break;
-			case 10:
+			case MSG_SET_DOWNLOAD_SIZE:
 				contentLengthPercent = contentLength / 100;
 				break;
-			case 11:
+			case MSG_UPDATE_DOWNLOAD_PROGRESS:
 				int progress = writtenBytes / contentLengthPercent;
 				mProgressDialog.setProgress(progress);
 				// Log.d(TAG, "Content written:" + progress + "%");
 				break;
-			case 12:
-				showToast("Download erfolgreich.");
+			case MSG_DOWNLOAD_FINISHED:
+				showToast(getString(R.string.success_downloadComplete));
 				mProgressDialog.dismiss();
 				writtenBytes = 0;
 				break;
-			case 13:
+			case MSG_DOWNLOAD_FINISHED_AND_OPEN_FILE:
+				mProgressDialog.dismiss();
+				writtenBytes = 0;
 				openPDF(currentFile);
-				mProgressDialog.dismiss();
-				writtenBytes = 0;
 				break;
-			case 14:
+			case MSG_DOWNLOAD_FINISHED_AND_SEND_FILE:
 				sendEmailWithAttachment(currentFile);
 				mProgressDialog.dismiss();
 				writtenBytes = 0;
 				break;
-			case 99:
+			case MSG_URL_ERROR:
+			case MSG_IO_ERROR:
+				if (t != null && t.isAlive()) {
+					t.interrupt();
+				}
 				mProgressDialog.dismiss();
-				showToast("Download fehlgeschlagen");
+				showToast(getString(R.string.error_DownloadFailed));
+				break;
+			case MSG_DOWNLOAD_CANCELED:
+				mProgressDialog.dismiss();
+				showToast(getString(R.string.error_downloadCanceled));
 			default:
 				break;
 			}
@@ -350,10 +373,12 @@ public class Certifications extends nActivity {
 	private synchronized void doDownload(final String url, final File fileToSafeAt, final boolean openFile,
 			final boolean sendFile) {
 		showDialog(DIALOG_PROGRESS);
-		mProgressDialog.setMessage("Download von " + fileToSafeAt.getName());
-		mProgressDialog.setTitle("test");
+		// XXX setMessage muss zweimal gesetzt werden??? einmal onCreateDialog
+		// und einmal hier?!?
+		mProgressDialog.setMessage("Download " + currentCertName);
 
-		Thread t = new Thread() {
+		t = new Thread() {
+			boolean stopThread = false;
 
 			public void run() {
 				try {
@@ -364,15 +389,22 @@ public class Certifications extends nActivity {
 
 				} catch (Exception e) {
 					mProgressDialog.dismiss();
-					showToast("Ungültige Antwort vom Server");
+					showToast(getString(R.string.error_invalidServerResponse) + e.getMessage());
 					e.printStackTrace();
 				}
 				Looper.loop();
 			}
 
-			private synchronized void DownloadFromUrl(String url, File file) {
+			@Override
+			public void interrupt() {
+				// TODO Auto-generated method stub
+				super.interrupt();
+				stopThread = true;
+			}
 
-				downloadHandler.sendEmptyMessage(0);
+			private void DownloadFromUrl(String url, File file) {
+
+				downloadHandler.sendEmptyMessage(MSG_INIT_DOWNLOAD);
 				final String USER_AGENT = TAG + "/" + 1;
 				final HttpPost httpPost = new HttpPost(url);
 				httpPost.addHeader("User-Agent", USER_AGENT);
@@ -381,7 +413,7 @@ public class Certifications extends nActivity {
 				httpPost.setHeader(cookieHeader.get(0));
 
 				try {
-					downloadHandler.sendEmptyMessage(1);
+					// downloadHandler.sendEmptyMessage(1);
 					HttpClient mHttpClient = new DefaultHttpClient();
 
 					HttpResponse response = mHttpClient.execute(httpPost);
@@ -390,16 +422,18 @@ public class Certifications extends nActivity {
 					StatusLine status = response.getStatusLine();
 
 					if (status.getStatusCode() != HttpStatus.SC_OK) {
-						throw new RuntimeException("Ungültige Antwort vom Server: " + status.toString());
+						throw new RuntimeException(getString(R.string.error_invalidServerResponse) + ": "
+								+ status.toString());
 					}
-					downloadHandler.sendEmptyMessage(2);
+					// downloadHandler.sendEmptyMessage(2);
 
 					// Hole Content Stream
 					final HttpEntity entity = response.getEntity();
 
 					contentLength = (int) entity.getContentLength();
 					Log.d(TAG, "ContentLenght:" + contentLength);
-					downloadHandler.sendEmptyMessage(10);
+					// FIXME größe mit Message übermitteln
+					downloadHandler.sendEmptyMessage(MSG_SET_DOWNLOAD_SIZE);
 
 					OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 					InputStream inStream = entity.getContent();
@@ -408,31 +442,36 @@ public class Certifications extends nActivity {
 
 					int readBytes;
 
-					while ((readBytes = inStream.read(buffer)) != -1) {
+					while ((readBytes = inStream.read(buffer)) != -1 && !stopThread) {
 
 						out.write(buffer, 0, readBytes);
 
 						writtenBytes += readBytes;
-						downloadHandler.sendEmptyMessage(11);
+						downloadHandler.sendEmptyMessage(MSG_UPDATE_DOWNLOAD_PROGRESS);
 					}
+
 					inStream.close();
 					out.close();
 					entity.consumeContent();
-					notifyAll();
-					if (openFile) {
-						downloadHandler.sendEmptyMessage(13);
-					} else if (sendFile) {
-						downloadHandler.sendEmptyMessage(14);
+					if (!stopThread) {
+						if (openFile) {
+							downloadHandler.sendEmptyMessage(MSG_DOWNLOAD_FINISHED_AND_OPEN_FILE);
+						} else if (sendFile) {
+							downloadHandler.sendEmptyMessage(MSG_DOWNLOAD_FINISHED_AND_SEND_FILE);
+						} else {
+							downloadHandler.sendEmptyMessage(MSG_DOWNLOAD_FINISHED);
+						}
 					} else {
-						downloadHandler.sendEmptyMessage(12);
+						downloadHandler.sendEmptyMessage(MSG_DOWNLOAD_CANCELED);
+						file.delete();
 					}
 				} catch (MalformedURLException e) {
 					Log.d(TAG, "malformedURL");
-					downloadHandler.sendEmptyMessage(99);
+					downloadHandler.sendEmptyMessage(MSG_URL_ERROR);
 					e.printStackTrace();
 				} catch (IOException e) {
 					Log.d(TAG, "IO Exception");
-					downloadHandler.sendEmptyMessage(99);
+					downloadHandler.sendEmptyMessage(MSG_IO_ERROR);
 					e.printStackTrace();
 				}
 
@@ -448,12 +487,29 @@ public class Certifications extends nActivity {
 		case DIALOG_PROGRESS:
 			mProgressDialog = new ProgressDialog(this);
 			mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-			mProgressDialog.setCancelable(false);
+			mProgressDialog.setMessage("Download " + currentCertName);
+			// FIXME Thread nicht abbrechbar..
+			mProgressDialog.setCancelable(true);
+			mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					Log.d(TAG, "Cancel Download");
+					// Wenn Thread noch läuft, beenden
+					if (t != null) {// && t.isAlive()) {
+						Log.d(TAG, "Interupt Thread");
+						// FIXME .. thread läuft trotzdem weiter
+						t.interrupt();
+					}
+					// File Löschen, könnte unvollständig sein
+					currentFile.delete();
+
+				}
+			});
 			return mProgressDialog;
 		case DIALOG_OPEN_FILE_NOT_FOUND:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle("Datei nicht gefunden");
-			builder.setMessage("Soll die Datei Heruntergeladen werden?");
+			builder.setTitle(R.string.fileNotFound);
+			builder.setMessage(R.string.downloadFileQuestion);
 			builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
 				@Override
@@ -462,7 +518,7 @@ public class Certifications extends nActivity {
 
 				}
 			});
-			builder.setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
+			builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
@@ -474,8 +530,8 @@ public class Certifications extends nActivity {
 			return alert;
 		case DIALOG_SEND_FILE_NOT_FOUND:
 			AlertDialog.Builder builderSendFileNotFoundDia = new AlertDialog.Builder(this);
-			builderSendFileNotFoundDia.setTitle("Datei nicht gefunden");
-			builderSendFileNotFoundDia.setMessage("Soll die Datei Heruntergeladen werden?");
+			builderSendFileNotFoundDia.setTitle(R.string.fileNotFound);
+			builderSendFileNotFoundDia.setMessage(R.string.downloadFileQuestion);
 			builderSendFileNotFoundDia.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
 				@Override
@@ -484,7 +540,7 @@ public class Certifications extends nActivity {
 
 				}
 			});
-			builderSendFileNotFoundDia.setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
+			builderSendFileNotFoundDia.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
@@ -496,7 +552,7 @@ public class Certifications extends nActivity {
 			return alertSendFileNotFoundDia;
 		case DIALOG_FILE_EXIST:
 			AlertDialog.Builder builderFileExistDia = new AlertDialog.Builder(this);
-			builderFileExistDia.setTitle("Datei existiert bereits");
+			builderFileExistDia.setTitle(R.string.fileExists);
 			final int OVERWRITE = 0;
 			final int RENAME = 1;
 			builderFileExistDia.setItems(R.array.ifFileExistArray, new DialogInterface.OnClickListener() {
@@ -517,7 +573,7 @@ public class Certifications extends nActivity {
 				}
 			});
 
-			builderFileExistDia.setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
+			builderFileExistDia.setNegativeButton(getText(R.string.cancel), new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					dialog.cancel();

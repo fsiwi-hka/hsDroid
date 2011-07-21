@@ -7,7 +7,7 @@
 	<string name="username">HS-Benutzername</string>
 	<string name="password">Passwort</string>
 	<string name="login">Anmelden</string>
-	<string name="cancel">Schließen</string>
+	<string name="cancel">Abbrechen</string>
 	<string name="error">Fehler</string>
 	<string name="error_name_missing">Bitte HS-Benutzernamen angeben.</string>
 	<string name="error_name_incorrect">HS-Benutzername ist falsch. Bsp.: mami1011</string>
@@ -30,7 +30,7 @@
 	<string name="title_head_exam">Prüfung</string>
 	<string name="title_head_mark">Note</string>
 	
-	<string name="savePW_checkBox">Passwort speichern</string>
+	<string name="text_savePWcheckBox">Passwort speichern</string>
 	
 	<string name="grades_view">Notenspiegel</string>
 	<string name="grades_view_attempt">Versuch: </string>
@@ -54,10 +54,10 @@
 	<string name="label_set_preferences">Einstellungen</string>
 	
 	<string-array name="defaultViewListArray">
-		<item>Alle Prüfungen</item>
-		<item>Aktuelle Prüfungen</item>
-		<item>Aktuelle nicht bestandene Prüfungen</item>
-		<item>Alle nicht bestandenen Prüfungen</item>
+		<item>@string/submenu_examViewAll</item>
+		<item>@string/submenu_examViewOnlyLast</item>
+		<item>@string/submenu_examViewOnlyLastFailed</item>
+		<item>@string/submenu_examViewAllFailed</item>
 	</string-array>
 	
 	<string-array name="defaultViewListValues">
@@ -87,6 +87,25 @@
 		<item>Überschreiben</item>
 		<item>Umbenennen</item>
 	</string-array>
+		<string name="fileExists">Datei existiert bereits</string>
+		<string name="fileNotFound">Datei nicht gefunden</string>
+		<string name="downloadFileQuestion">Soll die Datei Heruntergeladen werden?</string>
+		<string name="error_invalidServerResponse">Ungültige Antwort vom Server</string>
+		<string name="error_DownloadFailed">Download fehlgeschlagen</string>
+		<string name="success_downloadComplete">Download erfolgreich.</string>
+		<string name="error_NoPdfApp">Keine Anwendung vorhanden um PDF Dateien zu Öffnen</string>
+		<string name="text_file">Datei</string>
+		<string name="text_NotFound">nicht gefunden</string>
+		<string name="text_selectSendDestination">Versenden über</string>
+		<string name="text_chooseFile">Datei wählen</string>
+		<string name="text_deleted">gelöscht</string>
+		<string name="title_Certifications">Bescheinigungen</string>
+		<string name="title_certContextMenu_selectAction">Aktion wählen</string>
+		<string name="text_initialize">Initialisieren..</string>
+		<string name="error_noGradeDistributionAvailableForX">Keine Notenverteilung für %s verfügbar</string>
+		<string name="info_updateGradesList">Aktualisiere Notenspiegel...</string>
+		<string name="text_asAttachment">Anhang: </string>
+		<string name="error_downloadCanceled">Download abgebrochen</string>
 
 
 
