@@ -436,7 +436,7 @@ public class GradesList extends nActivity {
 		int year = dt.getYear() - 100;
 		int month = dt.getMonth() + 1;
 		// Log.d(TAG, "actualSemTest: mon:" + month + " yr:" + year);
-		if (month > 9 && month < 3) { // zwischen okt und feb ist WS
+		if (month > 9 || month < 3) { // zwischen okt und feb ist WS
 			// wenn nicht januar oder februar ist, jahr+1
 			if (month != (1 | 2)) {
 				year++;
