@@ -14,9 +14,9 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
@@ -56,6 +56,8 @@ public class GradesList extends nActivity {
 	private ProgressDialog mProgressDialog = null;
 
 	private SharedPreferences mPreferences;
+
+	private ExamInfoThread mExamInfoThread;
 
 	private boolean autoUpdate;
 	private boolean forceAutoUpdate = false;
@@ -150,44 +152,12 @@ public class GradesList extends nActivity {
 						showTitleProgress();
 						showToast("Lade Notenverteilung für " + name + ".");
 						setRequestedOrientation(2);
-						Thread t = new Thread() {
-							public void run() {
-								try {
-									Looper.prepare();
+						// //
+						// startThread
 
-									// ContentProvider öffnen
-									final ContentResolver resolver = getContentResolver();
-									// Cursor setzen
-
-									examinfoCursor = resolver.query(ExamInfos.CONTENT_URI, null, null,
-											new String[] { out }, null);
-									startManagingCursor(examinfoCursor);
-									examinfoCursor.moveToFirst();
-
-									// Dem Handler bescheid sagen, dass die
-									// Daten
-									// nun
-									// verfügbar sind
-									Message oMessage = mProgressHandle.obtainMessage();
-									Bundle oBundle = new Bundle();
-
-									oBundle.putString("Name", name);
-									oBundle.putString("Nr", nr);
-									oBundle.putString("Semester", semester);
-
-									oMessage.setData(oBundle);
-									oMessage.what = HANDLER_MSG_INFO_READY;
-									mProgressHandle.sendMessage(oMessage);
-
-								} catch (Exception e) {
-									dismissDialog(DIALOG_PROGRESS);
-									createDialog(GradesList.this.getString(R.string.error), e.getMessage());
-									e.printStackTrace();
-								}
-								Looper.loop();
-							}
-						};
-						t.start();
+						mExamInfoThread = new ExamInfoThread();
+						mExamInfoThread.execute(new String[] { name, nr, semester, out });
+						// //
 					} else {
 						String gradeDistribError = String.format(
 								getString(R.string.error_noGradeDistributionAvailableForX), name);
@@ -254,6 +224,7 @@ public class GradesList extends nActivity {
 				// Bildschirm Orientierung wieder dem User überlassen
 				setRequestedOrientation(-1);
 				hideTitleProgress();
+				updateThread.cancel(true);
 				break;
 			case HANDLER_MSG_ERROR:
 				showToast("Error, check logcat.");
@@ -270,6 +241,8 @@ public class GradesList extends nActivity {
 						.getData().getString("Semester"), examinfoCursor);
 				// dismissDialog(DIALOG_PROGRESS);
 				hideTitleProgress();
+				mExamInfoThread.cancel(true);
+
 				// schließe progress und zeige infodialog
 				break;
 
@@ -280,6 +253,7 @@ public class GradesList extends nActivity {
 			}
 		}
 	};
+	private UpdateThread updateThread;
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
@@ -409,10 +383,11 @@ public class GradesList extends nActivity {
 	}
 
 	private void clearDB() {
-		Thread clrDB = new Thread() {
-			public void run() {
+		AsyncTask<Void, Void, Void> clrDB = new AsyncTask<Void, Void, Void>() {
+
+			@Override
+			protected Void doInBackground(Void... params) {
 				try {
-					Looper.prepare();
 					final ContentResolver resolver = getContentResolver();
 					resolver.delete(ExamsCol.CONTENT_URI, null, null);
 
@@ -420,9 +395,10 @@ public class GradesList extends nActivity {
 					e.printStackTrace();
 
 				}
+				return null;
 			}
 		};
-		clrDB.start();
+		clrDB.execute();
 
 	}
 
@@ -433,32 +409,8 @@ public class GradesList extends nActivity {
 		showToast(getString(R.string.info_updateGradesList));
 
 		setRequestedOrientation(2);
-		Thread t = new Thread() {
-			public void run() {
-				try {
-					Looper.prepare();
-
-					// ContentProvider öffnen
-					final ContentResolver resolver = getContentResolver();
-					// Cursor setzen
-					final Cursor cursor = resolver.query(ExamsUpdateCol.CONTENT_URI, null, null, null, null);
-					startManagingCursor(cursor);
-
-					cursor.close();
-					// Dem Handler bescheid sagen, dass die Daten nun
-					// verfügbar sind
-					mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_REFRESH));
-
-				} catch (Exception e) {
-					mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_ERROR));
-					// hideTitleProgress();
-					createDialog(GradesList.this.getString(R.string.error), e.getMessage());
-					e.printStackTrace();
-				}
-				Looper.loop();
-			}
-		};
-		t.start();
+		this.updateThread = new UpdateThread();
+		this.updateThread.execute();
 
 	}
 
@@ -490,10 +442,113 @@ public class GradesList extends nActivity {
 				year++;
 			}
 			semString = "WiSe " + (year - 1) + "/" + year;
+
 		} else {// ansonsten SS
 			semString = "SoSe " + year;
 		}
 		return semString;
+	}
+
+	/**
+	 * 
+	 * @param nExam
+	 * @return
+	 */
+	private boolean isActualExam(String sem) {
+		return sem.equals(getActualExamSem());
+	}
+
+	// ///////
+	// Threads
+	// ///////
+
+	/**
+	 * Noten Update Thread
+	 * 
+	 * @author Oliver Eichner
+	 * 
+	 */
+	private class UpdateThread extends AsyncTask<Void, int[], Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+
+			try {
+				// ContentProvider öffnen
+				final ContentResolver resolver = getContentResolver();
+				// Cursor setzen
+				final Cursor cursor = resolver.query(ExamsUpdateCol.CONTENT_URI, null, null, null, null);
+				startManagingCursor(cursor);
+
+				cursor.close();
+
+			} catch (Exception e) {
+				mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_ERROR));
+				// hideTitleProgress();
+				createDialog(GradesList.this.getString(R.string.error), e.getMessage());
+				e.printStackTrace();
+			}
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			// Dem Handler bescheid sagen, dass die Daten nun
+			// verfügbar sind
+			mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_REFRESH));
+			super.onPostExecute(result);
+		}
+
+	}
+
+	/**
+	 * Thread für Notenverteilung
+	 * 
+	 * @author Oliver Eichner
+	 * 
+	 */
+	public class ExamInfoThread extends AsyncTask<String[], Integer, Bundle> {
+
+		@Override
+		protected Bundle doInBackground(String[]... params) {
+			try {
+				System.out.println("do..examinfothread");
+				// ContentProvider öffnen
+				final ContentResolver resolver = getContentResolver();
+				// Cursor setzen
+
+				// FIXME check ob 4 strings übergeben wurden..
+
+				String out = params[0][3];
+				examinfoCursor = resolver.query(ExamInfos.CONTENT_URI, null, null, new String[] { out }, null);
+				startManagingCursor(examinfoCursor);
+				examinfoCursor.moveToFirst();
+
+				// Dem Handler bescheid sagen, dass die
+				// Daten
+				// nun
+				// verfügbar sind
+				Message oMessage = mProgressHandle.obtainMessage();
+				Bundle oBundle = new Bundle();
+
+				// FIXME unnötiges rumgeschupse von daten.. name etc. über
+				// cursor holen..
+				oBundle.putString("Name", params[0][0]);
+				oBundle.putString("Nr", params[0][1]);
+				oBundle.putString("Semester", params[0][2]);
+
+				oMessage.setData(oBundle);
+				oMessage.what = HANDLER_MSG_INFO_READY;
+				mProgressHandle.sendMessage(oMessage);
+
+			} catch (Exception e) {
+				dismissDialog(DIALOG_PROGRESS);
+				createDialog(GradesList.this.getString(R.string.error), e.getMessage());
+				e.printStackTrace();
+			}
+			return null;
+		}
 	}
 
 	/**
@@ -737,15 +792,6 @@ public class GradesList extends nActivity {
 				return null;
 			}
 		}
-	}
-
-	/**
-	 * 
-	 * @param nExam
-	 * @return
-	 */
-	private boolean isActualExam(String sem) {
-		return sem.equals(getActualExamSem());
 	}
 
 }
