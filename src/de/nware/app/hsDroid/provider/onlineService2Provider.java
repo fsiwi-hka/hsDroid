@@ -337,7 +337,7 @@ public class onlineService2Provider extends ContentProvider {
 			cur.addRow(new Object[] { 0, columnValues[0], columnValues[1] });
 			return cur;
 		case EXAMINFOS:
-			cursor = getExamInfos(selectionArgs[0]);
+			cursor = getExamInfos(selectionArgs[0], false);
 			break;
 		case CERTIFICATIONS:
 			cursor = getCertifications();
@@ -356,8 +356,8 @@ public class onlineService2Provider extends ContentProvider {
 	 *            der/die/das info id
 	 * @return Der/Die/das exam infos
 	 */
-	private Cursor getExamInfos(String infoID) {
-		Log.d(TAG, "infoID:" + infoID + " asi:" + StaticSessionData.asiKey);
+	private Cursor getExamInfos(String infoID, boolean isSecondTry) {
+		// Log.d(TAG, "infoID:" + infoID + " asi:" + StaticSessionData.asiKey);
 
 		// FIXME Notenliste leer..?
 
@@ -421,7 +421,9 @@ public class onlineService2Provider extends ContentProvider {
 						+ mPreferences.getString("degreePref", "58") + "%2Cstgnr%3D1";
 
 				getResponse(notenSpiegelURLTmpl);
-				return getExamInfos(infoID);
+				if (!isSecondTry) {
+					return getExamInfos(infoID, true);
+				}
 
 			}
 
@@ -581,14 +583,10 @@ public class onlineService2Provider extends ContentProvider {
 		mOpenHelper.updateDBUser();
 
 		final String notenSpiegelURLTmpl = urlBase
-				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=studiengang&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D"
+				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D"
 				+ mPreferences.getString("degreePref", "58") + "%2Cstgnr%3D1&expand=1&asi=" + StaticSessionData.asiKey
 				+ "#auswahlBaum%7Cabschluss%3Aabschl%3D" + mPreferences.getString("degreePref", "58") + "%2Cstgnr%3D1";
-		// Master 59
-		final String notenSpiegelMasterURLTmpl = urlBase
-				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=studiengang&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D59%2Cstgnr%3D1&expand=1&asi="
-				+ StaticSessionData.asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D59%2Cstgnr%3D1";
-
+		Log.d(TAG, "url: " + notenSpiegelURLTmpl);
 		String response = getResponse(notenSpiegelURLTmpl);
 
 		BufferedReader rd = new BufferedReader(new StringReader(response));
