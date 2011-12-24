@@ -23,7 +23,8 @@ ToDo:
 		
 	
 	sqlite 
-	-	optional machen
+	-	optional machen?
+	-	db norm. semester
 	-	service erstellen der im hintergrund die noten abfrägt, info bei neuen noten
 		als update service eintragen
 	
@@ -51,22 +52,25 @@ ToDo:
 
 __________
 Changelog:
-21 jul.2011 - v0.2.1
+09.nov.2011
+	fix für notenupdate und notenvertielung threads
+	fix titlebar background
+21.jul.2011 - v0.2.1
 	unterstützung für master studiengänge
 	
-20 jul.2011 - v0.2.0
+20.jul.2011 - v0.2.0
 	bescheinigungen
 		-handling von mehreren dateien.. noch stark verbesserungs bedürftig ;)
 		
-19 jul.2011
+19.jul.2011
 	versenden von pdfs
 	öffnen von pdfs
 	löschen von pdfs
-18 jul.2011
+18.jul.2011
 	löschen aller lokalen einstellungen
 	downloadverzeichnis wählbar, aber nur root der sd karte
 	
-14 jul.2011
+14.jul.2011
 	autologin hängt jetzt von gespeichertem passwort ab.
 	cookie reuse fix
 	fix für anmeldung von anderem benutzer (cookie löschen, datenbank neu aufbauen)

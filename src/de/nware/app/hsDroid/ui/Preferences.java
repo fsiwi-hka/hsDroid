@@ -1,5 +1,6 @@
 package de.nware.app.hsDroid.ui;
 
+import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Toast;
 import de.nware.app.hsDroid.R;
 import de.nware.app.hsDroid.data.StaticSessionData;
@@ -25,6 +27,10 @@ public class Preferences extends PreferenceActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		ActionBar aBar = getActionBar();
+		aBar.setHomeButtonEnabled(true);
+
 		addPreferencesFromResource(R.xml.preferences);
 
 		updateSummaries();
@@ -187,5 +193,23 @@ public class Preferences extends PreferenceActivity {
 		// TODO Auto-generated method stub
 		super.onResume();
 		updateSummaries();
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Log.d(TAG, "unkown itemID: " + item.getItemId() + " title: " + item.getTitle());
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			// app icon in action bar clicked; go home
+			Intent intent = new Intent(this, Dashboard.class);
+			// Falls Activity schon läuft, kein neue starten, sondern alle
+			// Activities die darüber ligen schließen und wechseln.
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+			return true;
+		default:
+			Log.d(TAG, "unkown itemID: " + item.getItemId() + " title: " + item.getTitle());
+			return super.onOptionsItemSelected(item);
+		}
 	}
 }

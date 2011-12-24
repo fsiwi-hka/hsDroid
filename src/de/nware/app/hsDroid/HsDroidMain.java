@@ -278,6 +278,8 @@ public class HsDroidMain extends nActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+
+		Log.d(TAG, "unkown itemID: " + item.getItemId() + " title: " + item.getTitle());
 		switch (item.getItemId()) {
 		case R.id.menu_preferences:
 			Intent settingsActivity = new Intent(getBaseContext(), Preferences.class);

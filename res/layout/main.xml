@@ -1,26 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:baselineAligned="true" android:layout_gravity="center"
-	android:layout_height="match_parent" android:layout_width="match_parent" android:orientation="horizontal">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:baselineAligned="true"
+    android:orientation="horizontal" >
 
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/top"
+        android:gravity="center" >
 
-	<RelativeLayout android:id="@+id/relativeLayout1"
-		android:layout_width="match_parent" android:gravity="center"
-		android:layout_height="match_parent" android:layout_marginTop="@dimen/top">
-		
-		<EditText android:id="@+id/username" android:layout_width="match_parent" android:layout_height="wrap_content"
-			android:hint="@string/username" android:layout_alignParentLeft="true"
-			android:layout_alignParentRight="true" android:imeOptions="actionNext" android:inputType="text|textPersonName"></EditText>
-		<EditText android:id="@+id/password" android:layout_height="wrap_content" android:layout_width="match_parent"
-			android:hint="@string/password" android:password="true"
-			android:layout_below="@+id/username" android:imeOptions="actionDone" android:inputType="textPassword"></EditText>
-		<CheckBox android:layout_height="wrap_content" android:id="@+id/login_checkBox"
-			android:text="@string/text_savePWcheckBox" android:layout_width="match_parent"
-			android:layout_below="@+id/password"></CheckBox>
-		<Button android:text="@string/login" android:id="@+id/login"
-			android:layout_alignParentBottom="true" android:layout_width="match_parent"
-			android:layout_height="wrap_content"></Button>
-	</RelativeLayout>
+        <EditText
+            android:id="@+id/username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:hint="@string/username"
+            android:imeOptions="actionNext"
+            android:inputType="text|textPersonName" >
+        </EditText>
 
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/username"
+            android:hint="@string/password"
+            android:imeOptions="actionGo"
+            android:inputType="textPassword"
+            android:password="true" >
+        </EditText>
+
+        <CheckBox
+            android:id="@+id/login_checkBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/password"
+            android:text="@string/text_savePWcheckBox" >
+        </CheckBox>
+
+        <Button
+            android:id="@+id/login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="@string/login" >
+        </Button>
+    </RelativeLayout>
 
 </LinearLayout>

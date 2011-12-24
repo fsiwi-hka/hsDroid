@@ -8,7 +8,7 @@
 			android:defaultValue="false" android:summary="Automatische Anmeldung beim Start."
 			android:key="autoLoginPref" android:dependency="saveLoginDataPref"/>
 			<ListPreference android:title="Abschluß"
-			android:summary="Angestrebter Abschluß."
+			android:summary="Angestrebter Abschluß." 
 			android:key="degreePref" android:entries="@array/degreeEntryArray" android:entryValues="@array/degreeValueArray"/>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="Notenspiegel">

@@ -1,6 +1,10 @@
 package de.nware.app.hsDroid.ui;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -13,6 +17,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,6 +26,7 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +36,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.SectionIndexer;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import de.nware.app.hsDroid.R;
@@ -45,6 +52,9 @@ import de.nware.app.hsDroid.provider.onlineService2Data.ExamsUpdateCol;
  * 
  */
 public class GradesList extends nActivity {
+
+	private static final String MASTER_ID = "59";
+	private static final String BACHELOR_ID = "58";
 
 	private static final String TAG = "GradesListActivity";
 	private ListView lv;
@@ -95,7 +105,7 @@ public class GradesList extends nActivity {
 		}
 
 		boolean noDegreeSelected = false;
-		if (mPreferences.getString("degreePref", "").equals("")) {
+		if (mPreferences.getString("degreePref", "0").equals("0")) {
 			selectDegree();
 			forceAutoUpdate = false;
 			noDegreeSelected = true;
@@ -182,10 +192,10 @@ public class GradesList extends nActivity {
 				Editor ed = mPreferences.edit();
 				switch (which) {
 				case BACHELOR:
-					ed.putString("degreePref", "58");
+					ed.putString("degreePref", BACHELOR_ID);
 					break;
 				case MASTER:
-					ed.putString("degreePref", "59");
+					ed.putString("degreePref", MASTER_ID);
 					break;
 				default:
 					break;
@@ -468,10 +478,12 @@ public class GradesList extends nActivity {
 	 * @author Oliver Eichner
 	 * 
 	 */
-	private class UpdateThread extends AsyncTask<Void, int[], Void> {
+	private class UpdateThread extends AsyncTask<Void, int[], String> {
+
+		private boolean error = false;
 
 		@Override
-		protected Void doInBackground(Void... params) {
+		protected String doInBackground(Void... params) {
 
 			try {
 				// ContentProvider öffnen
@@ -479,25 +491,34 @@ public class GradesList extends nActivity {
 				// Cursor setzen
 				final Cursor cursor = resolver.query(ExamsUpdateCol.CONTENT_URI, null, null, null, null);
 				startManagingCursor(cursor);
-
+				// TODO
+				// resultat von update [neu,gesamt]
 				cursor.close();
 
 			} catch (Exception e) {
-				mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_ERROR));
-				// hideTitleProgress();
-				createDialog(GradesList.this.getString(R.string.error), e.getMessage());
+				error = true;
 				e.printStackTrace();
+				return e.getMessage();
+
 			}
 
 			return null;
 		}
 
 		@Override
-		protected void onPostExecute(Void result) {
+		protected void onPostExecute(String result) {
+
 			// Dem Handler bescheid sagen, dass die Daten nun
 			// verfügbar sind
-			mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_REFRESH));
-			super.onPostExecute(result);
+			if (error) {
+				mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_ERROR));
+				// hideTitleProgress();
+				createDialog(GradesList.this.getString(R.string.error), result);
+			} else {
+
+				mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_REFRESH));
+				super.onPostExecute(result);
+			}
 		}
 
 	}
@@ -552,12 +573,14 @@ public class GradesList extends nActivity {
 	}
 
 	/**
+	 * CursorAdapter für die Datenbank
 	 * 
 	 * @author Oliver Eichner
 	 * 
 	 */
-	public class ExamDBAdapter extends SimpleCursorAdapter {
+	public class ExamDBAdapter extends SimpleCursorAdapter implements SectionIndexer {
 
+		private SemesterIndexer semIndexer;
 		private Context context;
 		private int layout;
 		private String currentSem;
@@ -566,101 +589,32 @@ public class GradesList extends nActivity {
 			super(context, layout, cursor, from, to);
 			this.context = context;
 			this.layout = layout;
+			this.currentSem = "";
+
+			semIndexer = new SemesterIndexer(cursor, cursor.getColumnIndex(ExamsCol.SEMESTER));
 			Log.d(TAG, "Create ExamAdapter");
+
 		}
 
 		@Override
 		public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
-			// Log.d(TAG, "exAdapter newView");
-			Cursor c = getCursor();
+
+			int nameCol = cursor.getColumnIndex(ExamsCol.EXAMNAME);
+			String name = cursor.getString(nameCol);
+			// System.out.println("newView: " + name);
 
 			final LayoutInflater inflater = LayoutInflater.from(context);
 			View v = inflater.inflate(layout, viewGroup, false);
-
-			int nameCol = c.getColumnIndex(ExamsCol.EXAMNAME);
-			String name = c.getString(nameCol);
-			int rnCol = c.getColumnIndex(ExamsCol.EXAMNR);
-			String nr = c.getString(rnCol);
-			int attCol = c.getColumnIndex(ExamsCol.ATTEMPTS);
-			int att = c.getInt(attCol);
-			int gradeCol = c.getColumnIndex(ExamsCol.GRADE);
-			String grade = c.getString(gradeCol);
-			int semCol = c.getColumnIndex(ExamsCol.SEMESTER);
-			String sem = c.getString(semCol);
-			int passedCol = c.getColumnIndex(ExamsCol.PASSED);
-			int passed = c.getInt(passedCol);
-
-			// Log.d(TAG, "name: " + name);
-			// Log.d(TAG, "nr: " + nr);
-			// Log.d(TAG, "att: " + att);
-			// Log.d(TAG, "grade:" + grade);
-			// Log.d(TAG, "sem:" + sem);
-			// Log.d(TAG, "passed:" + passed);
-
-			/**
-			 * Next set the name of the entry.
-			 */
-			TextView exName = (TextView) v.findViewById(R.id.examName);
-
-			TextView exNr = (TextView) v.findViewById(R.id.examNr);
-
-			TextView exAtt = (TextView) v.findViewById(R.id.examAttempts);
-			TextView exGrade = (TextView) v.findViewById(R.id.examGrade);
-			TextView exSemester = (TextView) v.findViewById(R.id.examSemester);
-
-			if (exName != null) {
-				exName.setText(name);
-				if (isActualExam(sem) && mPreferences.getBoolean("highlightActualExamsPref", false)) {
-					exName.setShadowLayer(3, 0, 0, Color.GREEN);
-				} else {
-					exName.setShadowLayer(0, 0, 0, 0);
-				}
-			}
-			if (exNr != null) {
-				exNr.setText(nr);
-			}
-			if (exSemester != null) {
-				exSemester.setText(getApplicationContext().getString(R.string.grades_view_semester) + sem);
-			}
-			if (exAtt != null && att != 0) {
-				exAtt.setText(getApplicationContext().getString(R.string.grades_view_attempt) + att);
-			}
-			if (exGrade != null) {
-				if (passed == 0) {
-					// FIXME wenn möglich.. farben gedöns is ziemlich tricky
-					// wegen "recycler" von ListActivity
-					if (att > 1) {
-						exGrade.setTextColor(Color.BLACK);
-						exGrade.setBackgroundColor(Color.RED);
-						exGrade.setCompoundDrawablePadding(2);
-
-					} else {
-						exGrade.setTextColor(Color.RED);
-						exGrade.setBackgroundColor(Color.TRANSPARENT);
-					}
-				} else {
-					exGrade.setTextColor(Color.rgb(0x87, 0xeb, 0x0c));
-
-					exGrade.setBackgroundColor(Color.TRANSPARENT);
-				}
-				if (grade != "") {
-					exGrade.setText(grade);
-				} else {
-					if (passed == 0)
-						exGrade.setText("NB");
-					else
-						exGrade.setText("BE");
-				}
-			}
 
 			return v;
 		}
 
 		@Override
 		public void bindView(View v, Context context, Cursor c) {
-			// Log.d(TAG, "exAdapter bindView");
+
 			int nameCol = c.getColumnIndex(ExamsCol.EXAMNAME);
 			String name = c.getString(nameCol);
+			// System.out.println("bindView: " + name);
 			int rnCol = c.getColumnIndex(ExamsCol.EXAMNR);
 			String nr = c.getString(rnCol);
 			int attCol = c.getColumnIndex(ExamsCol.ATTEMPTS);
@@ -677,6 +631,15 @@ public class GradesList extends nActivity {
 			TextView exAtt = (TextView) v.findViewById(R.id.examAttempts);
 			TextView exGrade = (TextView) v.findViewById(R.id.examGrade);
 			TextView exSemester = (TextView) v.findViewById(R.id.examSemester);
+			TextView exSeparator = (TextView) v.findViewById(R.id.semSeparator);
+
+			if (currentSem.equals(sem)) {
+				exSeparator.setVisibility(View.GONE);
+			} else {
+				currentSem = sem;
+				exSeparator.setText(sem);
+				// exSeparator.setVisibility(View.VISIBLE);
+			}
 
 			if (exName != null) {
 				exName.setText(name);
@@ -732,7 +695,7 @@ public class GradesList extends nActivity {
 		}
 
 		public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
-			// Log.d(TAG, "runQueryOnBackgroundThread");
+			Log.d(TAG, "runQueryOnBackgroundThread");
 			// Log.d(TAG, "rqbg constraint: " + constraint);
 
 			String sortOrder = BaseColumns._ID + " " + getDefaultListOrder();
@@ -791,6 +754,127 @@ public class GradesList extends nActivity {
 			} else {
 				return null;
 			}
+		}
+
+		@Override
+		public int getPositionForSection(int section) {
+			return semIndexer.getPositionForSection(section);
+		}
+
+		@Override
+		public int getSectionForPosition(int position) {
+			return semIndexer.getSectionForPosition(position);
+		}
+
+		@Override
+		public Object[] getSections() {
+			return semIndexer.getSections();
+		}
+
+	}
+
+	public class SemesterIndexer extends DataSetObserver implements SectionIndexer {
+
+		private HashMap<String, Integer> semMap;
+
+		private SparseIntArray mSemCacheMap;
+
+		private String[] mSemesterSections;
+		private int mSemesters;
+		/**
+		 * Cursor
+		 */
+		protected Cursor mExamsCursor;
+
+		/**
+		 * Semester Column in ExamDB
+		 */
+		protected int mColumnIndex;
+		private final String tag = "SemesterIndexer";
+
+		public SemesterIndexer(Cursor cursor, int columnIndex) {
+			this.mExamsCursor = cursor;
+
+			this.mColumnIndex = columnIndex;
+
+			semMap = new HashMap<String, Integer>();
+
+			cursor.moveToFirst();
+			int index = 0;
+			while (!cursor.isAfterLast()) {
+				System.out.println();
+				String acSem = cursor.getString(mColumnIndex).substring(5);
+				if (!acSem.isEmpty()) {
+
+					semMap.put(acSem, index - 1);
+					Log.d(tag, "id: " + index + " sem: " + cursor.getString(cursor.getColumnIndex(ExamsCol.SEMESTER)));
+				} else {
+					Log.e(tag, "cursor empty: " + index);
+				}
+
+				cursor.moveToNext();
+				index++;
+
+			}
+			cursor.moveToFirst();
+			ArrayList<String> sectionList = new ArrayList<String>(semMap.keySet());
+
+			Collections.sort(sectionList);
+
+			mSemesterSections = new String[sectionList.size()];
+			sectionList.toArray(mSemesterSections);
+			mSemesters = mSemesterSections.length;
+
+			for (String string : mSemesterSections) {
+				System.out.println("section: " + string);
+			}
+
+			mSemCacheMap = new SparseIntArray(mSemesters);
+			if (cursor != null) {
+				cursor.registerDataSetObserver(this);
+			}
+			cursor.moveToFirst();
+
+		}
+
+		@Override
+		public int getPositionForSection(int sectionIndex) {
+			boolean got = false;
+			for (Entry<String, Integer> ent : semMap.entrySet()) {
+
+				if (got) {
+					if (!ent.getKey().equals(mSemesterSections[sectionIndex])) {
+						got = false;
+						return ent.getValue();
+					}
+					continue;
+				}
+
+				if (ent.getKey().equals(mSemesterSections[sectionIndex])) {
+					System.out.println("val: " + ent.getValue());
+					got = true;
+					return ent.getValue();
+				}
+			}
+			return 0;
+			// System.out.println("sectionIndex: " + sectionIndex);
+			// cursor.requery();
+			// if (mExamsCursor.isClosed()) {
+			// System.out.println("cursor closed??");
+			// }
+			// return sectionIndex;
+		}
+
+		@Override
+		public int getSectionForPosition(int position) {
+			System.out.println("position: " + position);
+			return 0; // Don't recognize the letter - falls under zero'th
+						// section
+		}
+
+		@Override
+		public Object[] getSections() {
+			return mSemesterSections;
 		}
 	}
 

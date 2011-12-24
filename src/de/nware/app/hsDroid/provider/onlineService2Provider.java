@@ -367,7 +367,6 @@ public class onlineService2Provider extends ContentProvider {
 				+ "%2Cstgnr%3D1%7Cstudiengang%3Astg%3DIB%7CpruefungOnTop%3Alabnr%3D" + infoID + "&expand=0&asi="
 				+ StaticSessionData.asiKey;
 
-		// FIXME Workaround
 		String response = getResponse(examInfoURL);
 
 		BufferedReader rd = new BufferedReader(new StringReader(response));
@@ -413,6 +412,7 @@ public class onlineService2Provider extends ContentProvider {
 			try {
 				returnCursor = parseExamInfo(htmlContentString);
 			} catch (Exception e) {
+
 				Log.d(TAG, "examInfoParser Error: " + e.getMessage());
 				final String notenSpiegelURLTmpl = urlBase
 						+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=studiengang&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D"
@@ -420,8 +420,9 @@ public class onlineService2Provider extends ContentProvider {
 						+ StaticSessionData.asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D"
 						+ mPreferences.getString("degreePref", "58") + "%2Cstgnr%3D1";
 
-				getResponse(notenSpiegelURLTmpl);
+				// FIXME Workaround
 				if (!isSecondTry) {
+					getResponse(notenSpiegelURLTmpl);
 					return getExamInfos(infoID, true);
 				}
 
@@ -506,10 +507,11 @@ public class onlineService2Provider extends ContentProvider {
 	 * Stellt HTTP Anfrage und liefert deren Antwort zurück.
 	 * 
 	 * @param url
-	 *            die formatierte URL
-	 * @return die HTML/XML Antwort
+	 *            die formatierte URL als {@link String}
+	 * @return die HTML/XML Antwort als {@link String}
 	 * @throws Exception
 	 */
+	// TODO URI verwenden?!?
 	private synchronized String getResponse(String url) {
 
 		Log.d(TAG, "URL: " + url);
