@@ -31,10 +31,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
@@ -55,6 +55,16 @@ import de.nware.app.hsDroid.R;
 import de.nware.app.hsDroid.data.StaticSessionData;
 import de.nware.app.hsDroid.provider.onlineService2Data.CertificationsCol;
 
+/**
+ * Activity zum herunterladen diverser Bescheinigungen.
+ * 
+ * Der Android DownloadManager kann hier nicht verwendet werden, da dieser kein
+ * https unterstützt :/
+ * 
+ * 
+ * @author Oliver Eichner
+ * @version 0.2
+ */
 public class Certifications extends nActivity {
 	private static final String TAG = "hsDroid-Certifications";
 	private SharedPreferences mPreferences;
@@ -325,6 +335,8 @@ public class Certifications extends nActivity {
 				showToast(getString(R.string.success_downloadComplete));
 				mProgressDialog.dismiss();
 				writtenBytes = 0;
+				dlThread.cancel(true);
+
 				break;
 			case MSG_DOWNLOAD_FINISHED_AND_OPEN_FILE:
 				mProgressDialog.dismiss();
@@ -343,10 +355,16 @@ public class Certifications extends nActivity {
 				}
 				mProgressDialog.dismiss();
 				showToast(getString(R.string.error_DownloadFailed));
+
+				dlThread.cancel(true);
+
 				break;
 			case MSG_DOWNLOAD_CANCELED:
 				mProgressDialog.dismiss();
 				showToast(getString(R.string.error_downloadCanceled));
+
+				dlThread.cancel(true);
+
 			default:
 				break;
 			}
@@ -379,6 +397,7 @@ public class Certifications extends nActivity {
 		Log.d(TAG, "certname: " + currentCertName);
 
 		String downloadPath = mPreferences.getString("downloadPathPref", defaultDLPath);
+		System.out.println(mPreferences + currentCertName + ".pdf");
 		currentFile = new File(downloadPath, currentCertName + ".pdf");
 
 		if (downloadFile) {
@@ -392,6 +411,136 @@ public class Certifications extends nActivity {
 		return currentFile;
 	}
 
+	/**
+	 * Async DownloadThread
+	 * 
+	 * @author Oliver Eichner
+	 * 
+	 */
+	private class DownloadThread extends AsyncTask<DownloadObject, Integer, Void> {
+		boolean stopThread = false;
+		DownloadObject dlObj;
+
+		@Override
+		protected Void doInBackground(final DownloadObject... params) {
+			this.dlObj = params[0];
+			// Cursor setzen
+			try {
+				downloadFromUrl(dlObj.url, dlObj.targetFile);
+			} catch (Exception e) {
+				mProgressDialog.dismiss();
+				showToast(getString(R.string.error_invalidServerResponse) + e.getMessage());
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+			// TODO Auto-generated method stub
+			super.onProgressUpdate(values);
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			// Dem Handler bescheid sagen, dass die Daten nun
+			// verfügbar sind
+			super.onPostExecute(result);
+		}
+
+		private synchronized void downloadFromUrl(String url, File file) {
+			downloadHandler.sendEmptyMessage(MSG_INIT_DOWNLOAD);
+			final String USER_AGENT = TAG + "/" + 1;
+			final HttpPost httpPost = new HttpPost(url);
+			httpPost.addHeader("User-Agent", USER_AGENT);
+			CookieSpecBase cookieSpecBase = new BrowserCompatSpec();
+			List<Header> cookieHeader = cookieSpecBase.formatCookies(StaticSessionData.cookies);
+			httpPost.setHeader(cookieHeader.get(0));
+
+			try {
+				// downloadHandler.sendEmptyMessage(1);
+				HttpClient mHttpClient = new DefaultHttpClient();
+				HttpResponse response = mHttpClient.execute(httpPost);
+
+				// Prüfen ob HTTP Antwort ok ist.
+				StatusLine status = response.getStatusLine();
+
+				if (status.getStatusCode() != HttpStatus.SC_OK) {
+					throw new RuntimeException(getString(R.string.error_invalidServerResponse) + ": "
+							+ status.toString());
+				}
+				// downloadHandler.sendEmptyMessage(2);
+
+				// Hole Content Stream
+				final HttpEntity entity = response.getEntity();
+
+				contentLength = (int) entity.getContentLength();
+				Log.d(TAG, "ContentLenght:" + contentLength);
+				// FIXME größe mit Message übermitteln
+				downloadHandler.sendEmptyMessage(MSG_SET_DOWNLOAD_SIZE);
+
+				OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+				InputStream inStream = entity.getContent();
+
+				byte[] buffer = new byte[1024];
+
+				int readBytes;
+
+				while ((readBytes = inStream.read(buffer)) != -1 && !stopThread) {
+
+					out.write(buffer, 0, readBytes);
+
+					writtenBytes += readBytes;
+					downloadHandler.sendEmptyMessage(MSG_UPDATE_DOWNLOAD_PROGRESS);
+				}
+
+				inStream.close();
+				out.close();
+				entity.consumeContent();
+				if (!stopThread) {
+					if (dlObj.openFile) {
+						downloadHandler.sendEmptyMessage(MSG_DOWNLOAD_FINISHED_AND_OPEN_FILE);
+					} else if (dlObj.sendFile) {
+						downloadHandler.sendEmptyMessage(MSG_DOWNLOAD_FINISHED_AND_SEND_FILE);
+					} else {
+						downloadHandler.sendEmptyMessage(MSG_DOWNLOAD_FINISHED);
+					}
+				} else {
+					downloadHandler.sendEmptyMessage(MSG_DOWNLOAD_CANCELED);
+					file.delete();
+				}
+			} catch (MalformedURLException e) {
+				Log.d(TAG, "malformedURL");
+				downloadHandler.sendEmptyMessage(MSG_URL_ERROR);
+				e.printStackTrace();
+			} catch (IOException e) {
+				Log.d(TAG, "IO Exception");
+				downloadHandler.sendEmptyMessage(MSG_IO_ERROR);
+				e.printStackTrace();
+			}
+
+		}
+
+	}
+
+	private class DownloadObject {
+		public File targetFile;
+		public String url;
+		public boolean openFile;
+		public boolean sendFile;
+
+		public DownloadObject(File targetFile, String url, boolean openFile, boolean sendFile) {
+			super();
+			this.targetFile = targetFile;
+			this.url = url;
+			this.openFile = openFile;
+			this.sendFile = sendFile;
+		}
+
+	}
+
+	DownloadThread dlThread;
+
 	private synchronized void doDownload(final String url, final File fileToSafeAt, final boolean openFile,
 			final boolean sendFile) {
 		showDialog(DIALOG_PROGRESS);
@@ -399,108 +548,10 @@ public class Certifications extends nActivity {
 		// und einmal hier?!?
 		mProgressDialog.setMessage("Download " + currentCertName);
 
-		t = new Thread() {
-			boolean stopThread = false;
-
-			public void run() {
-				try {
-					Looper.prepare();
-
-					// Cursor setzen
-					DownloadFromUrl(url, fileToSafeAt);
-
-				} catch (Exception e) {
-					mProgressDialog.dismiss();
-					showToast(getString(R.string.error_invalidServerResponse) + e.getMessage());
-					e.printStackTrace();
-				}
-				Looper.loop();
-			}
-
-			@Override
-			public void interrupt() {
-				// TODO Auto-generated method stub
-				super.interrupt();
-				stopThread = true;
-			}
-
-			private void DownloadFromUrl(String url, File file) {
-
-				downloadHandler.sendEmptyMessage(MSG_INIT_DOWNLOAD);
-				final String USER_AGENT = TAG + "/" + 1;
-				final HttpPost httpPost = new HttpPost(url);
-				httpPost.addHeader("User-Agent", USER_AGENT);
-				CookieSpecBase cookieSpecBase = new BrowserCompatSpec();
-				List<Header> cookieHeader = cookieSpecBase.formatCookies(StaticSessionData.cookies);
-				httpPost.setHeader(cookieHeader.get(0));
-
-				try {
-					// downloadHandler.sendEmptyMessage(1);
-					HttpClient mHttpClient = new DefaultHttpClient();
-
-					HttpResponse response = mHttpClient.execute(httpPost);
-
-					// Prüfen ob HTTP Antwort ok ist.
-					StatusLine status = response.getStatusLine();
-
-					if (status.getStatusCode() != HttpStatus.SC_OK) {
-						throw new RuntimeException(getString(R.string.error_invalidServerResponse) + ": "
-								+ status.toString());
-					}
-					// downloadHandler.sendEmptyMessage(2);
-
-					// Hole Content Stream
-					final HttpEntity entity = response.getEntity();
-
-					contentLength = (int) entity.getContentLength();
-					Log.d(TAG, "ContentLenght:" + contentLength);
-					// FIXME größe mit Message übermitteln
-					downloadHandler.sendEmptyMessage(MSG_SET_DOWNLOAD_SIZE);
-
-					OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-					InputStream inStream = entity.getContent();
-
-					byte[] buffer = new byte[1024];
-
-					int readBytes;
-
-					while ((readBytes = inStream.read(buffer)) != -1 && !stopThread) {
-
-						out.write(buffer, 0, readBytes);
-
-						writtenBytes += readBytes;
-						downloadHandler.sendEmptyMessage(MSG_UPDATE_DOWNLOAD_PROGRESS);
-					}
-
-					inStream.close();
-					out.close();
-					entity.consumeContent();
-					if (!stopThread) {
-						if (openFile) {
-							downloadHandler.sendEmptyMessage(MSG_DOWNLOAD_FINISHED_AND_OPEN_FILE);
-						} else if (sendFile) {
-							downloadHandler.sendEmptyMessage(MSG_DOWNLOAD_FINISHED_AND_SEND_FILE);
-						} else {
-							downloadHandler.sendEmptyMessage(MSG_DOWNLOAD_FINISHED);
-						}
-					} else {
-						downloadHandler.sendEmptyMessage(MSG_DOWNLOAD_CANCELED);
-						file.delete();
-					}
-				} catch (MalformedURLException e) {
-					Log.d(TAG, "malformedURL");
-					downloadHandler.sendEmptyMessage(MSG_URL_ERROR);
-					e.printStackTrace();
-				} catch (IOException e) {
-					Log.d(TAG, "IO Exception");
-					downloadHandler.sendEmptyMessage(MSG_IO_ERROR);
-					e.printStackTrace();
-				}
-
-			}
-
-		};
-		t.start();
+		// start downloadtask
+		DownloadObject[] params = new DownloadObject[] { new DownloadObject(fileToSafeAt, url, openFile, sendFile) };
+		dlThread = new DownloadThread();
+		dlThread.execute(params);
 	}
 
 	@Override
