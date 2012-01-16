@@ -438,7 +438,7 @@ public class GradesList extends nActivity {
 		// Log.d(TAG, "actualSemTest: mon:" + month + " yr:" + year);
 		if (month > 9 || month < 3) { // zwischen okt und feb ist WS
 			// wenn nicht januar oder februar ist, jahr+1
-			if (month != (1 | 2)) {
+			if (month != 1 && month != 2) {
 				year++;
 			}
 			semString = "WiSe " + (year - 1) + "/" + year;
