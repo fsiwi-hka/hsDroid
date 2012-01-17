@@ -1,8 +1,10 @@
 package de.nware.app.hsDroid.ui;
 
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,6 +14,8 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
+import android.preference.PreferenceManager.OnActivityResultListener;
 import android.util.Log;
 import android.widget.Toast;
 import de.nware.app.hsDroid.R;
@@ -21,6 +25,40 @@ import de.nware.app.hsDroid.provider.onlineService2Data.ExamsCol;
 public class Preferences extends PreferenceActivity {
 	private static final String TAG = "hsDroid-PreferenceActivity";
 	private Toast toast;
+
+	private static final int RET_DIRNAME = 10;
+
+	// private String path;
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		System.out.println("reqCode: " + requestCode + " resCode: " + resultCode);
+
+		switch (resultCode) {
+		case RESULT_OK:
+			System.out.println("res: ok");
+			switch (requestCode) {
+			case RET_DIRNAME:
+				System.out.println("dir: " + data.getDataString());
+				SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+				SharedPreferences.Editor ed = preferences.edit();
+				ed.putString("downloadPathPref", data.getDataString().substring(7, data.getDataString().length()));
+				ed.commit();
+
+				break;
+
+			default:
+				break;
+			}
+			break;
+
+		default:
+			System.out.println("other res: " + resultCode);
+			break;
+		}
+
+		super.onActivityResult(requestCode, resultCode, data);
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -77,15 +115,33 @@ public class Preferences extends PreferenceActivity {
 		selectFolderPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			// TODO möglichkeit über OI Dateimanager, AndExplorer.. etc..
 			// verzeichnis aufrufen
+
+			OnActivityResultListener listener = new OnActivityResultListener() {
+
+				@Override
+				public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+					String path = data.getData().toString();
+					System.out.println("new dl path = " + path);
+
+					return true;
+				}
+
+			};
+
+			@SuppressWarnings("unused")
 			public boolean onPreferenceClick(Preference preference) {
 
-				// showToast("Implement me :)");
-				// Log.d(TAG, "dl dir: " + Environment.DIRECTORY_DOWNLOADS);
-				// Log.d(TAG, "ext DirStat: " +
-				// Environment.getExternalStorageState());
-
-				Intent intent = new Intent(getApplicationContext(), DirChooser.class);
-				startActivity(intent);
+				// FIXME ganz häßlicher workaround wenn oi filemanager nicht
+				// installiert ist.. :/
+				// http://android-developers.blogspot.com/2009/01/can-i-use-this-intent.html
+				try {
+					Intent dirIntent = new Intent("org.openintents.action.PICK_DIRECTORY");
+					startActivityForResult(dirIntent, RET_DIRNAME);
+				} catch (ActivityNotFoundException e) {
+					System.out.println("open oi err: " + e.getMessage());
+					Intent intent = new Intent(getApplicationContext(), DirChooser.class);
+					startActivity(intent);
+				}
 				// Preference pref = (Preference)
 				// findPreference("downloadPathPref");
 				// pref.setSummary("Pfad: " +
