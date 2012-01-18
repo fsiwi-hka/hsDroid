@@ -76,8 +76,6 @@ public class Certifications extends nActivity {
 	private final int DIALOG_OPEN_FILE_NOT_FOUND = 3;
 	private final int DIALOG_SEND_FILE_NOT_FOUND = 4;
 
-	private Thread t;
-
 	private final int MSG_INIT_DOWNLOAD = 0;
 	private final int MSG_SET_DOWNLOAD_SIZE = 10;
 	private final int MSG_UPDATE_DOWNLOAD_PROGRESS = 11;
@@ -347,13 +345,12 @@ public class Certifications extends nActivity {
 				break;
 			case MSG_URL_ERROR:
 			case MSG_IO_ERROR:
-				if (t != null && t.isAlive()) {
-					t.interrupt();
+				if (dlThread != null) {
+					dlThread.cancel(true);
 				}
+
 				mProgressDialog.dismiss();
 				showToast(getString(R.string.error_DownloadFailed));
-
-				dlThread.cancel(true);
 
 				break;
 			case MSG_DOWNLOAD_CANCELED:
@@ -415,7 +412,6 @@ public class Certifications extends nActivity {
 	 * 
 	 */
 	private class DownloadThread extends AsyncTask<DownloadObject, Integer, Void> {
-		boolean stopThread = false;
 		DownloadObject dlObj;
 
 		@Override
@@ -483,7 +479,7 @@ public class Certifications extends nActivity {
 
 				int readBytes;
 
-				while ((readBytes = inStream.read(buffer)) != -1 && !stopThread) {
+				while ((readBytes = inStream.read(buffer)) != -1 && !isCancelled()) {
 
 					out.write(buffer, 0, readBytes);
 
@@ -494,7 +490,7 @@ public class Certifications extends nActivity {
 				inStream.close();
 				out.close();
 				entity.consumeContent();
-				if (!stopThread) {
+				if (!isCancelled()) {
 					if (dlObj.openFile) {
 						downloadHandler.sendEmptyMessage(MSG_DOWNLOAD_FINISHED_AND_OPEN_FILE);
 					} else if (dlObj.sendFile) {
@@ -563,16 +559,15 @@ public class Certifications extends nActivity {
 			mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
 				@Override
 				public void onCancel(DialogInterface dialog) {
-					Log.d(TAG, "Cancel Download");
-					// Wenn Thread noch läuft, beenden
-					if (t != null) {// && t.isAlive()) {
-						Log.d(TAG, "Interupt Thread");
-						// FIXME .. thread läuft trotzdem weiter
-						t.interrupt();
-					}
-					// File Löschen, könnte unvollständig sein
-					currentFile.delete();
+					cancelDownload();
 
+				}
+			});
+			mProgressDialog.setButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					cancelDownload();
 				}
 			});
 			return mProgressDialog;
@@ -681,6 +676,17 @@ public class Certifications extends nActivity {
 			return super.onOptionsItemSelected(item);
 		}
 
+	}
+
+	private void cancelDownload() {
+		Log.d(TAG, "Cancel Download");
+		// Wenn Thread noch läuft, beenden
+		if (dlThread != null) {// && t.isAlive()) {
+			Log.d(TAG, "Interupt Thread");
+			dlThread.cancel(true);
+		}
+		// File Löschen, könnte unvollständig sein
+		currentFile.delete();
 	}
 
 }
