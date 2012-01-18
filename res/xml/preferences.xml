@@ -1,44 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-	<PreferenceCategory android:title="Allgemein">
+	<PreferenceCategory android:title="@string/text_general">
 		<CheckBoxPreference android:defaultValue="false"
-			android:summary="Passwort wird unverschlüsselt gespeichert!"
-			android:key="saveLoginDataPref" android:title="@string/text_savePWcheckBox" android:disableDependentsState="false"/>
-			<CheckBoxPreference android:title="AutoLogin"
-			android:defaultValue="false" android:summary="Automatische Anmeldung beim Start."
-			android:key="autoLoginPref" android:dependency="saveLoginDataPref"/>
-			<ListPreference android:title="Abschluß"
-			android:summary="Angestrebter Abschluß."
-			android:key="degreePref" android:entries="@array/degreeEntryArray" android:entryValues="@array/degreeValueArray"/>
+			android:summary="@string/text_savePW" android:key="saveLoginDataPref"
+			android:title="@string/text_savePWcheckBox"
+			android:disableDependentsState="false" />
+		<CheckBoxPreference android:title="@string/text_autoLogin"
+			android:defaultValue="false" android:summary="@string/text_autoLoginDesc"
+			android:key="autoLoginPref" android:dependency="saveLoginDataPref" />
+		<ListPreference android:title="@string/text_degree"
+			android:summary="@string/text_degreeDesc" android:key="degreePref"
+			android:entries="@array/degreeEntryArray" android:entryValues="@array/degreeValueArray" />
 	</PreferenceCategory>
-	<PreferenceCategory android:title="Notenspiegel">
-		<CheckBoxPreference android:title="Auto Update"
-			android:summary="Notenspiegel automatisch aktualisieren."
-			android:key="autoUpdatePref" android:defaultValue="false"/>
-		<ListPreference android:title="Sortierreihenfolge ändern"
-			android:summary="Aufsteigende oder absteigende Anordnung der Noten."
-			android:key="defaultOrderPref" android:entries="@array/orderEntryArray" android:entryValues="@array/orderValueArray" android:defaultValue="DESC"/>
+	<PreferenceCategory android:title="@string/grades_view">
+		<CheckBoxPreference android:title="@string/text_autoUpdate"
+			android:summary="@string/text_autoUpdateDesc" android:key="autoUpdatePref"
+			android:defaultValue="false" />
 
-		<ListPreference android:title="Ansicht ändern"
-			android:summary="Legt fest in welcher Ansicht der Notenspiegel standartmäßig angezeigt wird."
-			android:key="defaultViewPref" android:entries="@array/defaultViewListArray" android:entryValues="@array/defaultViewListValues" android:defaultValue="all"/>
-		<CheckBoxPreference android:title="Hervorheben"
+		<ListPreference android:title="@string/text_sortOrder"
+			android:summary="@string/text_sortOrderDesc"
+			android:key="defaultOrderPref" android:entries="@array/orderEntryArray"
+			android:entryValues="@array/orderValueArray" android:defaultValue="DESC" />
+
+		<ListPreference android:title="@string/text_changeView"
+			android:summary="@string/text_changeViewDesc"
+			android:key="defaultViewPref" android:entries="@array/defaultViewListArray"
+			android:entryValues="@array/defaultViewListValues"
+			android:defaultValue="all" />
+			
+		<CheckBoxPreference android:title="@string/text_highlight"
 			android:defaultValue="false"
-			android:summary="Prüfungsleistung des aktuellen Semesters hervorheben."
+			android:summary="@string/text_highlightDesc"
 			android:key="highlightActualExamsPref" />
-		<Preference android:title="Farbe" android:summary="Farbe der Hervorhebung auswählen."
-			android:key="highlightColorPref" android:dependency="highlightActualExamsPref"/>
+		<Preference android:title="@string/text_color"
+			android:summary="@string/text_colorDesc" android:key="highlightColorPref"
+			android:dependency="highlightActualExamsPref" />
 	</PreferenceCategory>
-	<PreferenceCategory android:title="Bescheinigungen">
-			<Preference android:defaultValue="/mnt/sdcard/download/"
-			android:key="downloadPathPref" android:title="Download Verzeichnis" android:summary=""/>
+	
+	<PreferenceCategory android:title="@string/title_Certifications">
+		<Preference android:defaultValue="/mnt/sdcard/download/"
+			android:key="downloadPathPref" android:title="@string/text_downloadDir"
+			android:summary="" />
 	</PreferenceCategory>
-	<PreferenceCategory android:title="Daten">
-		<Preference android:title="DB löschen"
-			android:summary="Alle Daten aus der Datenbank löschen." android:key="clearDBPref" />
-		<Preference android:title="Cookie löschen"
-			android:summary="Entfernt Cookie aus dem Speicher." android:key="delCookiePref" />
-		<Preference android:title="Einstellungen zurücksetzen"
-			android:summary="Löscht alle Einstellungen." android:key="delPref" />
+	<PreferenceCategory android:title="@string/text_data">
+		<Preference android:title="@string/text_delDB"
+			android:summary="@string/text_delDBDesc" android:key="clearDBPref" />
+		<Preference android:title="@string/text_delCookie"
+			android:summary="@string/text_delCookieDesc" android:key="delCookiePref" />
+		<Preference android:title="@string/text_resetSettings"
+			android:summary="@string/text_resetSettingsDesc" android:key="delPref" />
 	</PreferenceCategory>
 </PreferenceScreen>

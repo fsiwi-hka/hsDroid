@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="app_name">hsDroid</string>
-    <string name="app_version">0.2.2-git</string>
-    
     <string name="username">HS-Benutzername</string>
     <string name="password">Passwort</string>
+    <string name="text_savePWcheckBox">Passwort speichern</string>
     <string name="login">Anmelden</string>
     <string name="cancel">Abbrechen</string>
+    <string name="close">Schließen</string>
     <string name="error">Fehler</string>
+    
     <string name="error_name_missing">Bitte HS-Benutzernamen angeben.</string>
     <string name="error_name_incorrect">HS-Benutzername ist falsch. Bsp.: mami1011</string>
     <string name="error_ok">OK</string>
@@ -17,68 +16,36 @@
     <string name="error_site_down">Hochschulwebsite ist im Wartungsmodus.</string>
     <string name="error_login_failed">Anmeldung fehlgeschlagen, bitte Logindaten überprüfen.</string>
     <string name="error_cookie_empty">Keinen Keks bekommen?</string>
-    <string name="progress_loading">Laden...</string>
-    <string name="progress_connect">Verbinden...</string>
-    <string name="progress_parse">Parsen...</string>
-    <string name="progress_cookie">Keks nehmen...</string>
-    <string name="progress_notenfetch">Noten holen...</string>
-    <string name="progress_notencleanup">Html säubern...</string>
-    <string name="progress_notenparse">Noten angeln...</string>
-    <string name="title_view_marks">Notenspiegel</string>
-    <string name="title_head_exam">Prüfung</string>
-    <string name="title_head_mark">Note</string>
-    <string name="text_savePWcheckBox">Passwort speichern</string>
+    
+    <string name="progress_connect">Verbinden&#8230;</string>
+    <string name="progress_parse">Parsen&#8230;</string>
+    <string name="progress_cookie">Keks nehmen&#8230;</string>
+    
     <string name="grades_view">Notenspiegel</string>
     <string name="grades_view_attempt">Versuch: </string>
     <string name="grades_view_semester">Semester: </string>
+    
     <string name="menu_preferences">Einstellungen</string>
     <string name="menu_about">Info</string>
     <string name="menu_refresh">Aktualisieren</string>
     <string name="menu_view">Ansicht</string>
+    
     <string name="submenu_examViewAll">Alle Prüfungen</string>
     <string name="submenu_examViewOnlyLast">Aktuelle Prüfungen</string>
     <string name="submenu_examViewOnlyLastFailed">Aktuelle nicht bestandene Prüfungen</string>
     <string name="submenu_examViewAllFailed">Alle nicht bestandenen Prüfungen</string>
-    <string name="empty_list_view">Keine Daten vorhanden</string>
+    
     <string name="about_subtitle">Notenviewer</string>
     <string name="about_maintext">Mit diesem App wird der Notenspiegel über den \"Online Service 2\" abgerufen.\n\nHomepage:
 		https://github.com/n0iz/hsDroid\nEMail: eiol0011@hs-karlsruhe.com</string>
     <string name="label_set_preferences">Einstellungen</string>
 
-    <string-array name="defaultViewListArray">
-        <item>@string/submenu_examViewAll</item>
-        <item>@string/submenu_examViewOnlyLast</item>
-        <item>@string/submenu_examViewOnlyLastFailed</item>
-        <item>@string/submenu_examViewAllFailed</item>
-    </string-array>
-    <string-array name="defaultViewListValues">
-        <item>all</item>
-        <item>act</item>
-        <item>actfail</item>
-        <item>allfail</item>
-    </string-array>
-    <string-array name="defaultViewListValuesOld">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
+
     <string-array name="orderEntryArray">
         <item>Aufsteigend</item>
         <item>Absteigend</item>
     </string-array>
-    <string-array name="orderValueArray">
-        <item>ASC</item>
-        <item>DESC</item>
-    </string-array>
-    <string-array name="degreeEntryArray">
-        <item>Bachelor</item>
-        <item>Master</item>
-    </string-array>
-    <string-array name="degreeValueArray">
-        <item>58</item>
-        <item>59</item>
-    </string-array>
+    
     <string-array name="ifFileExistArray">
         <item>Überschreiben</item>
         <item>Umbenennen</item>
@@ -100,8 +67,49 @@
     <string name="title_certContextMenu_selectAction">Aktion wählen</string>
     <string name="text_initialize">Initialisieren..</string>
     <string name="error_noGradeDistributionAvailableForX">Keine Notenverteilung für %s verfügbar</string>
-    <string name="info_updateGradesList">Aktualisiere Notenspiegel...</string>
+    <string name="info_updateGradesList">Aktualisiere Notenspiegel&#8230;</string>
     <string name="text_asAttachment">Anhang: </string>
     <string name="error_downloadCanceled">Download abgebrochen</string>
 
+    
+    <string name="text_general">Allgemein</string>
+    <string name="text_savePW">Passwort wird unverschlüsselt gespeichert!</string>
+    
+    <string name="text_autoLogin">AutoLogin</string>
+	<string name="text_autoLoginDesc">Automatische Anmeldung beim Start.</string>
+	
+	<string name="text_degree">Abschluß</string>
+	<string name="text_degreeDesc">Angestrebter Abschluß.</string>
+	
+	
+	<string name="text_autoUpdate">Auto Update</string>
+	<string name="text_autoUpdateDesc">Notenspiegel automatisch aktualisieren.</string>
+			
+	<string name="text_sortOrder">Sortierreihenfolge ändern</string>
+	<string name="text_sortOrderDesc">Aufsteigende oder absteigende Anordnung der Noten.</string>
+
+
+	<string name="text_changeView">Ansicht ändern</string>
+	<string name="text_changeViewDesc">Legt fest in welcher Ansicht der Notenspiegel standartmäßig angezeigt wird.</string>
+	
+	<string name="text_highlight">Hervorheben</string>
+	<string name="text_highlightDesc">Prüfungsleistung des aktuellen Semesters hervorheben.</string>
+	
+	<string name="text_color">Farbe</string>
+	<string name="text_colorDesc">Farbe der Hervorhebung auswählen.</string>
+
+	
+	<string name="text_downloadDir">Download Verzeichnis</string>
+	
+	<string name="text_data">Daten</string>
+	<string name="text_delDB">DB löschen</string>
+	<string name="text_delDBDesc">Alle Daten aus der Datenbank löschen.</string>
+		
+	<string name="text_delCookie">Cookie löschen</string>
+	<string name="text_delCookieDesc">Entfernt Cookie aus dem Speicher.</string>
+	
+	<string name="text_resetSettings">Einstellungen zurücksetzen</string>
+	<string name="text_resetSettingsDesc">Löscht alle Einstellungen.</string>
+    
+    
 </resources>
