@@ -1,6 +1,7 @@
 package de.nware.app.hsDroid.ui;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -416,7 +417,6 @@ public class GradesList extends nActivity {
 
 	private void refreshList() {
 		this.lv.invalidateViews();
-
 	}
 
 	private void createDialog(String title, String text) {
@@ -551,6 +551,8 @@ public class GradesList extends nActivity {
 		}
 	}
 
+	private HashMap<String, Integer> semMap = null;
+
 	/**
 	 * 
 	 * @author Oliver Eichner
@@ -567,91 +569,30 @@ public class GradesList extends nActivity {
 			this.context = context;
 			this.layout = layout;
 			Log.d(TAG, "Create ExamAdapter");
+			fillSemesterHashMap(cursor);
+		}
+
+		private void fillSemesterHashMap(Cursor cursor) {
+			cursor.moveToFirst();
+			int count = 0;
+
+			semMap = new HashMap<String, Integer>();
+
+			while (!cursor.isAfterLast()) {
+
+				semMap.put(cursor.getString(cursor.getColumnIndex(ExamsCol.SEMESTER)), count);
+				// cursor.getInt(cursor.getColumnIndex(BaseColumns._ID)));
+				cursor.moveToNext();
+				count++;
+			}
+			cursor.moveToFirst();
 		}
 
 		@Override
 		public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
-			// Log.d(TAG, "exAdapter newView");
-			Cursor c = getCursor();
-
+			// Log.d(TAG, "exAdapter newView");s
 			final LayoutInflater inflater = LayoutInflater.from(context);
 			View v = inflater.inflate(layout, viewGroup, false);
-
-			int nameCol = c.getColumnIndex(ExamsCol.EXAMNAME);
-			String name = c.getString(nameCol);
-			int rnCol = c.getColumnIndex(ExamsCol.EXAMNR);
-			String nr = c.getString(rnCol);
-			int attCol = c.getColumnIndex(ExamsCol.ATTEMPTS);
-			int att = c.getInt(attCol);
-			int gradeCol = c.getColumnIndex(ExamsCol.GRADE);
-			String grade = c.getString(gradeCol);
-			int semCol = c.getColumnIndex(ExamsCol.SEMESTER);
-			String sem = c.getString(semCol);
-			int passedCol = c.getColumnIndex(ExamsCol.PASSED);
-			int passed = c.getInt(passedCol);
-
-			// Log.d(TAG, "name: " + name);
-			// Log.d(TAG, "nr: " + nr);
-			// Log.d(TAG, "att: " + att);
-			// Log.d(TAG, "grade:" + grade);
-			// Log.d(TAG, "sem:" + sem);
-			// Log.d(TAG, "passed:" + passed);
-
-			/**
-			 * Next set the name of the entry.
-			 */
-			TextView exName = (TextView) v.findViewById(R.id.examName);
-
-			TextView exNr = (TextView) v.findViewById(R.id.examNr);
-
-			TextView exAtt = (TextView) v.findViewById(R.id.examAttempts);
-			TextView exGrade = (TextView) v.findViewById(R.id.examGrade);
-			TextView exSemester = (TextView) v.findViewById(R.id.examSemester);
-
-			if (exName != null) {
-				exName.setText(name);
-				if (isActualExam(sem) && mPreferences.getBoolean("highlightActualExamsPref", false)) {
-					exName.setShadowLayer(3, 0, 0, Color.GREEN);
-				} else {
-					exName.setShadowLayer(0, 0, 0, 0);
-				}
-			}
-			if (exNr != null) {
-				exNr.setText(nr);
-			}
-			if (exSemester != null) {
-				exSemester.setText(getApplicationContext().getString(R.string.grades_view_semester) + sem);
-			}
-			if (exAtt != null && att != 0) {
-				exAtt.setText(getApplicationContext().getString(R.string.grades_view_attempt) + att);
-			}
-			if (exGrade != null) {
-				if (passed == 0) {
-					// FIXME wenn möglich.. farben gedöns is ziemlich tricky
-					// wegen "recycler" von ListActivity
-					if (att > 1) {
-						exGrade.setTextColor(Color.BLACK);
-						exGrade.setBackgroundColor(Color.RED);
-						exGrade.setCompoundDrawablePadding(2);
-
-					} else {
-						exGrade.setTextColor(Color.RED);
-						exGrade.setBackgroundColor(Color.TRANSPARENT);
-					}
-				} else {
-					exGrade.setTextColor(Color.rgb(0x87, 0xeb, 0x0c));
-
-					exGrade.setBackgroundColor(Color.TRANSPARENT);
-				}
-				if (grade != "") {
-					exGrade.setText(grade);
-				} else {
-					if (passed == 0)
-						exGrade.setText("NB");
-					else
-						exGrade.setText("BE");
-				}
-			}
 
 			return v;
 		}
@@ -685,6 +626,22 @@ public class GradesList extends nActivity {
 				} else {
 					exName.setShadowLayer(0, 0, 0, 0);
 				}
+
+				int a, b;
+				if (semMap.size() > 0) {
+					a = c.getInt(c.getColumnIndex(BaseColumns._ID));
+					b = semMap.get(sem) + 1;
+					System.out.println("id: " + a + " semKey:" + b);
+					TextView separator = (TextView) v.findViewById(R.id.examSeparator);
+					if (a == b) {
+
+						separator.setText(sem);
+						separator.setVisibility(TextView.VISIBLE);
+					} else {
+						separator.setVisibility(TextView.GONE);
+					}
+				}
+
 			}
 			if (exNr != null) {
 				exNr.setText(nr);
@@ -744,7 +701,7 @@ public class GradesList extends nActivity {
 			if (constraint.equals(SORT_ALL)) {
 				return getContentResolver().query(ExamsCol.CONTENT_URI, null, null, null, sortOrder);
 			} else if (constraint.equals(SORT_ALL_FAILED)) {
-
+				System.out.println("sort all failed");
 				StringBuilder buffer = null;
 				String[] args = null;
 
@@ -755,6 +712,8 @@ public class GradesList extends nActivity {
 				args = new String[] { "0" };
 				// Log.d(TAG, "buffer: " + buffer.toString());
 				// Log.d(TAG, "args: " + args[0]);
+				fillSemesterHashMap(getContentResolver().query(ExamsCol.CONTENT_URI, null,
+						buffer == null ? null : buffer.toString(), args, sortOrder));
 				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
 						buffer == null ? null : buffer.toString(), args, sortOrder);
 			} else if (constraint.equals(SORT_ACTUAL)) {
@@ -786,6 +745,7 @@ public class GradesList extends nActivity {
 				args = new String[] { getActualExamSem(), "0" };
 				// Log.d(TAG, "buffer: " + buffer.toString());
 				// Log.d(TAG, "args: " + args[0]);
+
 				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
 						buffer == null ? null : buffer.toString(), args, sortOrder);
 			} else {
