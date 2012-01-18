@@ -39,12 +39,12 @@ public class HsDroidMain extends nActivity {
 
 	private ProgressDialog mProgressDialog = null;
 	private static final int DIALOG_PROGRESS = 1;
-	private EditText UserEditText;
-	private EditText PassEditText;
-	private CheckBox LoginCheckBox;
+	private EditText mTextfieldUsername;
+	private EditText mTextfieldPassword;
+	private CheckBox mLoginCheckBox;
 
 	private boolean savePassword = false;
-	private SharedPreferences notenapp_preferences;
+	private SharedPreferences mSharedPreferences;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -52,25 +52,25 @@ public class HsDroidMain extends nActivity {
 		setContentView(R.layout.main);
 		customTitle("Anmeldung");
 
-		UserEditText = (EditText) findViewById(R.id.username);
-		PassEditText = (EditText) findViewById(R.id.password);
+		mTextfieldUsername = (EditText) findViewById(R.id.username);
+		mTextfieldPassword = (EditText) findViewById(R.id.password);
 
-		LoginCheckBox = (CheckBox) findViewById(R.id.login_checkBox);
+		mLoginCheckBox = (CheckBox) findViewById(R.id.login_checkBox);
 
-		notenapp_preferences = PreferenceManager.getDefaultSharedPreferences(this);
-		String savedUser = notenapp_preferences.getString("UserSave", "");
-		String savedPass = notenapp_preferences.getString("PassSave", "");
-		savePassword = notenapp_preferences.getBoolean("saveLoginDataPref", false);
+		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		String savedUser = mSharedPreferences.getString("UserSave", "");
+		String savedPass = mSharedPreferences.getString("PassSave", "");
+		savePassword = mSharedPreferences.getBoolean("saveLoginDataPref", false);
 
-		LoginCheckBox.setChecked(savePassword);
+		mLoginCheckBox.setChecked(savePassword);
 
 		if (savePassword && !savedUser.equals("")) {
-			PassEditText.setText(savedPass);
+			mTextfieldPassword.setText(savedPass);
 		}
 
-		UserEditText.setText(savedUser);
+		mTextfieldUsername.setText(savedUser);
 
-		final boolean autoLogin = notenapp_preferences.getBoolean("autoLoginPref", false);
+		final boolean autoLogin = mSharedPreferences.getBoolean("autoLoginPref", false);
 
 		Log.d(TAG, "autologin:" + autoLogin);
 		Log.d(TAG, "savePW:" + savePassword);
@@ -81,16 +81,16 @@ public class HsDroidMain extends nActivity {
 			showToast("Autologin nur mit gespeichertem Passwort möglich");
 		}
 
-		LoginCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+		mLoginCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				SharedPreferences.Editor editor = notenapp_preferences.edit();
-				if (LoginCheckBox.isChecked()) {
+				SharedPreferences.Editor editor = mSharedPreferences.edit();
+				if (mLoginCheckBox.isChecked()) {
 					editor.putBoolean("saveLoginDataPref", true);
 				} else {
 					editor.putBoolean("saveLoginDataPref", false);
-					if (notenapp_preferences.getBoolean("autoLoginPref", false)) {
+					if (mSharedPreferences.getBoolean("autoLoginPref", false)) {
 						editor.putBoolean("autoLoginPref", false);
 						showToast("Autologin wurde deaktiviert.");
 					}
@@ -116,13 +116,13 @@ public class HsDroidMain extends nActivity {
 		// (leerzeichen killen und Buchstaben klein,
 		// wegen leerzeichen bei android autovervollständigung beim tippen in
 		// der textbox...
-		String username = UserEditText.getText().toString().trim().toLowerCase();
+		String username = mTextfieldUsername.getText().toString().trim().toLowerCase();
 		// Password: nicht anzeigbare Zeichen entfernen
-		String password = PassEditText.getText().toString().trim();
+		String password = mTextfieldPassword.getText().toString().trim();
 
 		// Prüfeung falls sich ein anderer user anmeldet. damit nicht das
 		// session cookie vom vorherigen user übernommen wird..
-		if (!username.equals("") && !username.equals(notenapp_preferences.getString("UserSave", ""))) {
+		if (!username.equals("") && !username.equals(mSharedPreferences.getString("UserSave", ""))) {
 			if (StaticSessionData.cookies != null) {
 				// StaticSessionData.cookies.clear();
 				StaticSessionData.cookies = null;
@@ -157,8 +157,8 @@ public class HsDroidMain extends nActivity {
 			// FIXME zu unsicher.. wird alles im plaintext gespeichert..
 			// eventuell sqlite mit encryption..
 			// speichern von user und passwort
-			SharedPreferences.Editor editor = notenapp_preferences.edit();
-			if (LoginCheckBox.isChecked()) {
+			SharedPreferences.Editor editor = mSharedPreferences.edit();
+			if (mLoginCheckBox.isChecked()) {
 				editor.putString("PassSave", password);
 				editor.putBoolean("saveLoginDataPref", true);
 			} else {
@@ -178,7 +178,7 @@ public class HsDroidMain extends nActivity {
 	}
 
 	/**
-	 * ProgresDialog Handler
+	 * ProgresDialog Handler für Login
 	 */
 	final Handler mProgressHandle = new Handler() {
 
@@ -244,9 +244,9 @@ public class HsDroidMain extends nActivity {
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		if (hasFocus) {
-			notenapp_preferences = PreferenceManager.getDefaultSharedPreferences(this);
-			savePassword = notenapp_preferences.getBoolean("saveLoginDataPref", false);
-			LoginCheckBox.setChecked(savePassword);
+			mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+			savePassword = mSharedPreferences.getBoolean("saveLoginDataPref", false);
+			mLoginCheckBox.setChecked(savePassword);
 		}
 	}
 
@@ -299,11 +299,6 @@ public class HsDroidMain extends nActivity {
 
 	public void aboutDialog() {
 		new AboutDialog(this);
-	}
-
-	private void quit(boolean success, Intent i) {
-		setResult((success) ? -1 : 0, i);
-		finish();
 	}
 
 	/**

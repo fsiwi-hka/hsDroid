@@ -5,20 +5,13 @@
 	android:layout_height="wrap_content"
 	android:orientation="vertical"
 	android:layout_gravity="center_horizontal">
-	
-	<ImageView 
-		android:src="@drawable/icon_hs" 
-		android:layout_width="wrap_content"
-		android:id="@+id/dash_item_icon" 
-		android:layout_height="wrap_content"
-	android:layout_gravity="center_horizontal">
-	</ImageView>
-	
+
 	<TextView 
-		android:text="Bescheinigungen" 
+		android:text="@string/testString" 
 		android:id="@+id/dash_item_text"
 		android:layout_width="wrap_content" 
 		android:layout_height="wrap_content"
-		android:layout_gravity="center_horizontal">
+		android:layout_gravity="center_horizontal"
+		android:drawableTop="@drawable/icon_hs">
 	</TextView>
 </LinearLayout>

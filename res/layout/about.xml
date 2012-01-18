@@ -13,26 +13,26 @@
 			android:layout_gravity="center_vertical" android:layout_height="wrap_content"
 			android:layout_weight="1" android:layout_margin="10dp">
 				
-				<TextView android:id="@+id/about_title" android:text="hsDroid - v.0.1.5-svn"
+				<TextView android:id="@+id/about_title" android:text="@string/testString"
 					android:layout_height="wrap_content" android:layout_width="wrap_content"
 					android:textSize="18sp"
 					android:textStyle="bold"
 					></TextView>
 
 			<TextView android:layout_height="wrap_content" android:id="@+id/about_SubTitle"
-				android:text="App für Studierende der HS-Karlsruhe" android:layout_width="wrap_content"></TextView>
+				android:text="@string/testString" android:layout_width="wrap_content"></TextView>
 		</LinearLayout>
-		<ImageView android:src="@drawable/icon" android:id="@+id/about_image"
+		<ImageView android:src="@drawable/icon" android:id="@+id/about_image" android:contentDescription="@string/descLogo"
 			android:layout_height="wrap_content" android:layout_width="wrap_content"
 			android:layout_weight="0"  android:layout_gravity="center"></ImageView>
 	</LinearLayout>
 	<TextView android:id="@+id/about_maintext"
-		android:text="TEst Text für main TExt, mit ganz viel text, der nix bringt.. huhu haha foo bar \n asd asd asd asd "
-		android:layout_below="@+id/linearLayoutTitle" android:layout_width="wrap_content"
+		android:text="@string/testString"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:layout_margin="10dp" android:textColor="@android:color/darker_gray"
 		android:autoLink="all"></TextView>
 	<Button android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:id="@+id/about_cancel"
-		android:text="@string/cancel" android:layout_gravity="center_horizontal"></Button>
+		android:text="@string/close" android:layout_gravity="center_horizontal"></Button>
 
 </LinearLayout>

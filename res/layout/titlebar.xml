@@ -4,7 +4,7 @@
 	xmlns:android="http://schemas.android.com/apk/res/android" android:padding="3dip">
 
 	<ImageView android:src="@drawable/icon" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:id="@+id/appIconImageView"></ImageView>
+		android:layout_height="wrap_content" android:id="@+id/appIconImageView" android:contentDescription="@string/descLogo"></ImageView>
 
 	<LinearLayout android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:orientation="vertical"
@@ -26,13 +26,13 @@
 		android:textStyle="bold"
 		android:layout_height="wrap_content" android:id="@+id/titleTvActivityTitle"
 		android:layout_centerVertical="true"
-		android:text="Activity Title" android:layout_toRightOf="@+id/appTitleLinearLayout"
+		android:text="@string/testString" android:layout_toRightOf="@+id/appTitleLinearLayout"
 		android:paddingLeft="10dip"></TextView>
 
 	<ProgressBar android:id="@+id/leadProgressBar"
 		style="?android:attr/progressBarStyleSmall" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:layout_centerVertical="true"
-		android:paddingLeft="3dip" android:layout_alignParentRight="true"></ProgressBar>
+		android:paddingLeft="3dip" android:paddingRight="3dip" android:layout_alignParentRight="true"></ProgressBar>
 
 
 </RelativeLayout>
