@@ -294,7 +294,13 @@ public class GradesList extends nActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		System.out.println("test onPause");
+		Log.d(TAG, "pause... try to kill running threads");
+		if (updateThread != null && updateThread.getStatus() != AsyncTask.Status.FINISHED) {
+			updateThread.cancel(true);
+		}
+		if (mExamInfoThread != null && mExamInfoThread.getStatus() != AsyncTask.Status.FINISHED) {
+			mExamInfoThread.cancel(true);
+		}
 	}
 
 	@Override
@@ -525,10 +531,11 @@ public class GradesList extends nActivity {
 				startManagingCursor(examinfoCursor);
 				examinfoCursor.moveToFirst();
 
-				// Dem Handler bescheid sagen, dass die
-				// Daten
-				// nun
-				// verfügbar sind
+				if (isCancelled()) {
+					stopManagingCursor(examinfoCursor);
+					return null;
+				}
+				// Dem Handler bescheid sagen, dass die Daten nun verfügbar sind
 				Message oMessage = mProgressHandle.obtainMessage();
 				Bundle oBundle = new Bundle();
 
@@ -546,6 +553,8 @@ public class GradesList extends nActivity {
 				dismissDialog(DIALOG_PROGRESS);
 				createDialog(GradesList.this.getString(R.string.error), e.getMessage());
 				e.printStackTrace();
+			} finally {
+				stopManagingCursor(examinfoCursor);
 			}
 			return null;
 		}
