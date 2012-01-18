@@ -30,6 +30,7 @@ import de.nware.app.hsDroid.data.StaticSessionData;
  */
 public class LoginThread extends Thread {
 
+	private static final String TAG = "LoginThread";
 	private final static String UPDATE_URL = "https://qis2.hs-karlsruhe.de/qisserver/rds?state=user&type=1&category=auth.login&startpage=portal.vm&breadCrumbSource=portal";
 
 	public final static byte STATE_NOT_STARTED = 0;
@@ -149,15 +150,16 @@ public class LoginThread extends Thread {
 	}
 
 	public boolean login() {
+		// warten bis threadHandler bereit ist
 		while (mThreadHandler == null) {
-			int count = 0;
+			// int count = 0;
 			// FIXME geht erst im zweiten Durchlauf der Schleife????
-			Log.e("login", "handler empty: " + count);
+			// Log.e("login", "handler empty: " + count);
 			try {
 				sleep(1);
-				count += 1;
+				// count += 1;
 			} catch (InterruptedException e) {
-				Log.e("Login login() pause", e.getMessage());
+				Log.e(TAG, e.getMessage());
 				e.printStackTrace();
 			}
 
