@@ -33,7 +33,6 @@
 		<CheckBoxPreference android:title="@string/text_separator"
 			android:defaultValue="true" android:summary="@string/text_separatorDesc"
 			android:key="prefUseSeparator" />
-		/>
 		<Preference android:title="@string/text_color"
 			android:summary="@string/text_colorDesc" android:key="highlightColorPref"
 			android:dependency="highlightActualExamsPref" />
