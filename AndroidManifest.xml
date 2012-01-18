@@ -1,47 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="de.nware.app.hsDroid" android:versionName="@string/app_version" android:versionCode="3">
-	<application android:icon="@drawable/icon" android:label="@string/app_name"
-		android:theme="@style/nTheme">
-		<activity android:name="HsDroidMain" android:label="@string/app_name"
-			android:configChanges="orientation">
+    package="de.nware.app.hsDroid"
+    android:versionCode="3"
+    android:versionName="@string/app_version" >
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN" />
-				<category android:name="android.intent.category.LAUNCHER" />
-			</intent-filter>
-		</activity>
-		<activity android:name="de.nware.app.hsDroid.ui.GradesList"
-			android:label="@string/grades_view" android:configChanges="orientation">
-			<intent-filter>
-				<action android:name="android.intent.action.VIEW" />
-			</intent-filter>
-		</activity>
-		<activity android:name=".ui.Preferences" android:label="@string/label_set_preferences">
-		</activity>
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="10" />
 
-		<provider android:name="de.nware.app.hsDroid.provider.onlineService2Provider"
-			android:authorities="de.nware.app.hsDroid.provider.onlineService2Provider"
-			android:exported="false">
+    <application
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:theme="@style/nTheme" >
+        <activity
+            android:name="HsDroidMain"
+            android:configChanges="orientation"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-			<grant-uri-permission android:pathPattern=".*" />
-		</provider>
-		<activity android:name=".ui.Dashboard">
-			<intent-filter>
-				<action android:name="android.intent.action.VIEW"></action>
-			</intent-filter>
-		</activity>
-		<activity android:name=".ui.Certifications">
-			<intent-filter>
-				<action android:name="android.intent.action.VIEW"></action>
-			</intent-filter>
-		</activity>
-		<activity android:name=".ui.DirChooser"></activity>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="de.nware.app.hsDroid.ui.GradesList"
+            android:configChanges="orientation"
+            android:label="@string/grades_view" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.Preferences"
+            android:label="@string/label_set_preferences" >
+        </activity>
 
+        <provider
+            android:name="de.nware.app.hsDroid.provider.onlineService2Provider"
+            android:authorities="de.nware.app.hsDroid.provider.onlineService2Provider"
+            android:exported="false" >
+            <grant-uri-permission android:pathPattern=".*" />
+        </provider>
 
-	</application>
-	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
-	<uses-sdk android:minSdkVersion="8" android:targetSdkVersion="8"/>
+        <activity android:name=".ui.Dashboard" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" >
+                </action>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.Certifications" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" >
+                </action>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.DirChooser" >
+        </activity>
+    </application>
+
 </manifest>

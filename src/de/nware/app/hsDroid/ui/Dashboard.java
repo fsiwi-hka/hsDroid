@@ -14,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.TextView;
 import de.nware.app.hsDroid.R;
 
@@ -22,10 +21,6 @@ public class Dashboard extends nActivity {
 	private static final String TAG = "hsDroid-Dashboard";
 
 	private GridView dashboard;
-
-	private final int MENU_GRADES = 0;
-	private final int MENU_CERTIFICATIONS = 1;
-	private final int MENU_SETTINGS = 5;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,28 +39,8 @@ public class Dashboard extends nActivity {
 				Log.d(TAG, "pos: " + position);
 
 				Intent intent;
-
 				intent = new Intent(getBaseContext(), (Class<?>) adapter.getItemAtPosition(position));
 				startActivityForResult(intent, 1);
-
-				// switch (position) {
-				// case MENU_GRADES:
-				// Log.d(TAG, "prepare launch");
-				// intent = new Intent(getBaseContext(), GradesList.class);
-				// startActivityForResult(intent, 1);
-				// Log.d(TAG, "prepare launched");
-				// break;
-				// case MENU_CERTIFICATIONS:
-				// intent = new Intent(getBaseContext(), Certifications.class);
-				// startActivityForResult(intent, 1);
-				// break;
-				// case MENU_SETTINGS:
-				//
-				// break;
-				//
-				// default:
-				// break;
-				// }
 			}
 
 		});
@@ -103,9 +78,7 @@ public class Dashboard extends nActivity {
 				view = li.inflate(R.layout.dashboard_item, null);
 				TextView tv = (TextView) view.findViewById(R.id.dash_item_text);
 				tv.setText(mDashText[position]);
-
-				ImageView imageView = (ImageView) view.findViewById(R.id.dash_item_icon);
-				imageView.setImageResource(mDashIcon[position]);
+				tv.setCompoundDrawablesWithIntrinsicBounds(0, (int) mDashIcon[position], 0, 0);
 			} else {
 				view = convertView;
 			}
@@ -115,6 +88,8 @@ public class Dashboard extends nActivity {
 		private Integer[] mDashIcon = { R.drawable.ic_launcher_notenspiegel, R.drawable.ic_launcher_paper2,
 				R.drawable.ic_launcher_preferences };
 		private String[] mDashText = { "Notenspiegel", "Bescheinigungen", "Einstellungen" };
+
+		@SuppressWarnings("rawtypes")
 		private Class[] mDashClass = { GradesList.class, Certifications.class, Preferences.class };
 
 	}

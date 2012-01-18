@@ -88,9 +88,6 @@ public class Certifications extends nActivity {
 	private final int MSG_URL_ERROR = 91;
 	private final int MSG_DOWNLOAD_CANCELED = 99;
 
-	private final int FE_RENAME = 1;
-	private final int FE_OVERWRITE = 2;
-
 	private int fileExistCount = 0;
 	int contentLength;
 	int writtenBytes;

@@ -15,7 +15,6 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.preference.PreferenceManager.OnActivityResultListener;
 import android.util.Log;
 import android.widget.Toast;
 import de.nware.app.hsDroid.R;
@@ -28,10 +27,8 @@ public class Preferences extends PreferenceActivity {
 
 	private static final int RET_DIRNAME = 10;
 
-	// private String path;
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
 		System.out.println("reqCode: " + requestCode + " resCode: " + resultCode);
 
 		switch (resultCode) {
@@ -113,22 +110,9 @@ public class Preferences extends PreferenceActivity {
 
 		Preference selectFolderPref = (Preference) findPreference("downloadPathPref");
 		selectFolderPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			// TODO möglichkeit über OI Dateimanager, AndExplorer.. etc..
+			// TODO möglichkeit über AndExplorer.. etc..
 			// verzeichnis aufrufen
 
-			OnActivityResultListener listener = new OnActivityResultListener() {
-
-				@Override
-				public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-					String path = data.getData().toString();
-					System.out.println("new dl path = " + path);
-
-					return true;
-				}
-
-			};
-
-			@SuppressWarnings("unused")
 			public boolean onPreferenceClick(Preference preference) {
 
 				// FIXME ganz häßlicher workaround wenn oi filemanager nicht
@@ -142,10 +126,6 @@ public class Preferences extends PreferenceActivity {
 					Intent intent = new Intent(getApplicationContext(), DirChooser.class);
 					startActivity(intent);
 				}
-				// Preference pref = (Preference)
-				// findPreference("downloadPathPref");
-				// pref.setSummary("Pfad: " +
-				// pref.getSharedPreferences().getString(pref.getKey(), ""));
 				return true;
 			}
 
@@ -163,7 +143,7 @@ public class Preferences extends PreferenceActivity {
 					StaticSessionData.cookies = null;
 					showToast("Cookie gelöscht");
 				} else {
-					Log.d(TAG, "Versuch nicht vorhandenes Cookie zu lösche. Na na na, das geht aber nich.");
+					Log.d(TAG, "Versuch nicht vorhandenes Cookie zu lösche. So geht das aber nich ;).");
 					showToast("Kein Cookie vorhanden.");
 				}
 

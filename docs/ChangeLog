@@ -5,7 +5,6 @@ _____
 ToDo:
 	
 	Notenverteilung
-	- Trennlinien pro Semester
 	- Aktuelle Ansichtsmodues im Titel Anzeigen
 	
 	-userdaten verschlüßelt speichern!
@@ -20,18 +19,13 @@ ToDo:
 		
 		-Login in Contentprovider Integrieren
 		-Relogin über Contentprovider
+		-HS Login als Account anlegen -> Sync Service?!?
 		
 	
 	sqlite 
 	-	optional machen
 	-	service erstellen der im hintergrund die noten abfrägt, info bei neuen noten
 		als update service eintragen
-	
-	Download von Bescheinigungen
-	-	Downloads abbrechbar machen.. Steuerbarkeit ;)
-		cancel im dialog -> thread unterbrechen, Teildownload löschen
-	-	Name + akt. Semester
-	-	Speicherort wählbar, unterverzeichnisse. erstellen von verzeichnissen
 		
 	Offline Modus, wenn keine Internetverbindung verfügbar ist..
 	
@@ -48,9 +42,17 @@ ToDo:
 		man kann LongPress deaktivieren, aber im landscape geht es dan doch wieder, 
 		wegen fullscreen textview 
 	-layout!!
+	Widget
 
 __________
 Changelog:
+
+18.jan.2012	- v0.2.2
+	Semester Unterteilung im Notenspiegel (geht im mom nur bei Absteigender sortierreihenfolge..)
+	Fix FC im Notenspiegel, wenn Noteninfo abgerufen wrude und back gedrückt wurde.
+	OI Filemanager Support beim wählen des DL Pfades
+	thread fixes
+	
 21 jul.2011 - v0.2.1
 	unterstützung für master studiengänge
 	

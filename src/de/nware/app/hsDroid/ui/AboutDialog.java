@@ -1,6 +1,5 @@
 package de.nware.app.hsDroid.ui;
 
-import de.nware.app.hsDroid.R;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -9,6 +8,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import de.nware.app.hsDroid.R;
 
 /**
  * Helper which Creates an About Dialog

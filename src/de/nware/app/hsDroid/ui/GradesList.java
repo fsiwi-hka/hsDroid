@@ -569,13 +569,12 @@ public class GradesList extends nActivity {
 	 */
 	public class ExamDBAdapter extends SimpleCursorAdapter {
 
-		private Context context;
+		// private Context context;
 		private int layout;
-		private String currentSem;
 
 		public ExamDBAdapter(Context context, int layout, Cursor cursor, String[] from, int[] to) {
 			super(context, layout, cursor, from, to);
-			this.context = context;
+			// this.context = context;
 			this.layout = layout;
 			Log.d(TAG, "Create ExamAdapter");
 			fillSemesterHashMap(cursor);
@@ -640,7 +639,6 @@ public class GradesList extends nActivity {
 				if (semMap.size() > 0) {
 					a = c.getInt(c.getColumnIndex(BaseColumns._ID));
 					b = semMap.get(sem) + 1;
-					System.out.println("id: " + a + " semKey:" + b);
 					TextView separator = (TextView) v.findViewById(R.id.examSeparator);
 					if (a == b) {
 

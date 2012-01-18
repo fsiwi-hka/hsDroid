@@ -32,8 +32,6 @@ class ExamParser extends DefaultHandler {
 	private int attempts;
 	private int infoID;
 
-	// gpContentHandlerData data = new gpContentHandlerData(false, false, 0);
-
 	ArrayList<Exam> lecList;
 
 	public ArrayList<Exam> getExams() {
@@ -55,7 +53,7 @@ class ExamParser extends DefaultHandler {
 	@Override
 	public void startElement(String n, String l, String q, Attributes a) throws SAXException {
 		super.startElement(n, l, q, a);
-		// Log.d("hska saxparser start l:", l);
+		// Log.d(TAG, l);
 		if (l == "tr") {
 			waitForTd = true;
 		}
@@ -104,7 +102,6 @@ class ExamParser extends DefaultHandler {
 			super.characters(ch, start, length);
 		} catch (SAXException e) {
 			e.printStackTrace();
-			// XXX string auslagern
 		}
 		String text = new String(ch, start, length);
 
@@ -114,14 +111,10 @@ class ExamParser extends DefaultHandler {
 			case 0:
 				// Log.d("PruefNr:", text);
 				examNr += text;
-				// System.out.println("pnr  ["+examNr+"]");
-
 				break;
 			case 1:
 				// Log.d("PruefName:", text);
 				examName += text;
-				// System.out.println("ptxt  ["+examName+"]");
-
 				break;
 			case 2:
 				// Log.d("Semester:", text);
@@ -145,6 +138,7 @@ class ExamParser extends DefaultHandler {
 				break;
 			case 5:
 				// Log.d("Status:", text);
+				// XXX ugly
 				if (text.equals("bestanden")) {
 					passed = true;
 				}
@@ -159,7 +153,7 @@ class ExamParser extends DefaultHandler {
 				break;
 
 			default:
-				Log.d("parser default", text + " element:" + elementCount);
+				Log.d(TAG, text + " element:" + elementCount);
 				break;
 			}
 		}
@@ -174,7 +168,5 @@ class ExamParser extends DefaultHandler {
 
 	public void endDocument() throws SAXException {
 		super.endDocument();
-		// array umdrehen
-		// Collections.reverse(lecList);
 	}
 }

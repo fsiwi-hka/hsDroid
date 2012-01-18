@@ -10,6 +10,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -32,6 +33,11 @@ public class DirChooser extends nListActivity {
 
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+		prepareDirectoryList();
+
+	}
+
+	private void prepareDirectoryList() {
 		final ArrayList<File> sdDirs = new ArrayList<File>();
 		if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 			File extDir = Environment.getExternalStorageDirectory();
@@ -41,7 +47,6 @@ public class DirChooser extends nListActivity {
 
 				@Override
 				public boolean accept(File pathname) {
-					// TODO Auto-generated method stub
 					return pathname.isDirectory();
 				}
 			};
@@ -61,28 +66,23 @@ public class DirChooser extends nListActivity {
 
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-					// showToast("pos:" + pos + " name: " +
-					// sdDirs.get(pos).getAbsolutePath());
 					showToast(sdDirs.get(pos).getAbsolutePath());
-
+					// hasSubDirs(sdDirs.get(pos));
 					Editor ed = mPreferences.edit();
 					ed.putString("downloadPathPref", sdDirs.get(pos).getAbsolutePath());
 					ed.commit();
 					finish();
-					// if (hasSubDirs(sdDirs.get(pos))) {
-					//
-					// }
 				}
 			});
 		} else {
 			showToast("SD Karte nicht verfügbar.");
 		}
-
 	}
 
 	private boolean hasSubDirs(File file) {
 		for (File childDir : file.listFiles()) {
 			if (childDir.isDirectory()) {
+				Log.d(TAG, "Pfad :" + file.getAbsolutePath() + " hat unterverzeichnisse");
 				return true;
 			}
 		}
