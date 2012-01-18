@@ -101,5 +101,15 @@
 	
 	<string name="text_resetSettings">Reset settings</string>
 	<string name="text_resetSettingsDesc">Clear all user settings.</string>
+	
+	<string name="text_separator">Separator</string>
+	<string name="text_separatorDesc">Show list separator for each semester.</string>
+   
+	
+	<string name="text_path">Path:</string>
+	<string name="text_delDBCompleted">Database deleted.</string>
+    <string name="text_resetSettingsComplete">Reset done.</string>
+    <string name="loadGradeDistrib">Loading grade distribution for %s.</string>
+    
 
 </resources>

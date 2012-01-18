@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 	<PreferenceCategory android:title="@string/text_general">
 		<CheckBoxPreference android:defaultValue="false"
 			android:summary="@string/text_savePW" android:key="saveLoginDataPref"
@@ -18,25 +18,27 @@
 			android:defaultValue="false" />
 
 		<ListPreference android:title="@string/text_sortOrder"
-			android:summary="@string/text_sortOrderDesc"
-			android:key="defaultOrderPref" android:entries="@array/orderEntryArray"
-			android:entryValues="@array/orderValueArray" android:defaultValue="DESC" />
+			android:summary="@string/text_sortOrderDesc" android:key="defaultOrderPref"
+			android:entries="@array/orderEntryArray" android:entryValues="@array/orderValueArray"
+			android:defaultValue="DESC" />
 
 		<ListPreference android:title="@string/text_changeView"
-			android:summary="@string/text_changeViewDesc"
-			android:key="defaultViewPref" android:entries="@array/defaultViewListArray"
-			android:entryValues="@array/defaultViewListValues"
+			android:summary="@string/text_changeViewDesc" android:key="defaultViewPref"
+			android:entries="@array/defaultViewListArray" android:entryValues="@array/defaultViewListValues"
 			android:defaultValue="all" />
-			
+
 		<CheckBoxPreference android:title="@string/text_highlight"
-			android:defaultValue="false"
-			android:summary="@string/text_highlightDesc"
+			android:defaultValue="false" android:summary="@string/text_highlightDesc"
 			android:key="highlightActualExamsPref" />
+		<CheckBoxPreference android:title="@string/text_separator"
+			android:defaultValue="true" android:summary="@string/text_separatorDesc"
+			android:key="prefUseSeparator" />
+		/>
 		<Preference android:title="@string/text_color"
 			android:summary="@string/text_colorDesc" android:key="highlightColorPref"
 			android:dependency="highlightActualExamsPref" />
 	</PreferenceCategory>
-	
+
 	<PreferenceCategory android:title="@string/title_Certifications">
 		<Preference android:defaultValue="/mnt/sdcard/download/"
 			android:key="downloadPathPref" android:title="@string/text_downloadDir"

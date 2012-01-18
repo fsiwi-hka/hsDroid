@@ -151,9 +151,9 @@ public class GradesList extends nActivity {
 
 						// Log.d(TAG, "show examInfo");
 						showTitleProgress();
-						showToast("Lade Notenverteilung für " + name + ".");
+						showToast(String.format(getString(R.string.loadGradeDistrib), name));
 						setRequestedOrientation(2);
-						// //
+
 						// startThread
 
 						mExamInfoThread = new ExamInfoThread();
@@ -173,7 +173,7 @@ public class GradesList extends nActivity {
 
 	private void selectDegree() {
 		AlertDialog.Builder builderSelectDegree = new AlertDialog.Builder(this);
-		builderSelectDegree.setTitle("Abschluß wählen");
+		builderSelectDegree.setTitle(getString(R.string.text_degreeDesc));
 		final int BACHELOR = 0;
 		final int MASTER = 1;
 		builderSelectDegree.setItems(R.array.degreeEntryArray, new DialogInterface.OnClickListener() {
@@ -636,7 +636,7 @@ public class GradesList extends nActivity {
 				}
 
 				int a, b;
-				if (semMap.size() > 0) {
+				if (semMap.size() > 0 && mPreferences.getBoolean("prefUseSeparator", true)) {
 					a = c.getInt(c.getColumnIndex(BaseColumns._ID));
 					b = semMap.get(sem) + 1;
 					TextView separator = (TextView) v.findViewById(R.id.examSeparator);

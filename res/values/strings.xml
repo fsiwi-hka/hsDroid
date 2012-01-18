@@ -104,12 +104,20 @@
 	<string name="text_data">Daten</string>
 	<string name="text_delDB">DB löschen</string>
 	<string name="text_delDBDesc">Alle Daten aus der Datenbank löschen.</string>
-		
+	
+	
 	<string name="text_delCookie">Cookie löschen</string>
 	<string name="text_delCookieDesc">Entfernt Cookie aus dem Speicher.</string>
 	
 	<string name="text_resetSettings">Einstellungen zurücksetzen</string>
 	<string name="text_resetSettingsDesc">Löscht alle Einstellungen.</string>
-    
+	
+	<string name="text_path">Pfad:</string>
+	<string name="text_delDBCompleted">Datenbank gelöscht.</string>
+    <string name="text_resetSettingsComplete">Einstellunge zurückgesetzt.</string>
+	<string name="text_separator">Trennlinie</string>
+	<string name="text_separatorDesc">Trennlinien für einzelne Semester anzeigen.</string>
+	
+	<string name="loadGradeDistrib">Lade Notenverteilung für %s.</string>
     
 </resources>

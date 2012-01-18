@@ -29,14 +29,11 @@ public class Preferences extends PreferenceActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		System.out.println("reqCode: " + requestCode + " resCode: " + resultCode);
 
 		switch (resultCode) {
 		case RESULT_OK:
-			System.out.println("res: ok");
 			switch (requestCode) {
 			case RET_DIRNAME:
-				System.out.println("dir: " + data.getDataString());
 				SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 				SharedPreferences.Editor ed = preferences.edit();
 				ed.putString("downloadPathPref", data.getDataString().substring(7, data.getDataString().length()));
@@ -50,7 +47,7 @@ public class Preferences extends PreferenceActivity {
 			break;
 
 		default:
-			System.out.println("other res: " + resultCode);
+			Log.d(TAG, "other res: " + resultCode);
 			break;
 		}
 
@@ -101,7 +98,7 @@ public class Preferences extends PreferenceActivity {
 		clearDBPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
 			public boolean onPreferenceClick(Preference preference) {
-				showToast("Datenbank gelöscht.");
+				showToast(getString(R.string.text_delDBCompleted));
 				clearDB();
 				return true;
 			}
@@ -144,7 +141,7 @@ public class Preferences extends PreferenceActivity {
 					showToast("Cookie gelöscht");
 				} else {
 					Log.d(TAG, "Versuch nicht vorhandenes Cookie zu lösche. So geht das aber nich ;).");
-					showToast("Kein Cookie vorhanden.");
+					showToast(getString(R.string.error_cookie_empty));
 				}
 
 				return true;
@@ -159,7 +156,7 @@ public class Preferences extends PreferenceActivity {
 				Editor ed = preference.getEditor();
 				ed.clear();
 				ed.commit();
-				showToast("Einstellunge zurückgesetzt.");
+				showToast(getString(R.string.text_resetSettingsComplete));
 				// FIXME Invalidate View geht nich??
 				// main updaten.. user und pw löschen..
 				finish();
@@ -213,7 +210,8 @@ public class Preferences extends PreferenceActivity {
 
 	private void updateSummaries() {
 		Preference pref = (Preference) findPreference("downloadPathPref");
-		pref.setSummary("Pfad: "
+		pref.setSummary(getString(R.string.text_path)
+				+ " "
 				+ pref.getSharedPreferences().getString(pref.getKey(),
 						Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS));
 	}
