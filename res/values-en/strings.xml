@@ -61,5 +61,45 @@
     <string name="text_initialize">Initialize..</string>
     <string name="info_updateGradesList">Update overview of grades…</string>
     <string name="text_asAttachment">Attachment: </string>
+    
+    
+    <string name="text_general">General</string>
+    <string name="text_savePW">Password will be saved unencrypted!</string>
+    
+    <string name="text_autoLogin">AutoLogin</string>
+	<string name="text_autoLoginDesc">Automatic Login at start.</string>
+	
+	<string name="text_degree">Degree</string>
+	<string name="text_degreeDesc">Targeted Degree.</string>
+	
+	
+	<string name="text_autoUpdate">Auto Update</string>
+	<string name="text_autoUpdateDesc">Automatically update overview of grades.</string>
+			
+	<string name="text_sortOrder">Change sort order</string>
+	<string name="text_sortOrderDesc">Ascending or descending sort order of grades.</string>
+
+
+	<string name="text_changeView">Change view</string>
+	<string name="text_changeViewDesc">Choose your default view.</string>
+	
+	<string name="text_highlight">Highlight</string>
+	<string name="text_highlightDesc">Highlight actual exams.</string>
+	
+	<string name="text_color">Color</string>
+	<string name="text_colorDesc">Choose highlighting color.</string>
+
+	
+	<string name="text_downloadDir">Download directory</string>
+	
+	<string name="text_data">Data</string>
+	<string name="text_delDB">Delete DB</string>
+	<string name="text_delDBDesc">Delete all Data in the database.</string>
+		
+	<string name="text_delCookie">Remove Cookie</string>
+	<string name="text_delCookieDesc">Removes Cookie from RAM.</string>
+	
+	<string name="text_resetSettings">Reset settings</string>
+	<string name="text_resetSettingsDesc">Clear all user settings.</string>
 
 </resources>
