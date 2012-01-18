@@ -1,50 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
-	<string name="username">HS-Username</string>
-	<string name="password">Password</string>
-	<string name="login">Login</string>
-	<string name="cancel">Cancel</string>
-	<string name="error">Error</string>
-	<string name="error_name_missing">Please enter HS-Username.</string>
-	<string name="error_name_incorrect">Wrong HS-Username. ex.: mami1011</string>
-	<string name="error_ok">OK</string>
-	<string name="error_password_missing">Please enter password.</string>
-	<string name="error_couldnt_connect">Connection error</string>
-	<string name="error_site_down">Website is currently in maintenance mode.</string>
-	<string name="error_login_failed">Login failed, please check login data.</string>
-	<string name="progress_loading">Loading...</string>
-	<string name="progress_connect">Connecting...</string>
-	<string name="progress_parse">Parse...</string>
-	<string name="progress_cookie">Take cookie...</string>
-	<string name="progress_notenfetch">Take grades...</string>
-	<string name="progress_notencleanup">Html cleanup...</string>
-	<string name="progress_notenparse">Prepare grades...</string>
-	<string name="title_view_marks">Grades</string>
-	<string name="title_head_exam">Exam</string>
-	<string name="title_head_mark">Grade</string>
-	<string name="text_savePWcheckBox">Save password</string>
-	<string name="grades_view">Grades</string>
-	<string name="grades_view_attempt">Attempt: </string>
-	<string name="grades_view_semester">Semester: </string>
-	<string name="menu_preferences">Preferences</string>
-	<string name="menu_about">About</string>
-	<string name="submenu_examViewAllFailed">All failed exams</string>
-	<string name="submenu_examViewAll">All exams</string>
-	<string name="submenu_examViewOnlyLast">Actual exams</string>
-	<string name="submenu_examViewOnlyLastFailed">Failed exams</string>
-	
-	<string name="menu_view">View</string>
-	<string name="empty_list_view">No data available</string>
-	<string name="menu_refresh">Refresh</string>
 
-	<string name="error_cookie_empty">Got no cookie</string>
+    <string name="username">HS-Username</string>
+    <string name="password">Password</string>
+    <string name="text_savePWcheckBox">Save password</string>
+    <string name="login">Login</string>
+    <string name="cancel">Cancel</string>
+    <string name="close">Close</string>
+    <string name="error">Error</string>
+    <string name="error_name_missing">Please enter HS-Username.</string>
+    <string name="error_name_incorrect">Wrong HS-Username. ex.: mami1011</string>
+    <string name="error_ok">OK</string>
+    <string name="error_password_missing">Please enter password.</string>
+    <string name="error_couldnt_connect">Connection error</string>
+    <string name="error_site_down">Website is currently in maintenance mode.</string>
+    <string name="error_login_failed">Login failed, please check login data.</string>
+    <string name="error_cookie_empty">Got no cookie</string>
+    <string name="error_invalidServerResponse">Invalid response from server.</string>
+    <string name="error_DownloadFailed">Download failed</string>
+    <string name="error_NoPdfApp">No Application to open PDF files.</string>
+    <string name="error_noGradeDistributionAvailableForX">No grade distribution available for %s.</string>
+    <string name="error_downloadCanceled">Download canceled</string>
+    <string name="progress_connect">Connecting…</string>
+    <string name="progress_parse">Parse…</string>
+    <string name="progress_cookie">Take cookie…</string>
+    <string name="grades_view">Grades</string>
+    <string name="grades_view_attempt">Attempt: </string>
+    <string name="grades_view_semester">Semester: </string>
+    <string name="menu_preferences">Preferences</string>
+    <string name="menu_about">About</string>
+    <string name="menu_view">View</string>
+    <string name="menu_refresh">Refresh</string>
+    <string name="submenu_examViewAllFailed">All failed exams</string>
+    <string name="submenu_examViewAll">All exams</string>
+    <string name="submenu_examViewOnlyLast">Actual exams</string>
+    <string name="submenu_examViewOnlyLastFailed">Failed exams</string>
+    <string name="about_subtitle">Overview of grades</string>
+    <string name="about_maintext">App to login at \"Online Service 2\" at the HSKA, to view your grades.\n\nFor more informations visit:\nhttps://github.com/n0iz/hsDroid\n\nEmail: eiol0011@hs-karlsruhe.de</string>
 
-	<string name="about_subtitle">Gradesviewer</string>
-	<string name="about_maintext">App to login at \"Online Service 2\" at the HSKA, to view your grades.\n\nFor more informations visit:\nhttps://github.com/n0iz/hsDroid\n\nEmail: eiol0011@hs-karlsruhe.de</string>
+    <string-array name="orderEntryArray">
+        <item>Ascending</item>
+        <item>Descending</item>
+    </string-array>
+    <string-array name="ifFileExistArray">
+        <item>Overwrite</item>
+        <item>Rename</item>
+    </string-array>
 
-
-
-
+    <string name="fileExists">File already exists</string>
+    <string name="fileNotFound">File not found</string>
+    <string name="downloadFileQuestion">Download file?</string>
+    <string name="success_downloadComplete">Download successful.</string>
+    <string name="text_file">File</string>
+    <string name="text_NotFound">not found</string>
+    <string name="text_selectSendDestination">Send destination</string>
+    <string name="text_chooseFile">Choose file</string>
+    <string name="text_deleted">deleted</string>
+    <string name="title_Certifications">Certification</string>
+    <string name="title_certContextMenu_selectAction">Select action</string>
+    <string name="text_initialize">Initialize..</string>
+    <string name="info_updateGradesList">Update overview of grades…</string>
+    <string name="text_asAttachment">Attachment: </string>
 
 </resources>
