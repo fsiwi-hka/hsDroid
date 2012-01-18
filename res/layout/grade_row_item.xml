@@ -1,60 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent" 
-	android:layout_height="wrap_content"
-	android:orientation="horizontal" 
-	android:baselineAligned="true">
-	
-	<LinearLayout android:layout_width="fill_parent"
-		android:layout_height="wrap_content" 
-		android:orientation="vertical"
-		android:layout_weight="1">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:baselineAligned="true" >
 
-		<TextView android:id="@+id/examName" 
-			android:textSize="14sp"
-			android:textStyle="bold" 
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/examSeparator"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/background_light"
+        android:text="@string/testString"
+        android:textColor="@android:color/primary_text_light"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="visible" />
 
-		<LinearLayout android:layout_width="wrap_content"
-			android:layout_height="wrap_content" 
-			android:orientation="horizontal">
+    <LinearLayout
+        android:id="@+id/layaoutVert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/examSeparator"
+        android:orientation="vertical" >
 
-			<TextView android:id="@+id/examNr" 
-				android:textSize="12sp"
-				android:layout_width="wrap_content" 
-				android:layout_height="wrap_content"/>
-				
-			<TextView android:id="@+id/examSemester" 
-				android:textSize="12sp"
-				android:layout_width="wrap_content" 
-				android:layout_height="wrap_content"
-				android:layout_marginLeft="5dp"/>
-				
-			<TextView android:id="@+id/examAttempts" 
-				android:textSize="12sp"
-				android:layout_width="wrap_content" 
-				android:layout_height="wrap_content"
-				android:layout_marginLeft="5dp"/>
+        <TextView
+            android:id="@+id/examName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/testString"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
-		</LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
 
-	</LinearLayout>
-	
-	<LinearLayout android:orientation="horizontal"
-		android:layout_gravity="center_vertical" 
-		android:layout_weight="0"
-		android:layout_height="match_parent" 
-		android:layout_width="wrap_content">
+            <TextView
+                android:id="@+id/examNr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/testString"
+                android:textSize="12sp" />
 
-		<TextView android:id="@+id/examGrade" 
-			android:textSize="18sp"
-			android:textStyle="bold" 
-			android:layout_marginRight="5dp"
-			android:layout_marginLeft="5dp"
-			android:layout_width="wrap_content" 
-			android:layout_height="wrap_content"
-			android:text="1,0"
-			 android:layout_gravity="center"/>
-	</LinearLayout>
-</LinearLayout>
+            <TextView
+                android:id="@+id/examSemester"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="@string/testString"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/examAttempts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="@string/testString"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/examGrade"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/layaoutVert"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/layaoutVert"
+        android:gravity="center_vertical"
+        android:text="@string/testString"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>
