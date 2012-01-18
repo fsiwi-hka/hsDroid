@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">hsDroid</string>
+    <string name="app_version">0.2.2-git</string>
+
+    <string-array name="defaultViewListArray">
+        <item>@string/submenu_examViewAll</item>
+        <item>@string/submenu_examViewOnlyLast</item>
+        <item>@string/submenu_examViewOnlyLastFailed</item>
+        <item>@string/submenu_examViewAllFailed</item>
+    </string-array>
+    <string-array name="defaultViewListValues">
+        <item>all</item>
+        <item>act</item>
+        <item>actfail</item>
+        <item>allfail</item>
+    </string-array>
+    <string-array name="degreeEntryArray">
+        <item>Bachelor</item>
+        <item>Master</item>
+    </string-array>
+    <string-array name="degreeValueArray">
+        <item>58</item>
+        <item>59</item>
+    </string-array>
+    <string-array name="orderValueArray">
+        <item>ASC</item>
+        <item>DESC</item>
+    </string-array>
+
+    <string name="descLogo">hsDroid Logo</string>
+    <string name="testString">TestString</string>
+
+</resources>
