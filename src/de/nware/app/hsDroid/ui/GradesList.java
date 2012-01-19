@@ -114,6 +114,8 @@ public class GradesList extends nActivity {
 		cursor = resolver.query(ExamsCol.CONTENT_URI, null, null, null, null);
 		startManagingCursor(cursor);
 
+		semMap = new HashMap<String, Integer>();
+
 		final String[] from = new String[] { ExamsCol.EXAMNAME, ExamsCol.EXAMNR, ExamsCol.ATTEMPTS, ExamsCol.GRADE };
 		final int[] to = new int[] { R.id.examName, R.id.examNr, R.id.examGrade, R.id.examAttempts, R.id.examGrade };
 		mExamAdapter = new ExamDBAdapter(GradesList.this, R.layout.grade_row_item, cursor, from, to);
@@ -125,6 +127,8 @@ public class GradesList extends nActivity {
 			if (forceAutoUpdate) {
 				forceAutoUpdate = false;
 			}
+		} else {
+			fillSemesterHashMap();
 		}
 
 		this.mExamAdapter.getFilter().filter(getDefaultListSort());
@@ -221,6 +225,7 @@ public class GradesList extends nActivity {
 
 			case HANDLER_MSG_REFRESH:
 				// ListView wieder neu laden
+				fillSemesterHashMap();
 				refreshList();
 				// Bildschirm Orientierung wieder dem User überlassen
 				setRequestedOrientation(-1);
@@ -562,6 +567,28 @@ public class GradesList extends nActivity {
 
 	private HashMap<String, Integer> semMap = null;
 
+	public void fillSemesterHashMap() {
+		ContentResolver resolver = getContentResolver();
+		Cursor cursor = resolver.query(ExamsCol.CONTENT_URI, null, null, null, null);
+		cursor.moveToFirst();
+		int count = 0;
+
+		semMap = new HashMap<String, Integer>();
+
+		while (!cursor.isAfterLast()) {
+			if (cursor.isFirst()) {
+				int dbIdOffset = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
+				Log.d(TAG, "db offset: " + dbIdOffset);
+				count = dbIdOffset;
+			}
+			semMap.put(cursor.getString(cursor.getColumnIndex(ExamsCol.SEMESTER)), count);
+			// cursor.getInt(cursor.getColumnIndex(BaseColumns._ID)));
+			cursor.moveToNext();
+			count++;
+		}
+		cursor.close();
+	}
+
 	/**
 	 * 
 	 * @author Oliver Eichner
@@ -577,23 +604,7 @@ public class GradesList extends nActivity {
 			// this.context = context;
 			this.layout = layout;
 			Log.d(TAG, "Create ExamAdapter");
-			fillSemesterHashMap(cursor);
-		}
-
-		private void fillSemesterHashMap(Cursor cursor) {
-			cursor.moveToFirst();
-			int count = 0;
-
-			semMap = new HashMap<String, Integer>();
-
-			while (!cursor.isAfterLast()) {
-
-				semMap.put(cursor.getString(cursor.getColumnIndex(ExamsCol.SEMESTER)), count);
-				// cursor.getInt(cursor.getColumnIndex(BaseColumns._ID)));
-				cursor.moveToNext();
-				count++;
-			}
-			cursor.moveToFirst();
+			// fillSemesterHashMap();
 		}
 
 		@Override
@@ -636,11 +647,12 @@ public class GradesList extends nActivity {
 				}
 
 				int a, b;
-				if (semMap.size() > 0 && mPreferences.getBoolean("prefUseSeparator", true)) {
+				if (semMap.size() > 0) {
 					a = c.getInt(c.getColumnIndex(BaseColumns._ID));
-					b = semMap.get(sem) + 1;
+					b = semMap.get(sem);
+					Log.d(TAG, "a:b - " + a + ":" + b);
 					TextView separator = (TextView) v.findViewById(R.id.examSeparator);
-					if (a == b) {
+					if (a == b && mPreferences.getBoolean("prefUseSeparator", true)) {
 
 						separator.setText(sem);
 						separator.setVisibility(TextView.VISIBLE);
@@ -719,8 +731,6 @@ public class GradesList extends nActivity {
 				args = new String[] { "0" };
 				// Log.d(TAG, "buffer: " + buffer.toString());
 				// Log.d(TAG, "args: " + args[0]);
-				fillSemesterHashMap(getContentResolver().query(ExamsCol.CONTENT_URI, null,
-						buffer == null ? null : buffer.toString(), args, sortOrder));
 				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
 						buffer == null ? null : buffer.toString(), args, sortOrder);
 			} else if (constraint.equals(SORT_ACTUAL)) {
