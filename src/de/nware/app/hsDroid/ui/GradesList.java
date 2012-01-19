@@ -650,7 +650,7 @@ public class GradesList extends nActivity {
 				if (semMap.size() > 0) {
 					a = c.getInt(c.getColumnIndex(BaseColumns._ID));
 					b = semMap.get(sem);
-					Log.d(TAG, "a:b - " + a + ":" + b);
+					// Log.d(TAG, "a:b - " + a + ":" + b);
 					TextView separator = (TextView) v.findViewById(R.id.examSeparator);
 					if (a == b && mPreferences.getBoolean("prefUseSeparator", true)) {
 
