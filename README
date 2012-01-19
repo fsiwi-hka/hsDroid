@@ -1,5 +1,5 @@
 hsDroid
-=========
+=======
 
 hsDroid ist ein Android App für Studierende der HS-Karlsruhe.
 Es ermöglicht das anmelden am "Online Service 2" um dort den 
@@ -7,3 +7,77 @@ Notenspiegel abzufragen. Ausserdem können diverse Bescheinigungen
 heruntergeladen und z.B. per Email versendet werden.
 
 
+
+Changelog
+=========
+
+19.jan.2012	- v0.2.2
+	Semester Unterteilung im Notenspiegel (funktioniert im mom nur bei Absteigender sortierreihenfolge richtig...)
+	Fix FC im Notenspiegel, wenn Noteninfo abgerufen wird und back gedrückt wurde.
+	OI Filemanager Support beim wählen des DL Pfades
+	Threads davon überzeugt sich zu beenden ;)
+	Downloads können nun wirklich abgebrochen werden.
+	Layouts gefixt
+	Strings Update (Preferences/DE+EN)
+	LINT drüber laufen lassen (keine icons für xhdpi)
+	
+	
+21.jul.2011 - v0.2.1
+	unterstützung für master studiengänge
+	
+20.jul.2011 - v0.2.0
+	bescheinigungen
+		-handling von mehreren dateien.. noch stark verbesserungs bedürftig ;)
+		
+19.jul.2011
+	versenden von pdfs
+	öffnen von pdfs
+	löschen von pdfs
+18.jul.2011
+	löschen aller lokalen einstellungen
+	downloadverzeichnis wählbar, aber nur root der sd karte
+	
+14.jul.2011
+	autologin hängt jetzt von gespeichertem passwort ab.
+	cookie reuse fix
+	fix für anmeldung von anderem benutzer (cookie löschen, datenbank neu aufbauen)
+	dashboard
+	download von bescheinigungen (imma, kvv, etc.)
+	
+12.jul.2011 
+	eigene titlebar mit integrierter progress anzeige
+
+25.jun.2011
+	noten in sqlite datenbank (contentprovider)
+	aktualisierung im hintergrund beim starten (optional) 
+
+27.apr.2011 - v0.1.9
+	fixes: strings, cleanup
+	
+26.mar.2011
+	switch to gitHub
+
+22.mar.2011 - v0.1.8
+	Preferences wip
+	AutoLogin
+
+21.mar.2011 - v0.1.7
+	ListItem onClick - Notenverteilung
+	xml fixes
+
+v0.1.6
+	menu preferences,view,about
+	Threads ausgelagert
+	locales en
+	screen orientation fix
+
+v0.1.5
+	TableLayout entfernt
+	ListActivity hinzugefügt
+	looper
+	
+1.mar.2011 - v.0.1
+	login
+	user und password speichern (SharedPreferences)
+	SAXParser für "Notenspiegel"
+	TableLayout für Noten
