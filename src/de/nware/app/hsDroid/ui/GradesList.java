@@ -122,11 +122,14 @@ public class GradesList extends nActivity {
 		lv.setAdapter(mExamAdapter);
 
 		autoUpdate = mPreferences.getBoolean("autoUpdatePref", false);
-		if (!noDegreeSelected && (mExamAdapter.getCount() == 0 || autoUpdate || forceAutoUpdate)) {
+		if (!noDegreeSelected && (mExamAdapter.getCount() == 0 || forceAutoUpdate)) {
 			updateGrades();
 			if (forceAutoUpdate) {
 				forceAutoUpdate = false;
 			}
+		} else if (autoUpdate) {
+			fillSemesterHashMap();
+			updateGrades();
 		} else {
 			fillSemesterHashMap();
 		}
