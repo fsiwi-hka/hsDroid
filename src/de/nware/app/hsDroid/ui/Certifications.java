@@ -618,14 +618,23 @@ public class Certifications extends nActivity {
 		case DIALOG_FILE_EXIST:
 			AlertDialog.Builder builderFileExistDia = new AlertDialog.Builder(this);
 			builderFileExistDia.setTitle(R.string.fileExists);
-			final int OVERWRITE = 0;
-			final int RENAME = 1;
+			// XXX iwie anderst lösen... werte in allLang.xmk ?
+			final int OPEN = 0;
+			final int SEND = 1;
+			final int OVERWRITE = 2;
+			final int RENAME = 3;
 			builderFileExistDia.setItems(R.array.ifFileExistArray, new DialogInterface.OnClickListener() {
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					Log.d(TAG, "select: " + which);
 					switch (which) {
+					case OPEN:
+						openPDF(currentFile);
+						break;
+					case SEND:
+						sendEmailWithAttachment(currentFile);
+						break;
 					case OVERWRITE:
 						doDownload(currentURL, currentFile, false, false);
 						break;
