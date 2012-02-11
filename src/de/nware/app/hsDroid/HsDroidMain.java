@@ -191,7 +191,6 @@ public class HsDroidMain extends nActivity {
 
 				if (mLoginThread != null) {
 					mLoginThread.stopThread();
-					// mLoginThread.kill();
 					mLoginThread = null;
 				}
 

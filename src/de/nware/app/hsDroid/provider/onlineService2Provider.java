@@ -51,19 +51,18 @@ import de.nware.app.hsDroid.provider.onlineService2Data.ExamsUpdateCol;
  */
 public class onlineService2Provider extends ContentProvider {
 
-	/** Die Konstante TAG. */
+	/** Debug TAG. */
 	private static final String TAG = "OnlineServiceContentProvider";
 
-	/** Die Konstante DATABASE_NAME. */
+	/** Der Datenbankname. */
 	private static final String DATABASE_NAME = "hsdroid.db";
 
-	/** Die Konstante VERSION. */
+	/** Die Datenbankversion. */
 	private static final int VERSION = 1;
 
-	/** Die Konstante AUTHORITY. */
+	/** Die AUTHORITY. */
 	public static final String AUTHORITY = "de.nware.app.hsDroid.provider.onlineService2Provider";
 
-	/** Die Konstante mUriMatcher. */
 	private static final UriMatcher mUriMatcher;
 
 	/** Die Konstante EXAMS. */
@@ -78,7 +77,7 @@ public class onlineService2Provider extends ContentProvider {
 	/** Die Konstante EXAMINFOS. */
 	private static final int EXAMINFOS = 4;
 
-	/** Der/Die/Das exams projection map. */
+	/** Projection map. */
 	private static HashMap<String, String> examsProjectionMap;
 
 	/** Die Konstante CERTIFICATIONS_COLUMNS. */
@@ -94,16 +93,16 @@ public class onlineService2Provider extends ContentProvider {
 			ExamInfos.GUT, ExamInfos.BEFRIEDIGEND, ExamInfos.AUSREICHEND, ExamInfos.NICHTAUSREICHEND, ExamInfos.AVERAGE };
 
 	// HTTP gedöns
-	/** Der/Die/Das url base. */
+	/** Die QIS Url. */
 	final String urlBase = "https://qis2.hs-karlsruhe.de/qisserver/rds";
 
-	/** Der/Die/Das certification url tmpl. */
+	/** Link für Bescheinigungen. */
 	final String certificationURLTmpl = "%s?state=qissosreports&besch=%s&next=wait.vm&asi=%s";
 
-	/** Der/Die/Das certification type. */
+	/** Bescheinigungstypen. */
 	final String[] certificationType = { "stammdaten", "studbesch", "studbeschengl", "bafoeg", "kvv", "studienzeit" };
 
-	/** Der/Die/Das certification name. */
+	/** Bescheinigungsname. */
 	final String[] certificationName = { "Datenkontrollblatt", "Immatrikulationsbescheinigung",
 			"Englische Immatrikulationsbescheinigung", "Bescheinigung nach § 9 BAföG", "KVV-Bescheinigung",
 			"Studienzeitbescheinigung" };
@@ -115,7 +114,11 @@ public class onlineService2Provider extends ContentProvider {
 	private static byte[] mContentBuffer = new byte[2048];
 
 	/** Der http client. */
-	private final HttpClient mHttpClient = new DefaultHttpClient();
+	private HttpClient mHttpClient = new DefaultHttpClient();
+
+	// Timeout variablen
+	private final int connectionTimeoutMillis = 3000;
+	private final int socketTimeoutMillis = 3000;
 
 	private SharedPreferences mPreferences;
 
@@ -358,20 +361,19 @@ public class onlineService2Provider extends ContentProvider {
 	 */
 	private Cursor getExamInfos(String infoID, boolean isSecondTry) {
 		// Log.d(TAG, "infoID:" + infoID + " asi:" + StaticSessionData.asiKey);
-
-		// FIXME Notenliste leer..?
-
 		final String examInfoURL = urlBase
 				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=abschluss&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D"
 				+ mPreferences.getString("degreePref", "58")
 				+ "%2Cstgnr%3D1%7Cstudiengang%3Astg%3DIB%7CpruefungOnTop%3Alabnr%3D" + infoID + "&expand=0&asi="
 				+ StaticSessionData.asiKey;
 
-		// FIXME Workaround
 		String response = getResponse(examInfoURL);
 
 		BufferedReader rd = new BufferedReader(new StringReader(response));
 
+		// XXX Workaround für denn Fall, dass der Notenspiegel noch nicht
+		// geladen wurde. Seite Laden, da sonst die Notenübwesicht nicht
+		// funktioniert..
 		try {
 			String line;
 			Boolean record = false;
@@ -519,13 +521,25 @@ public class onlineService2Provider extends ContentProvider {
 		List<Header> cookieHeader = cookieSpecBase.formatCookies(StaticSessionData.cookies);
 		httpPost.setHeader(cookieHeader.get(0));
 
+		// FIXME Timeout einbauen
+
+		if (mHttpClient == null) {
+			// HttpParams httpParams = new BasicHttpParams();
+			// HttpConnectionParams.setConnectionTimeout(httpParams,
+			// connectionTimeoutMillis);
+			// HttpConnectionParams.setSoTimeout(httpParams,
+			// socketTimeoutMillis);
+			// mHttpClient = new DefaultHttpClient(httpParams);
+		}
 		try {
+
 			final HttpResponse response = mHttpClient.execute(httpPost);
 
 			// Prüfen ob HTTP Antwort ok ist.
 			final StatusLine status = response.getStatusLine();
 
 			if (status.getStatusCode() != HttpStatus.SC_OK) {
+				Log.d(TAG, "http status code: " + status.getStatusCode());
 				throw new RuntimeException("Ungültige Antwort vom Server: " + status.toString());
 			}
 
@@ -553,12 +567,12 @@ public class onlineService2Provider extends ContentProvider {
 	}
 
 	/**
-	 * Exam exists.
+	 * Prüfen ob eine bestimmte Prüfungsleistung schon eingetragen ist.
 	 * 
 	 * @param examnr
-	 *            der/die/das examnr
+	 *            Prüfungsnummer
 	 * @param examdate
-	 *            der/die/das examdate
+	 *            Prüfungsdatum
 	 * @return true, wenn erfolgreich
 	 */
 	public boolean examExists(String examnr, String examdate) {
@@ -572,14 +586,13 @@ public class onlineService2Provider extends ContentProvider {
 	}
 
 	/**
-	 * Update grades.
+	 * Notenspiegel aktuallisieren
 	 * 
-	 * @return der/die/das integer[]
+	 * @return integer[] mit gesamt anzahl der Prüfungsleistungen und anzahl der
+	 *         Neuen Prüfungen
 	 */
 	public Integer[] updateGrades() {
-		// String url = String.format(notenSpiegelURLTmpl,
-		// StaticSessionData.asiKey);
-		// Log.d(TAG, "url: " + urlBase + URLEncoder.encode(url));
+
 		mOpenHelper.updateDBUser();
 
 		final String notenSpiegelURLTmpl = urlBase
@@ -639,11 +652,12 @@ public class onlineService2Provider extends ContentProvider {
 	}
 
 	/**
-	 * Read.
+	 * Notenspiegel Lesen
 	 * 
 	 * @param htmlContent
-	 *            der/die/das html content
-	 * @return der/die/das integer[]
+	 *            html content
+	 * @return integer[] mit gesamt anzahl der Prüfungsleistungen und anzahl der
+	 *         Neuen Prüfungen
 	 */
 	private Integer[] read(String htmlContent) {
 		Integer[] counter = { 0, 0 };

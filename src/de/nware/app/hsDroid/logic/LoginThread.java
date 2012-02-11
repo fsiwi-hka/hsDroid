@@ -176,7 +176,7 @@ public class LoginThread extends Thread {
 	}
 
 	private void doLogout() throws Exception {
-		// FIXME!! abmelden implementieren
+		// TODO!! abmelden implementieren
 		// beim System abmelden
 	}
 
