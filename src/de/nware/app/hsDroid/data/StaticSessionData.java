@@ -15,6 +15,9 @@ public class StaticSessionData {
 	public final static int cookieValTimeMin = 29;
 
 	public static boolean isCookieValid() {
+		if (cookies == null) {
+			return false;
+		}
 		long now = System.currentTimeMillis();
 		long nowMin = (now / 60000);
 		long cookieMin = (cookieMillis / 60000);

@@ -1,11 +1,15 @@
 package de.nware.app.hsDroid.ui;
 
+import java.util.List;
+
 import android.app.Dialog;
-import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
@@ -52,6 +56,31 @@ public class Preferences extends PreferenceActivity {
 		}
 
 		super.onActivityResult(requestCode, resultCode, data);
+	}
+
+	// TODO Funktion isIntentAvailable() wo anders hinpacken...
+	/**
+	 * Quelle:
+	 * http://android-developers.blogspot.com/2009/01/can-i-use-this-intent.html
+	 * 
+	 * Indicates whether the specified action can be used as an intent. This
+	 * method queries the package manager for installed packages that can
+	 * respond to an intent with the specified action. If no suitable package is
+	 * found, this method returns false.
+	 * 
+	 * @param context
+	 *            The application's environment.
+	 * @param action
+	 *            The Intent action to check for availability.
+	 * 
+	 * @return True if an Intent with the specified action can be sent and
+	 *         responded to, false otherwise.
+	 */
+	public static boolean isIntentAvailable(Context context, String action) {
+		final PackageManager packageManager = context.getPackageManager();
+		final Intent intent = new Intent(action);
+		List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+		return list.size() > 0;
 	}
 
 	@Override
@@ -112,14 +141,12 @@ public class Preferences extends PreferenceActivity {
 
 			public boolean onPreferenceClick(Preference preference) {
 
-				// FIXME ganz häßlicher workaround wenn oi filemanager nicht
-				// installiert ist.. :/
 				// http://android-developers.blogspot.com/2009/01/can-i-use-this-intent.html
-				try {
+
+				if (isIntentAvailable(preference.getContext(), "org.openintents.action.PICK_DIRECTORY")) {
 					Intent dirIntent = new Intent("org.openintents.action.PICK_DIRECTORY");
 					startActivityForResult(dirIntent, RET_DIRNAME);
-				} catch (ActivityNotFoundException e) {
-					System.out.println("open oi err: " + e.getMessage());
+				} else {
 					Intent intent = new Intent(getApplicationContext(), DirChooser.class);
 					startActivity(intent);
 				}
@@ -134,7 +161,7 @@ public class Preferences extends PreferenceActivity {
 			public boolean onPreferenceClick(Preference preference) {
 
 				if (StaticSessionData.cookies != null) {
-					// FIXME .clear() geht nicht..
+					// XXX .clear() geht nicht..
 					// java.lang.UnsupportedOperationException warum??
 					// StaticSessionData.cookies.clear();
 					StaticSessionData.cookies = null;
@@ -218,7 +245,6 @@ public class Preferences extends PreferenceActivity {
 
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 		updateSummaries();
 	}

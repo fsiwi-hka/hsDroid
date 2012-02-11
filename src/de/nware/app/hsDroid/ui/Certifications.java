@@ -51,6 +51,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import de.nware.app.hsDroid.HsDroidMain;
 import de.nware.app.hsDroid.R;
 import de.nware.app.hsDroid.data.StaticSessionData;
 import de.nware.app.hsDroid.provider.onlineService2Data.CertificationsCol;
@@ -100,6 +101,9 @@ public class Certifications extends nActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		// Session gültigkeit prüfen
+		checkSession();
+
 		setContentView(R.layout.certifications);
 		customTitle(getString(R.string.title_Certifications));
 
@@ -148,6 +152,23 @@ public class Certifications extends nActivity {
 		} else {
 			showToast("SD-Karte nicht verfügbar. Status: " + Environment.getExternalStorageState());
 			return false;
+		}
+	}
+
+	@Override
+	protected void onResume() {
+		checkSession();
+		super.onResume();
+	}
+
+	private void checkSession() {
+		if (!StaticSessionData.isCookieValid()) {
+			// TODO relogin wenn cookie abgelaufen
+			// doLogin();
+			showToast("Cookie abgelaufen. Bitte neu anmelden.");
+			Intent mainIntent = new Intent(this, HsDroidMain.class);
+			startActivity(mainIntent);
+			finish();
 		}
 	}
 
@@ -451,7 +472,6 @@ public class Certifications extends nActivity {
 			httpPost.setHeader(cookieHeader.get(0));
 
 			try {
-				// downloadHandler.sendEmptyMessage(1);
 				HttpClient mHttpClient = new DefaultHttpClient();
 				HttpResponse response = mHttpClient.execute(httpPost);
 
@@ -462,14 +482,11 @@ public class Certifications extends nActivity {
 					throw new RuntimeException(getString(R.string.error_invalidServerResponse) + ": "
 							+ status.toString());
 				}
-				// downloadHandler.sendEmptyMessage(2);
 
 				// Hole Content Stream
 				final HttpEntity entity = response.getEntity();
 
 				contentLength = (int) entity.getContentLength();
-				Log.d(TAG, "ContentLenght:" + contentLength);
-				// FIXME größe mit Message übermitteln
 				downloadHandler.sendEmptyMessage(MSG_SET_DOWNLOAD_SIZE);
 
 				OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
@@ -554,7 +571,6 @@ public class Certifications extends nActivity {
 			mProgressDialog = new ProgressDialog(this);
 			mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 			mProgressDialog.setMessage("Download " + currentCertName);
-			// FIXME Thread nicht abbrechbar..
 			mProgressDialog.setCancelable(true);
 			mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
 				@Override

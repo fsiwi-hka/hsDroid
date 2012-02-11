@@ -30,9 +30,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import de.nware.app.hsDroid.HsDroidMain;
 import de.nware.app.hsDroid.R;
 import de.nware.app.hsDroid.data.StaticSessionData;
 import de.nware.app.hsDroid.provider.onlineService2Data.ExamInfos;
@@ -78,7 +80,7 @@ public class GradesList extends nActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		checkSession();
 		setContentView(R.layout.grade_list_view);
 		customTitle(getText(R.string.grades_view).toString());
 
@@ -107,10 +109,7 @@ public class GradesList extends nActivity {
 		final ContentResolver resolver = getContentResolver();
 
 		lv = (ListView) findViewById(R.id.gradesListView);
-		if (!StaticSessionData.isCookieValid()) {
-			// ToDo
-			// doLogin();
-		}
+		checkSession();
 		cursor = resolver.query(ExamsCol.CONTENT_URI, null, null, null, null);
 		startManagingCursor(cursor);
 
@@ -176,6 +175,17 @@ public class GradesList extends nActivity {
 			}
 		});
 
+	}
+
+	private void checkSession() {
+		if (!StaticSessionData.isCookieValid()) {
+			// TODO relogin wenn cookie abgelaufen
+			// doLogin();
+			showToast("Cookie abgelaufen. Bitte neu anmelden.");
+			Intent mainIntent = new Intent(this, HsDroidMain.class);
+			startActivity(mainIntent);
+			finish();
+		}
 	}
 
 	private void selectDegree() {
@@ -314,6 +324,7 @@ public class GradesList extends nActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		checkSession();
 		ACTUAL_SORT = getDefaultListSort();
 	}
 
@@ -593,21 +604,21 @@ public class GradesList extends nActivity {
 	}
 
 	/**
+	 * {@link ListAdapter} für die Datenbank mit den Prüfungsleistungen
 	 * 
 	 * @author Oliver Eichner
 	 * 
 	 */
 	public class ExamDBAdapter extends SimpleCursorAdapter {
 
-		// private Context context;
+		private Context context;
 		private int layout;
 
 		public ExamDBAdapter(Context context, int layout, Cursor cursor, String[] from, int[] to) {
 			super(context, layout, cursor, from, to);
-			// this.context = context;
+			this.context = context;
 			this.layout = layout;
 			Log.d(TAG, "Create ExamAdapter");
-			// fillSemesterHashMap();
 		}
 
 		@Override
