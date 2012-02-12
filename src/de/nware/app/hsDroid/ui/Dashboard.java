@@ -110,12 +110,10 @@ public class Dashboard extends nActivity {
 
 			return true;
 		case R.id.menu_about:
-			Log.d("Main menu:", "about");
 			new AboutDialog(this);
 
 			return true;
 		default:
-			Log.d("Main menu:", "default");
 			System.out.println("id:" + item.getItemId() + " about: " + R.id.menu_about);
 			return super.onOptionsItemSelected(item);
 		}

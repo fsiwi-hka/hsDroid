@@ -127,7 +127,8 @@ public class Certifications extends nActivity {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Log.d(TAG, "pos:" + position + " id:" + id + " adapterID:" + listView.getAdapter().getItemId(position));
+				// Log.d(TAG, "pos:" + position + " id:" + id + " adapterID:" +
+				// listView.getAdapter().getItemId(position));
 				if (isSdCardAvailable()) {
 					getFileByPos(position, true, false);
 				}
@@ -213,7 +214,7 @@ public class Certifications extends nActivity {
 						alert.show();
 
 					} else if (files1.length == 1) {
-						Log.d(TAG, "Filename [" + files1[0] + "]");
+						// Log.d(TAG, "Filename [" + files1[0] + "]");
 						new File(mPreferences.getString("downloadPathPref", defaultDLPath), files1[0]).delete();
 						// TODO String format %s...
 						showToast(getString(R.string.text_file) + " \"" + files1[0] + "\""
@@ -243,7 +244,7 @@ public class Certifications extends nActivity {
 						alert.show();
 
 					} else if (files.length == 1) {
-						Log.d(TAG, "Filename [" + files[0] + "]");
+						// Log.d(TAG, "Filename [" + files[0] + "]");
 						openPDF(new File(mPreferences.getString("downloadPathPref", defaultDLPath), files[0]));
 					}
 				} else {
@@ -271,7 +272,7 @@ public class Certifications extends nActivity {
 						alert.show();
 
 					} else if (filesCouldBeSend.length == 1) {
-						Log.d(TAG, "Filename [" + filesCouldBeSend[0] + "]");
+						// Log.d(TAG, "Filename [" + filesCouldBeSend[0] + "]");
 						sendEmailWithAttachment(new File(mPreferences.getString("downloadPathPref", defaultDLPath),
 								filesCouldBeSend[0]));
 					}
@@ -409,9 +410,9 @@ public class Certifications extends nActivity {
 		String idd = cur.getString(cur.getColumnIndexOrThrow(BaseColumns._ID));
 		currentURL = cur.getString(cur.getColumnIndexOrThrow(CertificationsCol.LINK));
 		currentCertName = cur.getString(cur.getColumnIndexOrThrow(CertificationsCol.TITLE));
-		Log.d(TAG, "id: " + idd);
-		Log.d(TAG, "link: " + currentURL);
-		Log.d(TAG, "certname: " + currentCertName);
+		// Log.d(TAG, "id: " + idd);
+		// Log.d(TAG, "link: " + currentURL);
+		// Log.d(TAG, "certname: " + currentCertName);
 
 		String downloadPath = mPreferences.getString("downloadPathPref", defaultDLPath);
 		System.out.println(mPreferences + currentCertName + ".pdf");
@@ -645,7 +646,7 @@ public class Certifications extends nActivity {
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					Log.d(TAG, "select: " + which);
+					// Log.d(TAG, "select: " + which);
 					switch (which) {
 					case OPEN:
 						openPDF(currentFile);
@@ -706,10 +707,9 @@ public class Certifications extends nActivity {
 	}
 
 	private void cancelDownload() {
-		Log.d(TAG, "Cancel Download");
 		// Wenn Thread noch läuft, beenden
 		if (dlThread != null) {// && t.isAlive()) {
-			Log.d(TAG, "Interupt Thread");
+			// Log.d(TAG, "Interupt Thread");
 			dlThread.cancel(true);
 		}
 		// File Löschen, könnte unvollständig sein

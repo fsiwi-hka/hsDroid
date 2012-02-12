@@ -402,7 +402,7 @@ public class onlineService2Provider extends ContentProvider {
 					// da die <img ..> tags nicht xml like "well formed" sind,
 					// muss man sie ein bissel anpassen ;)
 					if (line.contains("<img")) {
-						Log.d("examInfo parser", line);
+						// Log.d("examInfo parser", line);
 						line = line.substring(0, line.indexOf(">") + 1) + "</a>";
 					}
 					sb.append(line);
@@ -514,7 +514,7 @@ public class onlineService2Provider extends ContentProvider {
 	 */
 	private synchronized String getResponse(String url) {
 
-		Log.d(TAG, "URL: " + url);
+		// Log.d(TAG, "URL: " + url);
 		final HttpPost httpPost = new HttpPost(url);
 		httpPost.addHeader("User-Agent", USER_AGENT);
 		CookieSpecBase cookieSpecBase = new BrowserCompatSpec();

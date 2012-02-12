@@ -308,7 +308,7 @@ public class GradesList extends nActivity {
 		// this.m_examAdapter.getFilter().filter(GradesList.ACTUAL_SORT);
 		// FIXME nicht default , alte sortierung.!!
 
-		System.out.println("test onRestoreInstanceState");
+		// System.out.println("test onRestoreInstanceState");
 	}
 
 	@Override
@@ -316,7 +316,7 @@ public class GradesList extends nActivity {
 		super.onSaveInstanceState(outState);
 
 		// outState.putParcelableArrayList("exams_list", examsTest);
-		System.out.println("test onSaveInstanceState");
+		// System.out.println("test onSaveInstanceState");
 
 	}
 
@@ -567,7 +567,7 @@ public class GradesList extends nActivity {
 		@Override
 		protected Bundle doInBackground(String[]... params) {
 			try {
-				System.out.println("do..examinfothread");
+				// System.out.println("do..examinfothread");
 				// ContentProvider öffnen
 				final ContentResolver resolver = getContentResolver();
 				// Cursor setzen
@@ -630,18 +630,16 @@ public class GradesList extends nActivity {
 		while (!cursor.isAfterLast()) {
 			if (cursor.isFirst()) {
 				int dbIdOffset = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
-				Log.d(TAG, "db offset: " + dbIdOffset);
+				// Log.d(TAG, "db offset: " + dbIdOffset);
 				count = dbIdOffset;
 			}
 			semMap.put(cursor.getString(cursor.getColumnIndex(ExamsCol.SEMESTER)), count);
-			System.out.println("cnt: " + count + " sem: " + cursor.getString(cursor.getColumnIndex(ExamsCol.SEMESTER))
-					+ " id: " + cursor.getString(cursor.getColumnIndex(ExamsCol._ID)));
 			cursor.moveToNext();
 			if (incrementCounter) {
-				System.out.println("ASC");
+				// System.out.println("ASC");
 				count++;
 			} else {
-				System.out.println("DESC");
+				// System.out.println("DESC");
 				count--;
 			}
 		}
@@ -779,7 +777,7 @@ public class GradesList extends nActivity {
 			if (constraint.equals(SORT_ALL)) {
 				return getContentResolver().query(ExamsCol.CONTENT_URI, null, null, null, sortOrder);
 			} else if (constraint.equals(SORT_ALL_FAILED)) {
-				System.out.println("sort all failed");
+				// System.out.println("sort all failed");
 				StringBuilder buffer = null;
 				String[] args = null;
 

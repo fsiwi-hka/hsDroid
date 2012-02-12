@@ -51,7 +51,7 @@ public class Preferences extends PreferenceActivity {
 			break;
 
 		default:
-			Log.d(TAG, "other res: " + resultCode);
+			// Log.d(TAG, "other res: " + resultCode);
 			break;
 		}
 
@@ -102,11 +102,11 @@ public class Preferences extends PreferenceActivity {
 					CheckBoxPreference autoLogin = (CheckBoxPreference) findPreference("autoLoginPref");
 					autoLogin.setChecked(false);
 					ed.putBoolean("autoLoginPref", false);
-					Log.d(TAG, "autologin:" + newValue);
+					// Log.d(TAG, "autologin:" + newValue);
 				}
 				ed.putBoolean(preference.getKey(), (Boolean) newValue);
 				ed.commit();
-				Log.d(TAG, "savePW:" + newValue);
+				// Log.d(TAG, "savePW:" + newValue);
 				cbr.setChecked((Boolean) newValue);
 				return (Boolean) newValue;
 			}
@@ -229,9 +229,9 @@ public class Preferences extends PreferenceActivity {
 		bla.setTitle("Implement Me");
 		bla.setCancelable(true);
 		bla.setCanceledOnTouchOutside(true);
-		Log.d("prefs", "start dialog");
+		// Log.d("prefs", "start dialog");
 		bla.show();
-		Log.d("prefs", "stop dialog");
+		// Log.d("prefs", "stop dialog");
 
 	}
 

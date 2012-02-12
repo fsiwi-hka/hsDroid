@@ -72,9 +72,6 @@ public class HsDroidMain extends nActivity {
 
 		final boolean autoLogin = mSharedPreferences.getBoolean("autoLoginPref", false);
 
-		Log.d(TAG, "autologin:" + autoLogin);
-		Log.d(TAG, "savePW:" + savePassword);
-
 		if (autoLogin && savePassword) {
 			doLogin();
 		} else if (autoLogin && !savePassword) {
@@ -134,9 +131,6 @@ public class HsDroidMain extends nActivity {
 		if (StaticSessionData.cookies != null && !StaticSessionData.cookies.isEmpty()
 				&& StaticSessionData.isCookieValid()) {
 			Log.d("hsDroidMain", "Cookie still valid!!");
-			// prüfen wie alt das cookie
-			// // ist!!! und nach ca 30min
-			// // löschen
 			mProgressHandle.sendEmptyMessage(LoginThread.MESSAGE_COMPLETE);
 			return;
 		}
@@ -184,10 +178,8 @@ public class HsDroidMain extends nActivity {
 
 		@Override
 		public void handleMessage(Message msg) {
-			Log.d("handler msg.what:", String.valueOf(msg.what));
 			switch (msg.what) {
 			case LoginThread.MESSAGE_COMPLETE:
-				Log.d("handler", "Login_complete");
 
 				if (mLoginThread != null) {
 					mLoginThread.stopThread();
@@ -230,7 +222,7 @@ public class HsDroidMain extends nActivity {
 				mProgressDialog.setMessage(HsDroidMain.this.getString(R.string.progress_cookie));
 				break;
 			default:
-				Log.d("progressHandler Main", "unknown message");
+				Log.d("progressHandler Main", "unknown message: " + msg.what);
 				removeDialog(DIALOG_PROGRESS);
 
 				mLoginThread.stopThread();
@@ -284,12 +276,10 @@ public class HsDroidMain extends nActivity {
 
 			return true;
 		case R.id.menu_about:
-			Log.d("Main menu:", "about");
 			aboutDialog();
 
 			return true;
 		default:
-			Log.d("Main menu:", "default");
 			System.out.println("id:" + item.getItemId() + " about: " + R.id.menu_about);
 			return super.onOptionsItemSelected(item);
 		}
