@@ -11,8 +11,16 @@ heruntergeladen und z.B. per Email versendet werden.
 Changelog
 =========
 
+12.feb.2012 - v0.2.3
+	Workaround bei abgelaufenem Cookie -> Relogin aufforderung
+	Semesterunterteilung geht jetzt bei aufsteigender und absteigender sortierung
+	Security Update, damit Activites nicht 
+		von extern aufgerufen werden können.
+	String updates
+
 19.jan.2012	- v0.2.2
-	Semester Unterteilung im Notenspiegel (funktioniert im mom nur bei Absteigender sortierreihenfolge richtig...)
+	Semester Unterteilung im Notenspiegel (funktioniert im mom nur bei 
+		Absteigender sortierreihenfolge richtig...)
 	Fix FC im Notenspiegel, wenn Noteninfo abgerufen wird und back gedrückt wurde.
 	OI Filemanager Support beim wählen des DL Pfades
 	Threads davon überzeugt sich zu beenden ;)
@@ -27,7 +35,8 @@ Changelog
 	
 20.jul.2011 - v0.2.0
 	bescheinigungen
-		-handling von mehreren dateien.. noch stark verbesserungs bedürftig ;)
+		-handling von mehreren dateien.. 
+		 noch stark verbesserungs bedürftig ;)
 		
 19.jul.2011
 	versenden von pdfs
