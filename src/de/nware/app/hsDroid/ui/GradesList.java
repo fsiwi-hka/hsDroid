@@ -86,10 +86,11 @@ public class GradesList extends nActivity {
 
 		// einstellungne holen
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+		// Datenbank und User überprüfen
 		String dbUser = mPreferences.getString("dbUser", "0");
 		String user = mPreferences.getString("UserSave", "");
 		Log.d(TAG, "dbUser:" + dbUser + " user:" + user);
-
 		if (!dbUser.equals(user)) {
 			showTitleProgress();
 			showToast(getString(R.string.text_initialize));
@@ -97,6 +98,7 @@ public class GradesList extends nActivity {
 			forceAutoUpdate = true;
 		}
 
+		// Prüfen ob Abschluß gewählt wurde
 		boolean noDegreeSelected = false;
 		if (mPreferences.getString("degreePref", "").equals("")) {
 			selectDegree();
@@ -105,6 +107,7 @@ public class GradesList extends nActivity {
 		}
 
 		ACTUAL_SORT = getDefaultListSort();
+
 		Log.d(TAG, "create resolver");
 		final ContentResolver resolver = getContentResolver();
 
@@ -127,10 +130,10 @@ public class GradesList extends nActivity {
 				forceAutoUpdate = false;
 			}
 		} else if (autoUpdate) {
-			fillSemesterHashMap();
+			refreshList();
 			updateGrades();
 		} else {
-			fillSemesterHashMap();
+			refreshList();
 		}
 
 		this.mExamAdapter.getFilter().filter(getDefaultListSort());
@@ -177,6 +180,9 @@ public class GradesList extends nActivity {
 
 	}
 
+	/**
+	 * Prüfen ob Session noch gültig ist. Wenn nich, sprung zur Login Activity.
+	 */
 	private void checkSession() {
 		if (!StaticSessionData.isCookieValid()) {
 			// TODO relogin wenn cookie abgelaufen
@@ -190,6 +196,9 @@ public class GradesList extends nActivity {
 		}
 	}
 
+	/**
+	 * Abschlußauswahl Dialog. (Bachelor/Master).
+	 */
 	private void selectDegree() {
 		AlertDialog.Builder builderSelectDegree = new AlertDialog.Builder(this);
 		builderSelectDegree.setTitle(getString(R.string.text_degreeDesc));
@@ -240,7 +249,7 @@ public class GradesList extends nActivity {
 
 			case HANDLER_MSG_REFRESH:
 				// ListView wieder neu laden
-				fillSemesterHashMap();
+
 				refreshList();
 				// Bildschirm Orientierung wieder dem User überlassen
 				setRequestedOrientation(-1);
@@ -326,7 +335,9 @@ public class GradesList extends nActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		Log.d(TAG, "onResume");
 		checkSession();
+		refreshList();
 		ACTUAL_SORT = getDefaultListSort();
 	}
 
@@ -410,6 +421,9 @@ public class GradesList extends nActivity {
 
 	}
 
+	/**
+	 * Datenbank leeren
+	 */
 	private void clearDB() {
 		AsyncTask<Void, Void, Void> clrDB = new AsyncTask<Void, Void, Void>() {
 
@@ -430,9 +444,10 @@ public class GradesList extends nActivity {
 
 	}
 
+	/**
+	 * Notenspiegel aktualisieren.
+	 */
 	private void updateGrades() {
-		// Thread, update grades progress
-		// showDialog(DIALOG_PROGRESS);
 		showTitleProgress();
 		showToast(getString(R.string.info_updateGradesList));
 
@@ -442,10 +457,22 @@ public class GradesList extends nActivity {
 
 	}
 
+	/**
+	 * Liste neu Laden
+	 */
 	private void refreshList() {
+		fillSemesterHashMap();
 		this.lv.invalidateViews();
 	}
 
+	/**
+	 * Hilfsmethode zum erzeugen von Dialogen
+	 * 
+	 * @param title
+	 *            {@link String} Dialogtitel
+	 * @param text
+	 *            {@link String} Dialogtext
+	 */
 	private void createDialog(String title, String text) {
 		AlertDialog ad = new AlertDialog.Builder(this).setPositiveButton(this.getString(R.string.error_ok), null)
 				.setTitle(title).setMessage(text).create();
@@ -585,7 +612,16 @@ public class GradesList extends nActivity {
 
 	public void fillSemesterHashMap() {
 		ContentResolver resolver = getContentResolver();
-		Cursor cursor = resolver.query(ExamsCol.CONTENT_URI, null, null, null, null);
+		String sortOrder = mPreferences.getString("defaultOrderPref", "DESC");
+		// Log.d(TAG, "sort order: " + sortOrder);
+		boolean incrementCounter = false;
+		if (sortOrder.equals("ASC")) {
+			sortOrder = "DESC";
+		} else {
+			sortOrder = "ASC";
+			incrementCounter = true;
+		}
+		Cursor cursor = resolver.query(ExamsCol.CONTENT_URI, null, null, null, "_id " + sortOrder);
 		cursor.moveToFirst();
 		int count = 0;
 
@@ -598,9 +634,16 @@ public class GradesList extends nActivity {
 				count = dbIdOffset;
 			}
 			semMap.put(cursor.getString(cursor.getColumnIndex(ExamsCol.SEMESTER)), count);
-			// cursor.getInt(cursor.getColumnIndex(BaseColumns._ID)));
+			System.out.println("cnt: " + count + " sem: " + cursor.getString(cursor.getColumnIndex(ExamsCol.SEMESTER))
+					+ " id: " + cursor.getString(cursor.getColumnIndex(ExamsCol._ID)));
 			cursor.moveToNext();
-			count++;
+			if (incrementCounter) {
+				System.out.println("ASC");
+				count++;
+			} else {
+				System.out.println("DESC");
+				count--;
+			}
 		}
 		cursor.close();
 	}
@@ -666,7 +709,7 @@ public class GradesList extends nActivity {
 				if (semMap.size() > 0) {
 					a = c.getInt(c.getColumnIndex(BaseColumns._ID));
 					b = semMap.get(sem);
-					// Log.d(TAG, "a:b - " + a + ":" + b);
+					Log.d(TAG, "a:b - " + a + ":" + b);
 					TextView separator = (TextView) v.findViewById(R.id.examSeparator);
 					if (a == b && mPreferences.getBoolean("prefUseSeparator", true)) {
 
