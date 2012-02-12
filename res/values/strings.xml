@@ -17,6 +17,8 @@
     <string name="error_login_failed">Anmeldung fehlgeschlagen, bitte Logindaten überprüfen.</string>
     <string name="error_cookie_empty">Keinen Keks bekommen?</string>
     
+    <string name="dashboard_label">Menü</string>
+    
     <string name="progress_connect">Verbinden&#8230;</string>
     <string name="progress_parse">Parsen&#8230;</string>
     <string name="progress_cookie">Keks nehmen&#8230;</string>

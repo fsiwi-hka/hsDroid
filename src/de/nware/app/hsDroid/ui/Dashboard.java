@@ -27,7 +27,7 @@ public class Dashboard extends nActivity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.dashboard_grid);
-		customTitle("Menü");
+		customTitle(getString(R.string.dashboard_label));
 
 		dashboard = (GridView) findViewById(R.id.dashboard_gridview);
 		dashboard.setAdapter(new DashboardAdapter(this));

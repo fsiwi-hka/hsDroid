@@ -45,13 +45,16 @@
             <grant-uri-permission android:pathPattern=".*" />
         </provider>
 
-        <activity android:name=".ui.Dashboard" >
+        <activity
+            android:name=".ui.Dashboard"
+            android:label="@string/dashboard_label" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" >
                 </action>
             </intent-filter>
         </activity>
-        <activity android:name=".ui.Certifications" >
+        <activity android:name=".ui.Certifications"
+            android:label="@string/title_Certifications" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" >
                 </action>
