@@ -183,6 +183,8 @@ public class GradesList extends nActivity {
 			// doLogin();
 			showToast("Cookie abgelaufen. Bitte neu anmelden.");
 			Intent mainIntent = new Intent(this, HsDroidMain.class);
+			// Alle aktivities darüber schließen..
+			mainIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(mainIntent);
 			finish();
 		}
