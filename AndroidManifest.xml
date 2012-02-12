@@ -28,14 +28,16 @@
         <activity
             android:name="de.nware.app.hsDroid.ui.GradesList"
             android:configChanges="orientation"
-            android:label="@string/grades_view" >
+            android:label="@string/grades_view"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.Preferences"
-            android:label="@string/label_set_preferences" >
+            android:label="@string/label_set_preferences"
+            android:exported="false" >
         </activity>
 
         <provider
@@ -47,14 +49,16 @@
 
         <activity
             android:name=".ui.Dashboard"
-            android:label="@string/dashboard_label" >
+            android:label="@string/dashboard_label"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" >
                 </action>
             </intent-filter>
         </activity>
         <activity android:name=".ui.Certifications"
-            android:label="@string/title_Certifications" >
+            android:label="@string/title_Certifications"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" >
                 </action>
