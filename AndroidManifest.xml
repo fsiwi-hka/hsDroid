@@ -21,7 +21,6 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -30,9 +29,6 @@
             android:configChanges="orientation"
             android:label="@string/grades_view"
             android:exported="false" >
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ui.Preferences"
@@ -51,20 +47,14 @@
             android:name=".ui.Dashboard"
             android:label="@string/dashboard_label"
             android:exported="false" >
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" >
-                </action>
-            </intent-filter>
         </activity>
         <activity android:name=".ui.Certifications"
             android:label="@string/title_Certifications"
             android:exported="false" >
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" >
-                </action>
-            </intent-filter>
         </activity>
-        <activity android:name=".ui.DirChooser" >
+        <activity android:name=".ui.DirChooser"
+            android:exported="false"
+            android:label="@string/dirchooser_label" >
         </activity>
     </application>
 
