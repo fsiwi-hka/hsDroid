@@ -23,10 +23,9 @@ public class DirChooser extends nListActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.dir_chooser_list);
-		customTitle("Downloadverzeichnis");
+		customTitle(getString(R.string.dirchooser_label));
 		if (savedInstanceState != null) {
 
 		}
@@ -75,7 +74,8 @@ public class DirChooser extends nListActivity {
 				}
 			});
 		} else {
-			showToast("SD Karte nicht verfügbar.");
+			// TODO String exportieren
+			showToast(getString(R.string.error_nosdcard));
 		}
 	}
 

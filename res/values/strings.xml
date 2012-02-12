@@ -16,8 +16,11 @@
     <string name="error_site_down">Hochschulwebsite ist im Wartungsmodus.</string>
     <string name="error_login_failed">Anmeldung fehlgeschlagen, bitte Logindaten überprüfen.</string>
     <string name="error_cookie_empty">Keinen Keks bekommen?</string>
+    <string name="error_nosdcard">SD Karte nicht verfügbar.</string>
     
     <string name="dashboard_label">Menü</string>
+    
+    <string name="dirchooser_label">Downloadverzeichnis wählen</string>
     
     <string name="progress_connect">Verbinden&#8230;</string>
     <string name="progress_parse">Parsen&#8230;</string>
@@ -87,7 +90,7 @@
 	
 	
 	<string name="text_autoUpdate">Auto Update</string>
-	<string name="text_autoUpdateDesc">Notenspiegel automatisch aktualisieren.</string>
+	<string name="text_autoUpdateDesc">Notenspiegel automatisch aktualisieren, wenn dieser aufgerufen wird.</string>
 			
 	<string name="text_sortOrder">Sortierreihenfolge ändern</string>
 	<string name="text_sortOrderDesc">Aufsteigende oder absteigende Anordnung der Noten.</string>

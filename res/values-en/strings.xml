@@ -21,6 +21,8 @@
     <string name="error_NoPdfApp">No Application to open PDF files.</string>
     <string name="error_noGradeDistributionAvailableForX">No grade distribution available for %s.</string>
     <string name="error_downloadCanceled">Download canceled</string>
+    <string name="error_nosdcard">SDCard not available.</string>
+    
     <string name="progress_connect">Connecting…</string>
     <string name="progress_parse">Parse…</string>
     <string name="progress_cookie">Take cookie…</string>
@@ -39,6 +41,7 @@
     <string name="about_maintext">App to login at \"Online Service 2\" at the HSKA, to view your grades.\n\nFor more informations visit:\nhttps://github.com/n0iz/hsDroid\n\nEmail: eiol0011@hs-karlsruhe.de</string>
 
     <string name="dashboard_label">Dashboard</string>
+    <string name="dirchooser_label">Choose directory</string>
     
     <string-array name="orderEntryArray">
         <item>Ascending</item>
