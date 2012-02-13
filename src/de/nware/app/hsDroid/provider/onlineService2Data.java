@@ -28,6 +28,7 @@ public class onlineService2Data {
 		public static final String ATTEMPTS = "attempts";
 		public static final String GRADE = "grade";
 		public static final String LINKID = "linkid";
+		public static final String STUDIENGANG = "studiengang";
 	}
 
 	public static final class ExamInfos implements BaseColumns {

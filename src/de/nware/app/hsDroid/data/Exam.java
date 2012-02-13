@@ -23,6 +23,7 @@ public class Exam implements Parcelable {
 	private int attempts = 0;
 	private String infoLink = "";
 	private int infoID = 0;
+	private String studiengang = "";
 
 	/**
 	 * Konstruktor für {@link Parcel}
@@ -54,7 +55,7 @@ public class Exam implements Parcelable {
 	 *            LinkID der Notenverteilung
 	 */
 	public Exam(String examNr, String examName, String semester, String examDate, String grade, boolean passed,
-			String notation, int attempts, int infoID) {
+			String notation, int attempts, int infoID, String studiengang) {
 		super();
 		this.examNr = examNr;
 		this.examName = examName;
@@ -65,6 +66,7 @@ public class Exam implements Parcelable {
 		this.notation = notation;
 		this.attempts = attempts;
 		this.infoID = infoID;
+		this.studiengang = studiengang;
 	}
 
 	public String getExamNr() {
@@ -103,6 +105,10 @@ public class Exam implements Parcelable {
 		return infoID;
 	}
 
+	public String getStudiengang() {
+		return studiengang;
+	}
+
 	// methoden für Parcel
 
 	@Override
@@ -121,6 +127,7 @@ public class Exam implements Parcelable {
 		dest.writeInt(attempts);
 		dest.writeString(infoLink);
 		dest.writeInt(infoID);
+		dest.writeString(studiengang);
 
 	}
 
@@ -146,6 +153,7 @@ public class Exam implements Parcelable {
 		this.attempts = in.readInt();
 		this.infoLink = in.readString();
 		this.infoID = in.readInt();
+		this.studiengang = in.readString();
 	}
 
 }

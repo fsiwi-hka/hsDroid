@@ -156,6 +156,8 @@ public class GradesList extends nActivity {
 					final String nr = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.EXAMNR)).toString();
 					final String semester = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.SEMESTER)).toString();
 					final String grade = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.GRADE)).toString();
+					final String studiengang = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.STUDIENGANG))
+							.toString();
 					if (!out.equals("0") && !grade.equals("0,0")) { // FIXME
 
 						// Log.d(TAG, "show examInfo");
@@ -166,7 +168,12 @@ public class GradesList extends nActivity {
 						// startThread
 
 						mExamInfoThread = new ExamInfoThread();
-						mExamInfoThread.execute(new String[] { name, nr, semester, out });
+						Log.d(TAG, "name: " + name);
+						Log.d(TAG, "nr: " + nr);
+						Log.d(TAG, "sem: " + semester);
+						Log.d(TAG, "out: " + out);
+						Log.d(TAG, "studiengang: " + studiengang);
+						mExamInfoThread.execute(new String[] { name, nr, semester, out, studiengang });
 						// //
 					} else {
 						String gradeDistribError = String.format(
@@ -574,8 +581,9 @@ public class GradesList extends nActivity {
 
 				// FIXME check ob 4 strings übergeben wurden..
 
-				String out = params[0][3];
-				examinfoCursor = resolver.query(ExamInfos.CONTENT_URI, null, null, new String[] { out }, null);
+				// String out = params[0][3];
+				examinfoCursor = resolver.query(ExamInfos.CONTENT_URI, null, null, new String[] { params[0][3],
+						params[0][4] }, null);
 				startManagingCursor(examinfoCursor);
 				examinfoCursor.moveToFirst();
 
@@ -592,7 +600,10 @@ public class GradesList extends nActivity {
 				oBundle.putString("Name", params[0][0]);
 				oBundle.putString("Nr", params[0][1]);
 				oBundle.putString("Semester", params[0][2]);
-
+				System.out.println("params");
+				for (String[] strings : params) {
+					System.out.println("param: " + strings);
+				}
 				oMessage.setData(oBundle);
 				oMessage.what = HANDLER_MSG_INFO_READY;
 				mProgressHandle.sendMessage(oMessage);

@@ -31,6 +31,7 @@ class ExamParser extends DefaultHandler {
 	private String notation;
 	private int attempts;
 	private int infoID;
+	private String studiengang;
 
 	ArrayList<Exam> lecList;
 
@@ -48,6 +49,7 @@ class ExamParser extends DefaultHandler {
 		this.notation = "";
 		this.attempts = 0;
 		this.infoID = 0;
+		this.studiengang = "";
 	}
 
 	@Override
@@ -71,6 +73,14 @@ class ExamParser extends DefaultHandler {
 		if (l == "a") {
 			String infoLink = a.getValue("href"); // kann leer sein!!
 			// https://qis2.hs-karlsruhe.de/qisserver/rds?state=notenspiegelStudent&amp;next=list.vm&amp;nextdir=qispos/notenspiegel/student&amp;createInfos=Y&amp;struct=abschluss&amp;nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D58%2Cstgnr%3D1%7Cstudiengang%3Astg%3DIB%7CpruefungOnTop%3Alabnr%3D2792169&amp;expand=0&amp;asi=oq.nE$uDmdlbVCRpLPX.
+
+			String searchStringA = "%3Astg%3D";
+			int stringLengthA = infoLink.indexOf(searchStringA) + 9;
+			studiengang = infoLink.substring(stringLengthA, stringLengthA + 9);
+			int stringLengthB = studiengang.indexOf("%7C");
+			studiengang = studiengang.substring(0, stringLengthB);
+			Log.d(TAG, "Studiengang: " + studiengang);
+
 			String searchString = "labnr%3D";
 			int stringLength = infoLink.indexOf(searchString) + 8;
 			infoID = Integer.valueOf(infoLink.substring(stringLength, stringLength + 7));
@@ -85,7 +95,8 @@ class ExamParser extends DefaultHandler {
 		super.endElement(n, l, q);
 		if (l == "tr" && fetch == true) {
 			// Log.d(TAG, "infoID: " + infoID);
-			lecList.add(new Exam(examNr, examName, semester, examDate, grade, passed, notation, attempts, infoID));
+			lecList.add(new Exam(examNr, examName, semester, examDate, grade, passed, notation, attempts, infoID,
+					studiengang));
 
 			waitForTd = false;
 			fetch = false;

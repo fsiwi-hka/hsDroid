@@ -58,7 +58,7 @@ public class onlineService2Provider extends ContentProvider {
 	private static final String DATABASE_NAME = "hsdroid.db";
 
 	/** Die Datenbankversion. */
-	private static final int VERSION = 1;
+	private static final int VERSION = 2;
 
 	/** Die AUTHORITY. */
 	public static final String AUTHORITY = "de.nware.app.hsDroid.provider.onlineService2Provider";
@@ -178,7 +178,7 @@ public class onlineService2Provider extends ContentProvider {
 					+ ExamsCol.SEMESTER + " VARCHAR(255)," + ExamsCol.PASSED + " INTEGER," + ExamsCol.EXAMNAME
 					+ " VARCHAR(255)," + ExamsCol.EXAMNR + " VARCHAR(255)," + ExamsCol.EXAMDATE + " VARCHAR(255),"
 					+ ExamsCol.NOTATION + " VARCHAR(255)," + ExamsCol.ATTEMPTS + " VARCHAR(255)," + ExamsCol.GRADE
-					+ " VARCHAR(255)," + ExamsCol.LINKID + " INTEGER" + ");");
+					+ " VARCHAR(255)," + ExamsCol.LINKID + " INTEGER," + ExamsCol.STUDIENGANG + " VARCHAR(255)" + ");");
 			Log.d(TAG, "create table done");
 		}
 
@@ -221,6 +221,7 @@ public class onlineService2Provider extends ContentProvider {
 		examsProjectionMap.put(onlineService2Data.ExamsCol.ATTEMPTS, onlineService2Data.ExamsCol.ATTEMPTS);
 		examsProjectionMap.put(onlineService2Data.ExamsCol.GRADE, onlineService2Data.ExamsCol.GRADE);
 		examsProjectionMap.put(onlineService2Data.ExamsCol.LINKID, onlineService2Data.ExamsCol.LINKID);
+		examsProjectionMap.put(onlineService2Data.ExamsCol.STUDIENGANG, onlineService2Data.ExamsCol.STUDIENGANG);
 	}
 
 	/*
@@ -340,7 +341,7 @@ public class onlineService2Provider extends ContentProvider {
 			cur.addRow(new Object[] { 0, columnValues[0], columnValues[1] });
 			return cur;
 		case EXAMINFOS:
-			cursor = getExamInfos(selectionArgs[0], false);
+			cursor = getExamInfos(selectionArgs[0], selectionArgs[1], false);
 			break;
 		case CERTIFICATIONS:
 			cursor = getCertifications();
@@ -359,13 +360,13 @@ public class onlineService2Provider extends ContentProvider {
 	 *            der/die/das info id
 	 * @return Der/Die/das exam infos
 	 */
-	private Cursor getExamInfos(String infoID, boolean isSecondTry) {
+	private Cursor getExamInfos(String infoID, String studiengang, boolean isSecondTry) {
 		// Log.d(TAG, "infoID:" + infoID + " asi:" + StaticSessionData.asiKey);
+		// String studiengang = "IB";
 		final String examInfoURL = urlBase
 				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=abschluss&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D"
-				+ mPreferences.getString("degreePref", "58")
-				+ "%2Cstgnr%3D1%7Cstudiengang%3Astg%3DIB%7CpruefungOnTop%3Alabnr%3D" + infoID + "&expand=0&asi="
-				+ StaticSessionData.asiKey;
+				+ mPreferences.getString("degreePref", "58") + "%2Cstgnr%3D1%7Cstudiengang%3Astg%3D" + studiengang
+				+ "%7CpruefungOnTop%3Alabnr%3D" + infoID + "&expand=0&asi=" + StaticSessionData.asiKey;
 
 		String response = getResponse(examInfoURL);
 
@@ -424,7 +425,7 @@ public class onlineService2Provider extends ContentProvider {
 
 				getResponse(notenSpiegelURLTmpl);
 				if (!isSecondTry) {
-					return getExamInfos(infoID, true);
+					return getExamInfos(infoID, studiengang, true);
 				}
 
 			}
@@ -450,6 +451,7 @@ public class onlineService2Provider extends ContentProvider {
 		final MatrixCursor cursor = new MatrixCursor(EXAM_INFOS_COLUMNS);
 		try {
 			ExamInfoParser handler = new ExamInfoParser();
+			System.out.println("content exam info: " + htmlContentString);
 			Xml.parse(htmlContentString, handler);
 			ExamInfo exInfos = handler.getExamInfos();
 			cursor.addRow(new Object[] { 0, exInfos.getSehrGutAmount(), exInfos.getGutAmount(),
@@ -684,7 +686,7 @@ public class onlineService2Provider extends ContentProvider {
 					values.put(onlineService2Data.ExamsCol.ATTEMPTS, iterable_element.getAttempts());
 					values.put(onlineService2Data.ExamsCol.GRADE, iterable_element.getGrade());
 					values.put(onlineService2Data.ExamsCol.LINKID, iterable_element.getInfoID());
-
+					values.put(onlineService2Data.ExamsCol.STUDIENGANG, iterable_element.getStudiengang());
 					// Log.d(TAG, "insert..");
 					insert(onlineService2Data.ExamsCol.CONTENT_URI, values);
 				} else {
