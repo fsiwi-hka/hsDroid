@@ -13,6 +13,8 @@ Changelog
 
 14.feb.2012 - v0.2.4
 	fix für Notenverteilung bei anderen Studiengängen als IB
+	Einstellungen aus dem Menü der Login Activity entfernt
+	Anmelden per Tastatur ermöglicht. (imeOption=actionGo)
 
 12.feb.2012 - v0.2.3
 	Workaround bei abgelaufenem Cookie -> Relogin aufforderung
