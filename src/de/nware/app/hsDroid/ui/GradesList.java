@@ -171,7 +171,7 @@ public class GradesList extends nActivity {
 						Log.d(TAG, "name: " + name);
 						Log.d(TAG, "nr: " + nr);
 						Log.d(TAG, "sem: " + semester);
-						Log.d(TAG, "out: " + out);
+						Log.d(TAG, "linkID: " + out);
 						Log.d(TAG, "studiengang: " + studiengang);
 						mExamInfoThread.execute(new String[] { name, nr, semester, out, studiengang });
 						// //
@@ -718,7 +718,7 @@ public class GradesList extends nActivity {
 				if (semMap.size() > 0) {
 					a = c.getInt(c.getColumnIndex(BaseColumns._ID));
 					b = semMap.get(sem);
-					Log.d(TAG, "a:b - " + a + ":" + b);
+					// Log.d(TAG, "a:b - " + a + ":" + b);
 					TextView separator = (TextView) v.findViewById(R.id.examSeparator);
 					if (a == b && mPreferences.getBoolean("prefUseSeparator", true)) {
 
