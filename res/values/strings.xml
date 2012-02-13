@@ -52,8 +52,6 @@
     </string-array>
     
     <string-array name="ifFileExistArray">
-        <item>Öffnen</item>
-        <item>Senden</item>
         <item>Überschreiben</item>
         <item>Umbenennen</item>
     </string-array>

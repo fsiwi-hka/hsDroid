@@ -130,7 +130,8 @@ public class Certifications extends nActivity {
 				// Log.d(TAG, "pos:" + position + " id:" + id + " adapterID:" +
 				// listView.getAdapter().getItemId(position));
 				if (isSdCardAvailable()) {
-					getFileByPos(position, true, false);
+					view.showContextMenu();
+					// getFileByPos(position, true, false);
 				}
 
 			}
@@ -407,7 +408,6 @@ public class Certifications extends nActivity {
 				new String[] { String.valueOf(position) }, null);
 		startManagingCursor(cur);
 		cur.move(position + 1);
-		String idd = cur.getString(cur.getColumnIndexOrThrow(BaseColumns._ID));
 		currentURL = cur.getString(cur.getColumnIndexOrThrow(CertificationsCol.LINK));
 		currentCertName = cur.getString(cur.getColumnIndexOrThrow(CertificationsCol.TITLE));
 		// Log.d(TAG, "id: " + idd);
@@ -638,22 +638,14 @@ public class Certifications extends nActivity {
 			AlertDialog.Builder builderFileExistDia = new AlertDialog.Builder(this);
 			builderFileExistDia.setTitle(R.string.fileExists);
 			// XXX iwie anderst lösen... werte in allLang.xmk ?
-			final int OPEN = 0;
-			final int SEND = 1;
-			final int OVERWRITE = 2;
-			final int RENAME = 3;
+			final int OVERWRITE = 0;
+			final int RENAME = 1;
 			builderFileExistDia.setItems(R.array.ifFileExistArray, new DialogInterface.OnClickListener() {
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					// Log.d(TAG, "select: " + which);
 					switch (which) {
-					case OPEN:
-						openPDF(currentFile);
-						break;
-					case SEND:
-						sendEmailWithAttachment(currentFile);
-						break;
 					case OVERWRITE:
 						doDownload(currentURL, currentFile, false, false);
 						break;

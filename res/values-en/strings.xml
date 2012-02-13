@@ -48,8 +48,6 @@
         <item>Descending</item>
     </string-array>
     <string-array name="ifFileExistArray">
-         <item>Open</item>
-        <item>Send</item>
         <item>Overwrite</item>
         <item>Rename</item>
     </string-array>
