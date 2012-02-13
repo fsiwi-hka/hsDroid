@@ -15,7 +15,7 @@
 	<PreferenceCategory android:title="@string/grades_view">
 		<CheckBoxPreference android:title="@string/text_autoUpdate"
 			android:summary="@string/text_autoUpdateDesc" android:key="autoUpdatePref"
-			android:defaultValue="false" />
+			android:defaultValue="true" />
 
 		<ListPreference android:title="@string/text_sortOrder"
 			android:summary="@string/text_sortOrderDesc" android:key="defaultOrderPref"

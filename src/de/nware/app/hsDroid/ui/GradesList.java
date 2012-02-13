@@ -123,7 +123,7 @@ public class GradesList extends nActivity {
 		mExamAdapter = new ExamDBAdapter(GradesList.this, R.layout.grade_row_item, cursor, from, to);
 		lv.setAdapter(mExamAdapter);
 
-		autoUpdate = mPreferences.getBoolean("autoUpdatePref", false);
+		autoUpdate = mPreferences.getBoolean("autoUpdatePref", true);
 		if (!noDegreeSelected && (mExamAdapter.getCount() == 0 || forceAutoUpdate)) {
 			updateGrades();
 			if (forceAutoUpdate) {
@@ -624,7 +624,6 @@ public class GradesList extends nActivity {
 	public void fillSemesterHashMap() {
 		ContentResolver resolver = getContentResolver();
 		String sortOrder = mPreferences.getString("defaultOrderPref", "DESC");
-		// Log.d(TAG, "sort order: " + sortOrder);
 		boolean incrementCounter = false;
 		if (sortOrder.equals("ASC")) {
 			sortOrder = "DESC";
@@ -647,10 +646,8 @@ public class GradesList extends nActivity {
 			semMap.put(cursor.getString(cursor.getColumnIndex(ExamsCol.SEMESTER)), count);
 			cursor.moveToNext();
 			if (incrementCounter) {
-				// System.out.println("ASC");
 				count++;
 			} else {
-				// System.out.println("DESC");
 				count--;
 			}
 		}
