@@ -79,7 +79,7 @@ class ExamParser extends DefaultHandler {
 			studiengang = infoLink.substring(stringLengthA, stringLengthA + 9);
 			int stringLengthB = studiengang.indexOf("%7C");
 			studiengang = studiengang.substring(0, stringLengthB);
-			Log.d(TAG, "Studiengang: " + studiengang);
+			// Log.d(TAG, "Studiengang: " + studiengang);
 
 			String searchString = "labnr%3D";
 			int stringLength = infoLink.indexOf(searchString) + 8;
