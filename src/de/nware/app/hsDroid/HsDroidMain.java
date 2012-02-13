@@ -10,10 +10,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -23,7 +26,6 @@ import de.nware.app.hsDroid.data.StaticSessionData;
 import de.nware.app.hsDroid.logic.LoginThread;
 import de.nware.app.hsDroid.ui.AboutDialog;
 import de.nware.app.hsDroid.ui.Dashboard;
-import de.nware.app.hsDroid.ui.Preferences;
 import de.nware.app.hsDroid.ui.nActivity;
 
 /**
@@ -31,7 +33,7 @@ import de.nware.app.hsDroid.ui.nActivity;
  * @author Oliver Eichner
  * 
  */
-public class HsDroidMain extends nActivity {
+public class HsDroidMain extends nActivity implements OnClickListener {
 
 	private final static String TAG = "hsDroid-main";
 
@@ -99,9 +101,23 @@ public class HsDroidMain extends nActivity {
 
 		Button button = (Button) findViewById(R.id.login);
 
-		button.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				doLogin();
+		button.setOnClickListener(this);
+		// button.setOnClickListener(new View.OnClickListener() {
+		// public void onClick(View v) {
+		// onClick(v);
+		// }
+		// });
+
+		// passwort actionGo
+		mTextfieldPassword.setOnKeyListener(new OnKeyListener() {
+
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if (event != null && event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+					onClick(v);
+					return true;
+				}
+				return false;
 			}
 		});
 
@@ -263,18 +279,19 @@ public class HsDroidMain extends nActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu, menu);
+		inflater.inflate(R.menu.menu_login, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.menu_preferences:
-			Intent settingsActivity = new Intent(getBaseContext(), Preferences.class);
-			startActivity(settingsActivity);
-
-			return true;
+		// case R.id.menu_preferences:
+		// Intent settingsActivity = new Intent(getBaseContext(),
+		// Preferences.class);
+		// startActivity(settingsActivity);
+		//
+		// return true;
 		case R.id.menu_about:
 			aboutDialog();
 
@@ -302,6 +319,11 @@ public class HsDroidMain extends nActivity {
 		AlertDialog ad = new AlertDialog.Builder(this).setPositiveButton(getText(R.string.error_ok), null)
 				.setTitle(title).setMessage(text).create();
 		ad.show();
+	}
+
+	@Override
+	public void onClick(View v) {
+		doLogin();
 	}
 
 }

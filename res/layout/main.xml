@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/username"
         android:hint="@string/password"
-        android:imeOptions="actionDone"
+        android:imeOptions="actionGo"
         android:inputType="textPassword"
         android:password="true" >
     </EditText>
