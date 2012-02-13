@@ -11,6 +11,9 @@ heruntergeladen und z.B. per Email versendet werden.
 Changelog
 =========
 
+14.feb.2012 - v0.2.4
+	fix für Notenverteilung bei anderen Studiengängen als IB
+
 12.feb.2012 - v0.2.3
 	Workaround bei abgelaufenem Cookie -> Relogin aufforderung
 	Semesterunterteilung geht jetzt bei aufsteigender und absteigender sortierung
