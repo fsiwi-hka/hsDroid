@@ -101,7 +101,7 @@
 
 
 	<string name="text_changeView">Ansicht ändern</string>
-	<string name="text_changeViewDesc">Legt fest in welcher Ansicht der Notenspiegel standartmäßig angezeigt wird.</string>
+	<string name="text_changeViewDesc">Legt fest in welcher Ansicht der Notenspiegel standardmäßig angezeigt wird.</string>
 	
 	<string name="text_highlight">Hervorheben</string>
 	<string name="text_highlightDesc">Prüfungsleistung des aktuellen Semesters hervorheben.</string>
