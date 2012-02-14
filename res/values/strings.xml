@@ -42,9 +42,13 @@
     <string name="submenu_examViewOnlyLastPassed">Aktuelle bestandene Prüfungen</string>
     <string name="submenu_examViewAllPassed">Alle bestandenen Prüfungen</string>
     
-    <string name="about_subtitle">Notenviewer</string>
-    <string name="about_maintext">Mit diesem App wird der Notenspiegel über den \"Online Service 2\" abgerufen.\n\nHomepage:
-		https://github.com/n0iz/hsDroid\nEMail: eiol0011@hs-karlsruhe.com</string>
+    <string name="about_subtitle">Notenapp</string>
+    <string name="about_maintext">Mit diesem App wird der Notenspiegel über den \"Online Service 2\" abgerufen.\n\n
+        Copyright 2011,2012 Oliver Eichner \n
+        Lizenz: GPLv2\n
+        Homepage:\nhttps://github.com/n0iz/hsDroid\n\n
+		EMail: eiol0011@hs-karlsruhe.com oder n0izeland@gmail.com\n\n
+		Das rote Logo im Icon ist Eigentum der Hochschule Karlsruhe.</string>
     <string name="label_set_preferences">Einstellungen</string>
 
 
