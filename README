@@ -11,10 +11,14 @@ heruntergeladen und z.B. per Email versendet werden.
 Changelog
 =========
 
-14.feb.2012 - v0.2.4
+15.feb.2012 - v0.2.4
 	fix für Notenverteilung bei anderen Studiengängen als IB
+	AutoUpdate beim start des Notenspiegels per default
 	Einstellungen aus dem Menü der Login Activity entfernt
 	Anmelden per Tastatur ermöglicht. (imeOption=actionGo)
+	Bescheinigungs Activity bischen überarbeitet
+	Neue Filter für Notenspiegel
+	GPLv3
 
 12.feb.2012 - v0.2.3
 	Workaround bei abgelaufenem Cookie -> Relogin aufforderung
