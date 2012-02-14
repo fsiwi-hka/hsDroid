@@ -36,7 +36,10 @@
     <string name="submenu_examViewAllFailed">All failed exams</string>
     <string name="submenu_examViewAll">All exams</string>
     <string name="submenu_examViewOnlyLast">Actual exams</string>
-    <string name="submenu_examViewOnlyLastFailed">Failed exams</string>
+    <string name="submenu_examViewOnlyLastFailed">Actual failed exams</string>
+    <string name="submenu_examViewOnlyLastPassed">Actual passed exams</string>
+    <string name="submenu_examViewAllPassed">All passed exams</string>
+    
     <string name="about_subtitle">Overview of grades</string>
     <string name="about_maintext">App to login at \"Online Service 2\" at the HSKA, to view your grades.\n\nFor more informations visit:\nhttps://github.com/n0iz/hsDroid\n\nEmail: eiol0011@hs-karlsruhe.de</string>
 

@@ -73,8 +73,10 @@ public class GradesList extends nActivity {
 
 	private static final String SORT_ALL = "all";
 	private static final String SORT_ALL_FAILED = "allfail";
+	private static final String SORT_ALL_PASSED = "allpassed";
 	private static final String SORT_ACTUAL = "act";
 	private static final String SORT_ACTUAL_FAILED = "actfail";
+	private static final String SORT_ACTUAL_PASSED = "actpassed";
 	private static String ACTUAL_SORT = SORT_ALL;
 
 	@Override
@@ -412,6 +414,15 @@ public class GradesList extends nActivity {
 			ACTUAL_SORT = SORT_ACTUAL_FAILED;
 			mExamAdapter.getFilter().filter(ACTUAL_SORT);
 			return true;
+		case R.id.view_submenu_examViewOnlyLastPassed:
+			if (item.isChecked())
+				item.setChecked(false);
+			else
+				item.setChecked(true);
+
+			ACTUAL_SORT = SORT_ACTUAL_PASSED;
+			mExamAdapter.getFilter().filter(ACTUAL_SORT);
+			return true;
 		case R.id.view_submenu_examViewAllFailed:
 			if (item.isChecked())
 				item.setChecked(false);
@@ -419,6 +430,15 @@ public class GradesList extends nActivity {
 				item.setChecked(true);
 
 			ACTUAL_SORT = SORT_ALL_FAILED;
+			mExamAdapter.getFilter().filter(ACTUAL_SORT);
+			return true;
+		case R.id.view_submenu_examViewAllPassed:
+			if (item.isChecked())
+				item.setChecked(false);
+			else
+				item.setChecked(true);
+
+			ACTUAL_SORT = SORT_ALL_PASSED;
 			mExamAdapter.getFilter().filter(ACTUAL_SORT);
 			return true;
 		default:
@@ -798,6 +818,20 @@ public class GradesList extends nActivity {
 				// Log.d(TAG, "args: " + args[0]);
 				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
 						buffer == null ? null : buffer.toString(), args, sortOrder);
+			} else if (constraint.equals(SORT_ALL_PASSED)) {
+				// System.out.println("sort all failed");
+				StringBuilder buffer = null;
+				String[] args = null;
+
+				buffer = new StringBuilder();
+				buffer.append("UPPER(");
+				buffer.append(ExamsCol.PASSED);
+				buffer.append(") LIKE ?");
+				args = new String[] { "1" };
+				// Log.d(TAG, "buffer: " + buffer.toString());
+				// Log.d(TAG, "args: " + args[0]);
+				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
+						buffer == null ? null : buffer.toString(), args, sortOrder);
 			} else if (constraint.equals(SORT_ACTUAL)) {
 
 				StringBuilder buffer = null;
@@ -825,6 +859,23 @@ public class GradesList extends nActivity {
 				buffer.append(ExamsCol.PASSED);
 				buffer.append(") LIKE ?");
 				args = new String[] { getActualExamSem(), "0" };
+				// Log.d(TAG, "buffer: " + buffer.toString());
+				// Log.d(TAG, "args: " + args[0]);
+
+				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
+						buffer == null ? null : buffer.toString(), args, sortOrder);
+			} else if (constraint.equals(SORT_ACTUAL_PASSED)) {
+
+				StringBuilder buffer = null;
+				String[] args = null;
+
+				buffer = new StringBuilder();
+				buffer.append("UPPER(");
+				buffer.append(ExamsCol.SEMESTER);
+				buffer.append(") LIKE ? AND UPPER(");
+				buffer.append(ExamsCol.PASSED);
+				buffer.append(") LIKE ?");
+				args = new String[] { getActualExamSem(), "1" };
 				// Log.d(TAG, "buffer: " + buffer.toString());
 				// Log.d(TAG, "args: " + args[0]);
 

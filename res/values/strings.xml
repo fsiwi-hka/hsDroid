@@ -39,6 +39,8 @@
     <string name="submenu_examViewOnlyLast">Aktuelle Prüfungen</string>
     <string name="submenu_examViewOnlyLastFailed">Aktuelle nicht bestandene Prüfungen</string>
     <string name="submenu_examViewAllFailed">Alle nicht bestandenen Prüfungen</string>
+    <string name="submenu_examViewOnlyLastPassed">Aktuelle bestandene Prüfungen</string>
+    <string name="submenu_examViewAllPassed">Alle bestandenen Prüfungen</string>
     
     <string name="about_subtitle">Notenviewer</string>
     <string name="about_maintext">Mit diesem App wird der Notenspiegel über den \"Online Service 2\" abgerufen.\n\nHomepage:

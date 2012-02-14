@@ -12,6 +12,10 @@
 					android:title="@string/submenu_examViewOnlyLastFailed" />
 				<item android:id="@+id/view_submenu_examViewAllFailed"
 					android:title="@string/submenu_examViewAllFailed" />
+				<item android:id="@+id/view_submenu_examViewOnlyLastPassed"
+					android:title="@string/submenu_examViewOnlyLastPassed" />
+				<item android:id="@+id/view_submenu_examViewAllPassed"
+					android:title="@string/submenu_examViewAllPassed" />
 			</group>
 		</menu>
 	</item>
