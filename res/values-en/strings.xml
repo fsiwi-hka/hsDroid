@@ -122,5 +122,7 @@
     <string name="text_resetSettingsComplete">Reset done.</string>
     <string name="loadGradeDistrib">Loading grade distribution for %s.</string>
     
+    <string name="text_connection">Connection</string>
+	
 
 </resources>

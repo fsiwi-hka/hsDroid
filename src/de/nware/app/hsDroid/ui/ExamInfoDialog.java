@@ -56,7 +56,6 @@ public class ExamInfoDialog {
 
 	public ExamInfoDialog(Context context, String name, String nr, String sem, Cursor exInfoCursor) {
 		final Dialog dialog = new Dialog(context);
-		// dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		dialog.setContentView(R.layout.exam_info_dialog);
 		dialog.setTitle("Notenverteilung");
 

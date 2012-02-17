@@ -14,11 +14,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
 import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.text.InputType;
 import android.util.Log;
 import android.widget.Toast;
 import de.nware.app.hsDroid.R;
@@ -128,11 +130,11 @@ public class Preferences extends PreferenceActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		addPreferencesFromResource(R.xml.preferences);
+		addPreferencesFromResource(R.xml.preferencescreen);
 
 		updateSummaries();
 
-		CheckBoxPreference saveLoginDataPref = (CheckBoxPreference) findPreference("saveLoginDataPref");
+		CheckBoxPreference saveLoginDataPref = (CheckBoxPreference) findPreference(getString(R.string.Preference_SaveLoginData));
 		saveLoginDataPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
 			@Override
@@ -141,9 +143,9 @@ public class Preferences extends PreferenceActivity {
 				Editor ed = preference.getEditor();
 				if ((Boolean) newValue == false) {
 					ed.remove(preference.getKey());
-					CheckBoxPreference autoLogin = (CheckBoxPreference) findPreference("autoLoginPref");
+					CheckBoxPreference autoLogin = (CheckBoxPreference) findPreference(getString(R.string.Preference_AutoLogin));
 					autoLogin.setChecked(false);
-					ed.putBoolean("autoLoginPref", false);
+					ed.putBoolean(getString(R.string.Preference_AutoLogin), false);
 					// Log.d(TAG, "autologin:" + newValue);
 				}
 				ed.putBoolean(preference.getKey(), (Boolean) newValue);
@@ -154,7 +156,7 @@ public class Preferences extends PreferenceActivity {
 			}
 		});
 
-		Preference customPref = (Preference) findPreference("highlightColorPref");
+		Preference customPref = (Preference) findPreference(getString(R.string.Preference_HighlightColor));
 		customPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
 			public boolean onPreferenceClick(Preference preference) {
@@ -165,6 +167,7 @@ public class Preferences extends PreferenceActivity {
 
 		});
 
+		// Datenbank Löschen
 		Preference clearDBPref = (Preference) findPreference("clearDBPref");
 		clearDBPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
@@ -176,7 +179,7 @@ public class Preferences extends PreferenceActivity {
 
 		});
 
-		Preference selectFolderPref = (Preference) findPreference("downloadPathPref");
+		Preference selectFolderPref = (Preference) findPreference(getString(R.string.Preference_DownloadPath));
 		selectFolderPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			// TODO möglichkeit über AndExplorer.. etc..
 			// verzeichnis aufrufen
@@ -225,14 +228,26 @@ public class Preferences extends PreferenceActivity {
 				Editor ed = preference.getEditor();
 				ed.clear();
 				ed.commit();
+
+				// Defaults laden
+				StaticSessionData.resetSharedPreferences(getApplicationContext());
+
+				// Delete Cookie
+				StaticSessionData.cookies = null;
+
 				showToast(getString(R.string.text_resetSettingsComplete));
 				// FIXME Invalidate View geht nich??
 				// main updaten.. user und pw löschen..
-				finish();
+				// finish();
 				return true;
 			}
 
 		});
+
+		// EditTextfeld dees ConnectionTimeout sind nur Zahlen..
+		EditTextPreference pref = (EditTextPreference) findPreference(getText(R.string.Preference_ConnectionTimeout));
+		pref.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER);
+		pref.getEditText().setSelectAllOnFocus(true);
 	}
 
 	private void clearDB() {
@@ -278,7 +293,7 @@ public class Preferences extends PreferenceActivity {
 	}
 
 	private void updateSummaries() {
-		Preference pref = (Preference) findPreference("downloadPathPref");
+		Preference pref = (Preference) findPreference(getString(R.string.Preference_DownloadPath));
 		pref.setSummary(getString(R.string.text_path)
 				+ " "
 				+ pref.getSharedPreferences().getString(pref.getKey(),

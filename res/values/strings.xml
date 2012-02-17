@@ -109,6 +109,7 @@
 	<string name="text_color">Farbe</string>
 	<string name="text_colorDesc">Farbe der Hervorhebung auswählen.</string>
 
+	<string name="text_connection">Verbindung</string>
 	
 	<string name="text_downloadDir">Download Verzeichnis</string>
 	
@@ -116,6 +117,8 @@
 	<string name="text_delDB">DB löschen</string>
 	<string name="text_delDBDesc">Alle Daten aus der Datenbank löschen.</string>
 	
+	<string name="text_setConnectionTimeout">HTTP Verbindungs Timeout</string>
+	<string name="text_setConnectionTimeoutDesc">Max. dauer des Verbindungsaufbaus in ms.</string>
 	
 	<string name="text_delCookie">Cookie löschen</string>
 	<string name="text_delCookieDesc">Entfernt Cookie aus dem Speicher.</string>

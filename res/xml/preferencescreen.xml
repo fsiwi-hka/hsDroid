@@ -2,53 +2,58 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 	<PreferenceCategory android:title="@string/text_general">
 		<CheckBoxPreference android:defaultValue="false"
-			android:summary="@string/text_savePW" android:key="saveLoginDataPref"
+			android:summary="@string/text_savePW" android:key="@string/Preference_SaveLoginData"
 			android:title="@string/text_savePWcheckBox"
 			android:disableDependentsState="false" />
 		<CheckBoxPreference android:title="@string/text_autoLogin"
 			android:defaultValue="false" android:summary="@string/text_autoLoginDesc"
-			android:key="autoLoginPref" android:dependency="saveLoginDataPref" />
+			android:key="@string/Preference_AutoLogin" android:dependency="@string/Preference_SaveLoginData" />
 		<ListPreference android:title="@string/text_degree"
-			android:summary="@string/text_degreeDesc" android:key="degreePref"
+			android:summary="@string/text_degreeDesc" android:key="@string/Preference_Degree"
 			android:entries="@array/degreeEntryArray" android:entryValues="@array/degreeValueArray" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/grades_view">
 		<CheckBoxPreference android:title="@string/text_autoUpdate"
-			android:summary="@string/text_autoUpdateDesc" android:key="autoUpdatePref"
+			android:summary="@string/text_autoUpdateDesc" android:key="@string/Preference_AutoUpdate"
 			android:defaultValue="true" />
 
 		<ListPreference android:title="@string/text_sortOrder"
-			android:summary="@string/text_sortOrderDesc" android:key="defaultOrderPref"
+			android:summary="@string/text_sortOrderDesc" android:key="@string/Preference_DefaultSortOrder"
 			android:entries="@array/orderEntryArray" android:entryValues="@array/orderValueArray"
 			android:defaultValue="DESC" />
 
 		<ListPreference android:title="@string/text_changeView"
-			android:summary="@string/text_changeViewDesc" android:key="defaultViewPref"
+			android:summary="@string/text_changeViewDesc" android:key="@string/Preference_DefaultFilter"
 			android:entries="@array/defaultViewListArray" android:entryValues="@array/defaultViewListValues"
 			android:defaultValue="all" />
 
 		<CheckBoxPreference android:title="@string/text_highlight"
 			android:defaultValue="false" android:summary="@string/text_highlightDesc"
-			android:key="highlightActualExamsPref" />
+			android:key="@string/Preference_HighlightActualExams" />
 		<CheckBoxPreference android:title="@string/text_separator"
 			android:defaultValue="true" android:summary="@string/text_separatorDesc"
-			android:key="prefUseSeparator" />
+			android:key="@string/Preference_UseSeparator" />
 		<Preference android:title="@string/text_color"
-			android:summary="@string/text_colorDesc" android:key="highlightColorPref"
-			android:dependency="highlightActualExamsPref" />
+			android:summary="@string/text_colorDesc" android:key="@string/Preference_HighlightColor"
+			android:dependency="@string/Preference_HighlightActualExams" />
 	</PreferenceCategory>
 
 	<PreferenceCategory android:title="@string/title_Certifications">
 		<Preference android:defaultValue="/mnt/sdcard/download/"
-			android:key="downloadPathPref" android:title="@string/text_downloadDir"
+			android:key="@string/Preference_DownloadPath" android:title="@string/text_downloadDir"
 			android:summary="" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/text_data">
+		
 		<Preference android:title="@string/text_delDB"
 			android:summary="@string/text_delDBDesc" android:key="clearDBPref" />
 		<Preference android:title="@string/text_delCookie"
 			android:summary="@string/text_delCookieDesc" android:key="delCookiePref" />
 		<Preference android:title="@string/text_resetSettings"
 			android:summary="@string/text_resetSettingsDesc" android:key="delPref" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/text_connection">
+		<EditTextPreference android:title="@string/text_setConnectionTimeout" android:key="@string/Preference_ConnectionTimeout"
+		    android:defaultValue="1500" android:summary="@string/text_setConnectionTimeoutDesc"/>
 	</PreferenceCategory>
 </PreferenceScreen>

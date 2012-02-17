@@ -15,7 +15,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BrowserCompatSpec;
 import org.apache.http.impl.cookie.CookieSpecBase;
 import org.xml.sax.SAXException;
@@ -37,6 +36,7 @@ import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.util.Log;
 import android.util.Xml;
+import de.nware.app.hsDroid.R;
 import de.nware.app.hsDroid.data.Exam;
 import de.nware.app.hsDroid.data.ExamInfo;
 import de.nware.app.hsDroid.data.StaticSessionData;
@@ -154,7 +154,7 @@ public class onlineService2Provider extends ContentProvider {
 	private static byte[] mContentBuffer = new byte[2048];
 
 	/** Der http client. */
-	private HttpClient mHttpClient = new DefaultHttpClient();
+	// private HttpClient mHttpClient = null;// = new DefaultHttpClient();
 
 	// Timeout variablen
 	private final int connectionTimeoutMillis = 3000;
@@ -563,19 +563,14 @@ public class onlineService2Provider extends ContentProvider {
 		List<Header> cookieHeader = cookieSpecBase.formatCookies(StaticSessionData.cookies);
 		httpPost.setHeader(cookieHeader.get(0));
 
-		// FIXME Timeout einbauen
-
-		if (mHttpClient == null) {
-			// HttpParams httpParams = new BasicHttpParams();
-			// HttpConnectionParams.setConnectionTimeout(httpParams,
-			// connectionTimeoutMillis);
-			// HttpConnectionParams.setSoTimeout(httpParams,
-			// socketTimeoutMillis);
-			// mHttpClient = new DefaultHttpClient(httpParams);
-		}
+		// FIXME geht nicht als int Preference, wegen
+		// preferenceScreen/editText...
+		int connectionTimeoutMillis = Integer.valueOf(StaticSessionData.sPreferences.getString(
+				getContext().getString(R.string.Preference_ConnectionTimeout), "1500"));
+		HttpClient client = HttpClientFactory.getHttpClient(connectionTimeoutMillis);
 		try {
 
-			final HttpResponse response = mHttpClient.execute(httpPost);
+			final HttpResponse response = client.execute(httpPost);
 
 			// Prüfen ob HTTP Antwort ok ist.
 			final StatusLine status = response.getStatusLine();
@@ -598,7 +593,11 @@ public class onlineService2Provider extends ContentProvider {
 				content.write(mContentBuffer, 0, readBytes);
 			}
 
+			// Stream nach String
 			String output = new String(content.toByteArray());
+
+			// Stream freigeben
+			content.close();
 			return output;
 
 		} catch (IOException e) {

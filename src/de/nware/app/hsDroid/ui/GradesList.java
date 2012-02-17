@@ -1,5 +1,7 @@
 package de.nware.app.hsDroid.ui;
 
+import static de.nware.app.hsDroid.data.StaticSessionData.sPreferences;
+
 import java.util.Date;
 import java.util.HashMap;
 
@@ -11,7 +13,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -19,7 +20,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,42 +42,6 @@ import de.nware.app.hsDroid.provider.onlineService2Data.ExamsCol;
 import de.nware.app.hsDroid.provider.onlineService2Data.ExamsUpdateCol;
 
 /**
- *  This file is part of hsDroid.
- * 
- *  hsDroid is an Android App for students to view their grades from QIS Online Service 
- *  Copyright (C) 2011,2012  Oliver Eichner <n0izeland@gmail.com>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  any later version.
- *  
- *  hsDroid is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *  
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
- *  
- *  Diese Datei ist Teil von hsDroid.
- *  
- *  hsDroid ist Freie Software: Sie können es unter den Bedingungen
- *  der GNU General Public License, wie von der Free Software Foundation,
- *  Version 3 der Lizenz oder jeder späteren veröffentlichten Version, 
- *  weiterverbreiten und/oder modifizieren.
- *  
- *  hsDroid wird in der Hoffnung, dass es nützlich sein wird, aber
- *  OHNE JEDE GEWÄHRLEISTUNG, bereitgestellt; sogar ohne die implizite
- *  Gewährleistung der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
- *  Siehe die GNU General Public License für weitere Details.
- *  
- *  Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
- *  Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
- */
-
-/**
  * {@link ListActivity} zum anzeigen der Prüfungen
  * 
  * @author Oliver Eichner
@@ -94,8 +58,6 @@ public class GradesList extends nActivity {
 
 	private ProgressDialog mProgressDialog = null;
 
-	private SharedPreferences mPreferences;
-
 	private ExamInfoThread mExamInfoThread;
 
 	private boolean autoUpdate;
@@ -107,13 +69,13 @@ public class GradesList extends nActivity {
 	private final int HANDLER_MSG_ERROR = 99;
 	private final int HANDLER_MSG_INFO_READY = 4;
 
-	private static final String SORT_ALL = "all";
-	private static final String SORT_ALL_FAILED = "allfail";
-	private static final String SORT_ALL_PASSED = "allpassed";
-	private static final String SORT_ACTUAL = "act";
-	private static final String SORT_ACTUAL_FAILED = "actfail";
-	private static final String SORT_ACTUAL_PASSED = "actpassed";
-	private static String ACTUAL_SORT = SORT_ALL;
+	private static final String FILTER_ALL = "all";
+	private static final String FILTER_ALL_FAILED = "allfail";
+	private static final String FILTER_ALL_PASSED = "allpassed";
+	private static final String FILTER_ACTUAL = "act";
+	private static final String FILTER_ACTUAL_FAILED = "actfail";
+	private static final String FILTER_ACTUAL_PASSED = "actpassed";
+	private static String ACTUAL_FILTER = FILTER_ALL;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -123,11 +85,11 @@ public class GradesList extends nActivity {
 		customTitle(getText(R.string.grades_view).toString());
 
 		// einstellungne holen
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		StaticSessionData.reloadSharedPrefs(this);
 
 		// Datenbank und User überprüfen
-		String dbUser = mPreferences.getString("dbUser", "0");
-		String user = mPreferences.getString("UserSave", "");
+		String dbUser = sPreferences.getString("dbUser", "0");
+		String user = sPreferences.getString("UserSave", "");
 		Log.d(TAG, "dbUser:" + dbUser + " user:" + user);
 		if (!dbUser.equals(user)) {
 			showTitleProgress();
@@ -138,13 +100,13 @@ public class GradesList extends nActivity {
 
 		// Prüfen ob Abschluß gewählt wurde
 		boolean noDegreeSelected = false;
-		if (mPreferences.getString("degreePref", "").equals("")) {
+		if (StaticSessionData.sPreferences.getString(getString(R.string.Preference_Degree), "").equals("")) {
 			selectDegree();
 			forceAutoUpdate = false;
 			noDegreeSelected = true;
 		}
 
-		ACTUAL_SORT = getDefaultListSort();
+		ACTUAL_FILTER = getDefaultListFilter();
 
 		Log.d(TAG, "create resolver");
 		final ContentResolver resolver = getContentResolver();
@@ -161,7 +123,7 @@ public class GradesList extends nActivity {
 		mExamAdapter = new ExamDBAdapter(GradesList.this, R.layout.grade_row_item, cursor, from, to);
 		lv.setAdapter(mExamAdapter);
 
-		autoUpdate = mPreferences.getBoolean("autoUpdatePref", true);
+		autoUpdate = StaticSessionData.sPreferences.getBoolean(getString(R.string.Preference_AutoUpdate), true);
 		if (!noDegreeSelected && (mExamAdapter.getCount() == 0 || forceAutoUpdate)) {
 			updateGrades();
 			if (forceAutoUpdate) {
@@ -174,7 +136,7 @@ public class GradesList extends nActivity {
 			refreshList();
 		}
 
-		this.mExamAdapter.getFilter().filter(getDefaultListSort());
+		this.mExamAdapter.getFilter().filter(getDefaultListFilter());
 
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -253,13 +215,13 @@ public class GradesList extends nActivity {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				Editor ed = mPreferences.edit();
+				Editor ed = sPreferences.edit();
 				switch (which) {
 				case BACHELOR:
-					ed.putString("degreePref", "58");
+					ed.putString(getString(R.string.Preference_Degree), "58");
 					break;
 				case MASTER:
-					ed.putString("degreePref", "59");
+					ed.putString(getString(R.string.Preference_Degree), "59");
 					break;
 				default:
 					break;
@@ -272,13 +234,12 @@ public class GradesList extends nActivity {
 	}
 
 	private String getDefaultListOrder() {
-		String prefOrder = mPreferences.getString("defaultOrderPref", "DESC");
+		String prefOrder = sPreferences.getString(getString(R.string.Preference_DefaultSortOrder), "DESC");
 		return prefOrder;
 	}
 
-	private String getDefaultListSort() {
-		String prefView = mPreferences.getString("defaultViewPref", ACTUAL_SORT);
-		return prefView;
+	private String getDefaultListFilter() {
+		return sPreferences.getString(getString(R.string.Preference_DefaultFilter), ACTUAL_FILTER);
 	}
 
 	/**
@@ -383,14 +344,14 @@ public class GradesList extends nActivity {
 		Log.d(TAG, "onResume");
 		checkSession();
 		refreshList();
-		ACTUAL_SORT = getDefaultListSort();
+		ACTUAL_FILTER = getDefaultListFilter();
 	}
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
-
+		StaticSessionData.reloadSharedPrefs(this);
 		if (hasFocus) {
-			this.mExamAdapter.getFilter().filter(ACTUAL_SORT);
+			this.mExamAdapter.getFilter().filter(ACTUAL_FILTER);
 		}
 		refreshList();
 	}
@@ -421,8 +382,8 @@ public class GradesList extends nActivity {
 		case R.id.view_menu_preferences:
 			Intent settingsActivity = new Intent(getBaseContext(), Preferences.class);
 			startActivity(settingsActivity);
-			mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-			ACTUAL_SORT = getDefaultListSort();
+			// StaticSessionData.getSharedPrefs(this);
+			ACTUAL_FILTER = getDefaultListFilter();
 			return true;
 		case R.id.view_submenu_examViewAll:
 			if (item.isChecked())
@@ -430,16 +391,16 @@ public class GradesList extends nActivity {
 			else
 				item.setChecked(true);
 
-			ACTUAL_SORT = SORT_ALL;
-			mExamAdapter.getFilter().filter(ACTUAL_SORT);
+			ACTUAL_FILTER = FILTER_ALL;
+			mExamAdapter.getFilter().filter(ACTUAL_FILTER);
 			return true;
 		case R.id.view_submenu_examViewOnlyLast:
 			if (item.isChecked())
 				item.setChecked(false);
 			else
 				item.setChecked(true);
-			ACTUAL_SORT = SORT_ACTUAL;
-			mExamAdapter.getFilter().filter(ACTUAL_SORT);
+			ACTUAL_FILTER = FILTER_ACTUAL;
+			mExamAdapter.getFilter().filter(ACTUAL_FILTER);
 			return true;
 		case R.id.view_submenu_examViewOnlyLastFailed:
 			if (item.isChecked())
@@ -447,8 +408,8 @@ public class GradesList extends nActivity {
 			else
 				item.setChecked(true);
 
-			ACTUAL_SORT = SORT_ACTUAL_FAILED;
-			mExamAdapter.getFilter().filter(ACTUAL_SORT);
+			ACTUAL_FILTER = FILTER_ACTUAL_FAILED;
+			mExamAdapter.getFilter().filter(ACTUAL_FILTER);
 			return true;
 		case R.id.view_submenu_examViewOnlyLastPassed:
 			if (item.isChecked())
@@ -456,8 +417,8 @@ public class GradesList extends nActivity {
 			else
 				item.setChecked(true);
 
-			ACTUAL_SORT = SORT_ACTUAL_PASSED;
-			mExamAdapter.getFilter().filter(ACTUAL_SORT);
+			ACTUAL_FILTER = FILTER_ACTUAL_PASSED;
+			mExamAdapter.getFilter().filter(ACTUAL_FILTER);
 			return true;
 		case R.id.view_submenu_examViewAllFailed:
 			if (item.isChecked())
@@ -465,8 +426,8 @@ public class GradesList extends nActivity {
 			else
 				item.setChecked(true);
 
-			ACTUAL_SORT = SORT_ALL_FAILED;
-			mExamAdapter.getFilter().filter(ACTUAL_SORT);
+			ACTUAL_FILTER = FILTER_ALL_FAILED;
+			mExamAdapter.getFilter().filter(ACTUAL_FILTER);
 			return true;
 		case R.id.view_submenu_examViewAllPassed:
 			if (item.isChecked())
@@ -474,8 +435,8 @@ public class GradesList extends nActivity {
 			else
 				item.setChecked(true);
 
-			ACTUAL_SORT = SORT_ALL_PASSED;
-			mExamAdapter.getFilter().filter(ACTUAL_SORT);
+			ACTUAL_FILTER = FILTER_ALL_PASSED;
+			mExamAdapter.getFilter().filter(ACTUAL_FILTER);
 			return true;
 		default:
 			Log.d("GradeView menu:", "default");
@@ -511,9 +472,9 @@ public class GradesList extends nActivity {
 	 * Notenspiegel aktualisieren.
 	 */
 	private void updateGrades() {
+
 		showTitleProgress();
 		showToast(getString(R.string.info_updateGradesList));
-
 		setRequestedOrientation(2);
 		this.updateThread = new UpdateThread();
 		this.updateThread.execute();
@@ -602,7 +563,8 @@ public class GradesList extends nActivity {
 			} catch (Exception e) {
 				mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_ERROR));
 				// hideTitleProgress();
-				createDialog(GradesList.this.getString(R.string.error), e.getMessage());
+				// createDialog(GradesList.this.getString(R.string.error),
+				// e.getMessage());
 				e.printStackTrace();
 			}
 
@@ -679,7 +641,8 @@ public class GradesList extends nActivity {
 
 	public void fillSemesterHashMap() {
 		ContentResolver resolver = getContentResolver();
-		String sortOrder = mPreferences.getString("defaultOrderPref", "DESC");
+		String sortOrder = StaticSessionData.sPreferences.getString(getString(R.string.Preference_DefaultSortOrder),
+				"DESC");
 		boolean incrementCounter = false;
 		if (sortOrder.equals("ASC")) {
 			sortOrder = "DESC";
@@ -761,7 +724,7 @@ public class GradesList extends nActivity {
 
 			if (exName != null) {
 				exName.setText(name);
-				if (isActualExam(sem) && mPreferences.getBoolean("highlightActualExamsPref", false)) {
+				if (isActualExam(sem) && StaticSessionData.sPreferences.getBoolean("highlightActualExamsPref", false)) {
 					exName.setShadowLayer(3, 0, 0, Color.GREEN);
 				} else {
 					exName.setShadowLayer(0, 0, 0, 0);
@@ -773,7 +736,7 @@ public class GradesList extends nActivity {
 					b = semMap.get(sem);
 					// Log.d(TAG, "a:b - " + a + ":" + b);
 					TextView separator = (TextView) v.findViewById(R.id.examSeparator);
-					if (a == b && mPreferences.getBoolean("prefUseSeparator", true)) {
+					if (a == b && StaticSessionData.sPreferences.getBoolean("prefUseSeparator", true)) {
 
 						separator.setText(sem);
 						separator.setVisibility(TextView.VISIBLE);
@@ -838,9 +801,9 @@ public class GradesList extends nActivity {
 				return getFilterQueryProvider().runQuery(constraint);
 			}
 			// Log.d(TAG, "no FilterQueryProvider");
-			if (constraint.equals(SORT_ALL)) {
+			if (constraint.equals(FILTER_ALL)) {
 				return getContentResolver().query(ExamsCol.CONTENT_URI, null, null, null, sortOrder);
-			} else if (constraint.equals(SORT_ALL_FAILED)) {
+			} else if (constraint.equals(FILTER_ALL_FAILED)) {
 				// System.out.println("sort all failed");
 				StringBuilder buffer = null;
 				String[] args = null;
@@ -854,7 +817,7 @@ public class GradesList extends nActivity {
 				// Log.d(TAG, "args: " + args[0]);
 				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
 						buffer == null ? null : buffer.toString(), args, sortOrder);
-			} else if (constraint.equals(SORT_ALL_PASSED)) {
+			} else if (constraint.equals(FILTER_ALL_PASSED)) {
 				// System.out.println("sort all failed");
 				StringBuilder buffer = null;
 				String[] args = null;
@@ -868,7 +831,7 @@ public class GradesList extends nActivity {
 				// Log.d(TAG, "args: " + args[0]);
 				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
 						buffer == null ? null : buffer.toString(), args, sortOrder);
-			} else if (constraint.equals(SORT_ACTUAL)) {
+			} else if (constraint.equals(FILTER_ACTUAL)) {
 
 				StringBuilder buffer = null;
 				String[] args = null;
@@ -883,7 +846,7 @@ public class GradesList extends nActivity {
 				// Log.d(TAG, "args: " + args[0]);
 				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
 						buffer == null ? null : buffer.toString(), args, sortOrder);
-			} else if (constraint.equals(SORT_ACTUAL_FAILED)) {
+			} else if (constraint.equals(FILTER_ACTUAL_FAILED)) {
 
 				StringBuilder buffer = null;
 				String[] args = null;
@@ -900,7 +863,7 @@ public class GradesList extends nActivity {
 
 				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
 						buffer == null ? null : buffer.toString(), args, sortOrder);
-			} else if (constraint.equals(SORT_ACTUAL_PASSED)) {
+			} else if (constraint.equals(FILTER_ACTUAL_PASSED)) {
 
 				StringBuilder buffer = null;
 				String[] args = null;

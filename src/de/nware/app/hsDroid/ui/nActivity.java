@@ -7,6 +7,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import de.nware.app.hsDroid.R;
+import de.nware.app.hsDroid.data.StaticSessionData;
 
 /**
  *  This file is part of hsDroid.
@@ -59,7 +60,9 @@ public class nActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		customTitleSupported = requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
-
+		if (StaticSessionData.sPreferences == null) {
+			StaticSessionData.getSharedPrefs(this);
+		}
 		// CustomTitle setzen
 		// customTitle(getText(R.string.app_name).toString(),
 		// getText(R.string.app_version).toString());

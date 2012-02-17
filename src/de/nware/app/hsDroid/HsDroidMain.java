@@ -1,5 +1,6 @@
 package de.nware.app.hsDroid;
 
+import static de.nware.app.hsDroid.data.StaticSessionData.sPreferences;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -8,7 +9,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -83,7 +83,8 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 	private CheckBox mLoginCheckBox;
 
 	private boolean savePassword = false;
-	private SharedPreferences mSharedPreferences;
+
+	// private SharedPreferences sPreferences;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -96,10 +97,11 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 
 		mLoginCheckBox = (CheckBox) findViewById(R.id.login_checkBox);
 
-		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		String savedUser = mSharedPreferences.getString("UserSave", "");
-		String savedPass = mSharedPreferences.getString("PassSave", "");
-		savePassword = mSharedPreferences.getBoolean("saveLoginDataPref", false);
+		// mSharedPreferences =
+		// PreferenceManager.getDefaultSharedPreferences(this);
+		String savedUser = sPreferences.getString("UserSave", "");
+		String savedPass = sPreferences.getString("PassSave", "");
+		savePassword = sPreferences.getBoolean(getString(R.string.Preference_SaveLoginData), false);
 
 		mLoginCheckBox.setChecked(savePassword);
 
@@ -109,7 +111,7 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 
 		mTextfieldUsername.setText(savedUser);
 
-		final boolean autoLogin = mSharedPreferences.getBoolean("autoLoginPref", false);
+		final boolean autoLogin = sPreferences.getBoolean(getString(R.string.Preference_AutoLogin), false);
 
 		if (autoLogin && savePassword) {
 			doLogin();
@@ -121,13 +123,13 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				SharedPreferences.Editor editor = mSharedPreferences.edit();
+				SharedPreferences.Editor editor = sPreferences.edit();
 				if (mLoginCheckBox.isChecked()) {
-					editor.putBoolean("saveLoginDataPref", true);
+					editor.putBoolean(getString(R.string.Preference_SaveLoginData), true);
 				} else {
-					editor.putBoolean("saveLoginDataPref", false);
-					if (mSharedPreferences.getBoolean("autoLoginPref", false)) {
-						editor.putBoolean("autoLoginPref", false);
+					editor.putBoolean(getString(R.string.Preference_SaveLoginData), false);
+					if (sPreferences.getBoolean(getString(R.string.Preference_AutoLogin), false)) {
+						editor.putBoolean(getString(R.string.Preference_AutoLogin), false);
 						showToast("Autologin wurde deaktiviert.");
 					}
 
@@ -172,7 +174,7 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 
 		// Prüfeung falls sich ein anderer user anmeldet. damit nicht das
 		// session cookie vom vorherigen user übernommen wird..
-		if (!username.equals("") && !username.equals(mSharedPreferences.getString("UserSave", ""))) {
+		if (!username.equals("") && !username.equals(sPreferences.getString("UserSave", ""))) {
 			if (StaticSessionData.cookies != null) {
 				// StaticSessionData.cookies.clear();
 				StaticSessionData.cookies = null;
@@ -204,14 +206,14 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 			// FIXME zu unsicher.. wird alles im plaintext gespeichert..
 			// eventuell sqlite mit encryption..
 			// speichern von user und passwort
-			SharedPreferences.Editor editor = mSharedPreferences.edit();
+			SharedPreferences.Editor editor = sPreferences.edit();
 			if (mLoginCheckBox.isChecked()) {
 				editor.putString("PassSave", password);
-				editor.putBoolean("saveLoginDataPref", true);
+				editor.putBoolean(getString(R.string.Preference_SaveLoginData), true);
 			} else {
 				// editor.remove("UserSave");
 				editor.remove("PassSave");
-				editor.putBoolean("saveLoginDataPref", false);
+				editor.putBoolean(getString(R.string.Preference_SaveLoginData), false);
 			}
 			editor.putString("UserSave", username);
 			editor.commit(); // Very important
@@ -288,8 +290,9 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		if (hasFocus) {
-			mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-			savePassword = mSharedPreferences.getBoolean("saveLoginDataPref", false);
+			StaticSessionData.reloadSharedPrefs(this);
+
+			savePassword = sPreferences.getBoolean(getString(R.string.Preference_SaveLoginData), false);
 			mLoginCheckBox.setChecked(savePassword);
 		}
 	}

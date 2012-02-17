@@ -4,7 +4,11 @@ import java.util.List;
 
 import org.apache.http.cookie.Cookie;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import de.nware.app.hsDroid.R;
 
 /**
  *  This file is part of hsDroid.
@@ -55,6 +59,27 @@ public class StaticSessionData {
 
 	public final static int cookieValTimeMin = 29;
 
+	// Static sharedPref test
+	public static SharedPreferences sPreferences = null;
+
+	public static SharedPreferences getSharedPrefs(Context context) {
+
+		if (sPreferences == null) {
+			// Standardwerte setzen
+			PreferenceManager.setDefaultValues(context, R.xml.preferencescreen, false);
+			// SharedPreferences laden
+			sPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		}
+		return sPreferences;
+
+	}
+
+	public static void resetSharedPreferences(Context context) {
+		if (sPreferences != null) {
+			PreferenceManager.setDefaultValues(context, R.xml.preferencescreen, true);
+		}
+	}
+
 	/**
 	 * Prüft Cookie auf Gültigkeit
 	 * 
@@ -71,5 +96,10 @@ public class StaticSessionData {
 		Log.d("static test:", "min:" + cookieMin + " now min:" + nowMin);
 		Log.d("static test:", "diff: " + (nowMin - cookieMin));
 		return ((nowMin - cookieMin) < cookieValTimeMin);
+	}
+
+	public static void reloadSharedPrefs(Context context) {
+		sPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
 	}
 }
