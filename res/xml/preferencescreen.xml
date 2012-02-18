@@ -1,59 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-	<PreferenceCategory android:title="@string/text_general">
-		<CheckBoxPreference android:defaultValue="false"
-			android:summary="@string/text_savePW" android:key="@string/Preference_SaveLoginData"
-			android:title="@string/text_savePWcheckBox"
-			android:disableDependentsState="false" />
-		<CheckBoxPreference android:title="@string/text_autoLogin"
-			android:defaultValue="false" android:summary="@string/text_autoLoginDesc"
-			android:key="@string/Preference_AutoLogin" android:dependency="@string/Preference_SaveLoginData" />
-		<ListPreference android:title="@string/text_degree"
-			android:summary="@string/text_degreeDesc" android:key="@string/Preference_Degree"
-			android:entries="@array/degreeEntryArray" android:entryValues="@array/degreeValueArray" />
-	</PreferenceCategory>
-	<PreferenceCategory android:title="@string/grades_view">
-		<CheckBoxPreference android:title="@string/text_autoUpdate"
-			android:summary="@string/text_autoUpdateDesc" android:key="@string/Preference_AutoUpdate"
-			android:defaultValue="true" />
 
-		<ListPreference android:title="@string/text_sortOrder"
-			android:summary="@string/text_sortOrderDesc" android:key="@string/Preference_DefaultSortOrder"
-			android:entries="@array/orderEntryArray" android:entryValues="@array/orderValueArray"
-			android:defaultValue="DESC" />
+    <PreferenceCategory android:title="@string/text_general" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:disableDependentsState="false"
+            android:key="@string/Preference_SaveLoginData"
+            android:summary="@string/text_savePW"
+            android:title="@string/text_savePWcheckBox" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="@string/Preference_SaveLoginData"
+            android:key="@string/Preference_AutoLogin"
+            android:summary="@string/text_autoLoginDesc"
+            android:title="@string/text_autoLogin" />
 
-		<ListPreference android:title="@string/text_changeView"
-			android:summary="@string/text_changeViewDesc" android:key="@string/Preference_DefaultFilter"
-			android:entries="@array/defaultViewListArray" android:entryValues="@array/defaultViewListValues"
-			android:defaultValue="all" />
+        <ListPreference
+            android:entries="@array/degreeEntryArray"
+            android:entryValues="@array/degreeValueArray"
+            android:key="@string/Preference_Degree"
+            android:summary="@string/text_degreeDesc"
+            android:title="@string/text_degree" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/grades_view" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/Preference_AutoUpdate"
+            android:summary="@string/text_autoUpdateDesc"
+            android:title="@string/text_autoUpdate" />
 
-		<CheckBoxPreference android:title="@string/text_highlight"
-			android:defaultValue="false" android:summary="@string/text_highlightDesc"
-			android:key="@string/Preference_HighlightActualExams" />
-		<CheckBoxPreference android:title="@string/text_separator"
-			android:defaultValue="true" android:summary="@string/text_separatorDesc"
-			android:key="@string/Preference_UseSeparator" />
-		<Preference android:title="@string/text_color"
-			android:summary="@string/text_colorDesc" android:key="@string/Preference_HighlightColor"
-			android:dependency="@string/Preference_HighlightActualExams" />
-	</PreferenceCategory>
+        <ListPreference
+            android:defaultValue="DESC"
+            android:entries="@array/orderEntryArray"
+            android:entryValues="@array/orderValueArray"
+            android:key="@string/Preference_DefaultSortOrder"
+            android:summary="@string/text_sortOrderDesc"
+            android:title="@string/text_sortOrder" />
+        <ListPreference
+            android:defaultValue="all"
+            android:entries="@array/defaultViewListArray"
+            android:entryValues="@array/defaultViewListValues"
+            android:key="@string/Preference_DefaultFilter"
+            android:summary="@string/text_changeViewDesc"
+            android:title="@string/text_changeView" />
 
-	<PreferenceCategory android:title="@string/title_Certifications">
-		<Preference android:defaultValue="/mnt/sdcard/download/"
-			android:key="@string/Preference_DownloadPath" android:title="@string/text_downloadDir"
-			android:summary="" />
-	</PreferenceCategory>
-	<PreferenceCategory android:title="@string/text_data">
-		
-		<Preference android:title="@string/text_delDB"
-			android:summary="@string/text_delDBDesc" android:key="clearDBPref" />
-		<Preference android:title="@string/text_delCookie"
-			android:summary="@string/text_delCookieDesc" android:key="delCookiePref" />
-		<Preference android:title="@string/text_resetSettings"
-			android:summary="@string/text_resetSettingsDesc" android:key="delPref" />
-	</PreferenceCategory>
-	<PreferenceCategory android:title="@string/text_connection">
-		<EditTextPreference android:title="@string/text_setConnectionTimeout" android:key="@string/Preference_ConnectionTimeout"
-		    android:defaultValue="1500" android:summary="@string/text_setConnectionTimeoutDesc"/>
-	</PreferenceCategory>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/Preference_HighlightActualExams"
+            android:summary="@string/text_highlightDesc"
+            android:title="@string/text_highlight" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/Preference_UseSeparator"
+            android:summary="@string/text_separatorDesc"
+            android:title="@string/text_separator" />
+
+        <Preference
+            android:dependency="@string/Preference_HighlightActualExams"
+            android:key="@string/Preference_HighlightColor"
+            android:summary="@string/text_colorDesc"
+            android:title="@string/text_color" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/title_Certifications" >
+        <Preference
+            android:defaultValue="/mnt/sdcard/download/"
+            android:key="@string/Preference_DownloadPath"
+            android:summary=""
+            android:title="@string/text_downloadDir" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/text_data" >
+        <Preference
+            android:key="clearDBPref"
+            android:summary="@string/text_delDBDesc"
+            android:title="@string/text_delDB" />
+        <Preference
+            android:key="delPref"
+            android:summary="@string/text_resetSettingsDesc"
+            android:title="@string/text_resetSettings" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/text_connection" >
+        <EditTextPreference
+            android:defaultValue="1500"
+            android:key="@string/Preference_ConnectionTimeout"
+            android:summary="@string/text_setConnectionTimeoutDesc"
+            android:title="@string/text_setConnectionTimeout" />
+
+        <Preference
+            android:key="delCookiePref"
+            android:summary="@string/text_delCookieDesc"
+            android:title="@string/text_delCookie" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

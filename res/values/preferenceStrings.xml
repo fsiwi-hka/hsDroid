@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="Preference_SaveLoginData">saveLoginDataPref</string>
+    <string name="Preference_AutoLogin">autoLoginPref</string>
+    <string name="Preference_Degree">degreePref</string>
+    <string name="Preference_AutoUpdate">autoUpdatePref</string>
+    <string name="Preference_DefaultSortOrder">defaultOrderPref</string>
+    <string name="Preference_DefaultFilter">defaultViewPref</string>
+    <string name="Preference_HighlightActualExams">highlightActualExamsPref</string>
+    <string name="Preference_HighlightColor">highlightColorPref</string>
+    <string name="Preference_UseSeparator">prefUseSeparator</string>
+    <string name="Preference_DownloadPath">downloadPathPref</string>
+    <string name="Preference_ConnectionTimeout">connectionTimeout</string>
+    
+</resources>

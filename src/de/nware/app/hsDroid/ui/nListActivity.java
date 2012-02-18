@@ -1,8 +1,12 @@
 package de.nware.app.hsDroid.ui;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -73,6 +77,20 @@ public class nListActivity extends ListActivity {
 		// set up custom title
 		if (customTitleSupported) {
 			getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.titlebar);
+
+			ImageView image = (ImageView) findViewById(R.id.appIconImageView);
+			image.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					Intent dashIntent = new Intent(getApplicationContext(), Dashboard.class);
+					// Alle aktivities darüber schließen..
+					dashIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(dashIntent);
+					finish();
+				}
+			});
+
 			TextView titleTvActivityTitle = (TextView) findViewById(R.id.titleTvActivityTitle);
 			titleTvActivityTitle.setText(activityTitle);
 			// ProgressBar titleProgressBar;
