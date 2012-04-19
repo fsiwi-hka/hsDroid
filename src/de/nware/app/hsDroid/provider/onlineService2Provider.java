@@ -139,12 +139,16 @@ public class onlineService2Provider extends ContentProvider {
 	final String urlBase = "https://qis2.hs-karlsruhe.de/qisserver/rds";
 
 	/** Link für Bescheinigungen. */
-	final String certificationURLTmpl = "%s?state=qissosreports&besch=%s&next=wait.vm&asi=%s";
-
+	// final String certificationURLTmpl =
+	// "%s?state=qissosreports&besch=%s&next=wait.vm&asi=%s";
+	final String certificationURLTmpl2 = "%s?state=verpublish&vmfile=no&moduleCall=Report&publishSubDir=qissosreports&publishConfFile=%s";
 	/** Bescheinigungstypen. */
-	final String[] certificationType = { "stammdaten", "studbesch",
-			"studbeschengl", "bafoeg", "kvv", "studienzeit" };
+	// final String[] certificationType = { "stammdaten", "studbesch",
+	// "studbeschengl", "bafoeg", "kvv", "studienzeit" };
 
+	final String[] certificationType2 = { "stammdaten", "studienbescheinigung",
+			"studienbescheinigungenglisch", "bafoegbescheinigung",
+			"kvvbescheinigung", "studienzeitbescheinigung" };
 	/** Bescheinigungsname. */
 	final String[] certificationName = { "Datenkontrollblatt",
 			"Immatrikulationsbescheinigung",
@@ -162,8 +166,8 @@ public class onlineService2Provider extends ContentProvider {
 	// private HttpClient mHttpClient = null;// = new DefaultHttpClient();
 
 	// Timeout variablen
-	private final int connectionTimeoutMillis = 3000;
-	private final int socketTimeoutMillis = 3000;
+	// private final int connectionTimeoutMillis = 3000;
+	// private final int socketTimeoutMillis = 3000;
 
 	private SharedPreferences mPreferences;
 
@@ -555,8 +559,8 @@ public class onlineService2Provider extends ContentProvider {
 
 		final MatrixCursor cursor = new MatrixCursor(CERTIFICATIONS_COLUMNS);
 		int count = 0;
-		for (String certType : certificationType) {
-			String downloadUrl = String.format(certificationURLTmpl, urlBase,
+		for (String certType : certificationType2) {
+			String downloadUrl = String.format(certificationURLTmpl2, urlBase,
 					certType, StaticSessionData.asiKey);
 			cursor.addRow(new Object[] { count, certificationName[count],
 					downloadUrl });
