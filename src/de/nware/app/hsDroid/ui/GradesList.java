@@ -100,7 +100,8 @@ public class GradesList extends nActivity {
 
 		// Prüfen ob Abschluß gewählt wurde
 		boolean noDegreeSelected = false;
-		if (StaticSessionData.sPreferences.getString(getString(R.string.Preference_Degree), "").equals("")) {
+		if (StaticSessionData.sPreferences.getString(
+				getString(R.string.Preference_Degree), "").equals("")) {
 			selectDegree();
 			forceAutoUpdate = false;
 			noDegreeSelected = true;
@@ -118,13 +119,18 @@ public class GradesList extends nActivity {
 
 		semMap = new HashMap<String, Integer>();
 
-		final String[] from = new String[] { ExamsCol.EXAMNAME, ExamsCol.EXAMNR, ExamsCol.ATTEMPTS, ExamsCol.GRADE };
-		final int[] to = new int[] { R.id.examName, R.id.examNr, R.id.examGrade, R.id.examAttempts, R.id.examGrade };
-		mExamAdapter = new ExamDBAdapter(GradesList.this, R.layout.grade_row_item, cursor, from, to);
+		final String[] from = new String[] { ExamsCol.EXAMNAME,
+				ExamsCol.EXAMNR, ExamsCol.ATTEMPTS, ExamsCol.GRADE };
+		final int[] to = new int[] { R.id.examName, R.id.examNr,
+				R.id.examGrade, R.id.examAttempts, R.id.examGrade };
+		mExamAdapter = new ExamDBAdapter(GradesList.this,
+				R.layout.grade_row_item, cursor, from, to);
 		lv.setAdapter(mExamAdapter);
 
-		autoUpdate = StaticSessionData.sPreferences.getBoolean(getString(R.string.Preference_AutoUpdate), true);
-		if (!noDegreeSelected && (mExamAdapter.getCount() == 0 || forceAutoUpdate)) {
+		autoUpdate = StaticSessionData.sPreferences.getBoolean(
+				getString(R.string.Preference_AutoUpdate), true);
+		if (!noDegreeSelected
+				&& (mExamAdapter.getCount() == 0 || forceAutoUpdate)) {
 			updateGrades();
 			if (forceAutoUpdate) {
 				forceAutoUpdate = false;
@@ -139,30 +145,44 @@ public class GradesList extends nActivity {
 		this.mExamAdapter.getFilter().filter(getDefaultListFilter());
 
 		lv.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
 
 				// Log.d(TAG, "itemid: " + mExamAdapter.getItemId(position));
 				long itemID = mExamAdapter.getItemId(position);
 				String selection = BaseColumns._ID + " LIKE ?";
 
-				Cursor cur = getContentResolver().query(ExamsCol.CONTENT_URI, null, selection,
+				Cursor cur = getContentResolver().query(ExamsCol.CONTENT_URI,
+						null, selection,
 						new String[] { String.valueOf(itemID) }, null);
 				startManagingCursor(cur);
 				final String out;
 				if (cur.moveToFirst()) {
-					out = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.LINKID)).toString();
+					out = cur.getString(
+							cur.getColumnIndexOrThrow(ExamsCol.LINKID))
+							.toString();
 					// Log.d(TAG, "out: [" + out + "]");
-					final String name = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.EXAMNAME)).toString();
-					final String nr = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.EXAMNR)).toString();
-					final String semester = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.SEMESTER)).toString();
-					final String grade = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.GRADE)).toString();
-					final String studiengang = cur.getString(cur.getColumnIndexOrThrow(ExamsCol.STUDIENGANG))
+					final String name = cur.getString(
+							cur.getColumnIndexOrThrow(ExamsCol.EXAMNAME))
+							.toString();
+					final String nr = cur.getString(
+							cur.getColumnIndexOrThrow(ExamsCol.EXAMNR))
+							.toString();
+					final String semester = cur.getString(
+							cur.getColumnIndexOrThrow(ExamsCol.SEMESTER))
+							.toString();
+					final String grade = cur.getString(
+							cur.getColumnIndexOrThrow(ExamsCol.GRADE))
+							.toString();
+					final String studiengang = cur.getString(
+							cur.getColumnIndexOrThrow(ExamsCol.STUDIENGANG))
 							.toString();
 					if (!out.equals("0") && !grade.equals("0,0")) { // FIXME
 
 						// Log.d(TAG, "show examInfo");
 						showTitleProgress();
-						showToast(String.format(getString(R.string.loadGradeDistrib), name));
+						showToast(String.format(
+								getString(R.string.loadGradeDistrib), name));
 						setRequestedOrientation(2);
 
 						// startThread
@@ -173,11 +193,13 @@ public class GradesList extends nActivity {
 						Log.d(TAG, "sem: " + semester);
 						Log.d(TAG, "linkID: " + out);
 						Log.d(TAG, "studiengang: " + studiengang);
-						mExamInfoThread.execute(new String[] { name, nr, semester, out, studiengang });
+						mExamInfoThread.execute(new String[] { name, nr,
+								semester, out, studiengang });
 						// //
 					} else {
-						String gradeDistribError = String.format(
-								getString(R.string.error_noGradeDistributionAvailableForX), name);
+						String gradeDistribError = String
+								.format(getString(R.string.error_noGradeDistributionAvailableForX),
+										name);
 						showToast(gradeDistribError);
 					}
 				}
@@ -211,35 +233,40 @@ public class GradesList extends nActivity {
 		builderSelectDegree.setTitle(getString(R.string.text_degreeDesc));
 		final int BACHELOR = 0;
 		final int MASTER = 1;
-		builderSelectDegree.setItems(R.array.degreeEntryArray, new DialogInterface.OnClickListener() {
+		builderSelectDegree.setItems(R.array.degreeEntryArray,
+				new DialogInterface.OnClickListener() {
 
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				Editor ed = sPreferences.edit();
-				switch (which) {
-				case BACHELOR:
-					ed.putString(getString(R.string.Preference_Degree), "58");
-					break;
-				case MASTER:
-					ed.putString(getString(R.string.Preference_Degree), "59");
-					break;
-				default:
-					break;
-				}
-				ed.commit();
-				updateGrades();
-			}
-		});
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Editor ed = sPreferences.edit();
+						switch (which) {
+						case BACHELOR:
+							ed.putString(getString(R.string.Preference_Degree),
+									"58");
+							break;
+						case MASTER:
+							ed.putString(getString(R.string.Preference_Degree),
+									"59");
+							break;
+						default:
+							break;
+						}
+						ed.commit();
+						updateGrades();
+					}
+				});
 		builderSelectDegree.create().show();
 	}
 
 	private String getDefaultListOrder() {
-		String prefOrder = sPreferences.getString(getString(R.string.Preference_DefaultSortOrder), "DESC");
+		String prefOrder = sPreferences.getString(
+				getString(R.string.Preference_DefaultSortOrder), "DESC");
 		return prefOrder;
 	}
 
 	private String getDefaultListFilter() {
-		return sPreferences.getString(getString(R.string.Preference_DefaultFilter), ACTUAL_FILTER);
+		return sPreferences.getString(
+				getString(R.string.Preference_DefaultFilter), ACTUAL_FILTER);
 	}
 
 	/**
@@ -273,8 +300,9 @@ public class GradesList extends nActivity {
 					Log.d(TAG, "cursor null");
 				}
 
-				new ExamInfoDialog(GradesList.this, msg.getData().getString("Name"), msg.getData().getString("Nr"), msg
-						.getData().getString("Semester"), examinfoCursor);
+				new ExamInfoDialog(GradesList.this, msg.getData().getString(
+						"Name"), msg.getData().getString("Nr"), msg.getData()
+						.getString("Semester"), examinfoCursor);
 				// dismissDialog(DIALOG_PROGRESS);
 				hideTitleProgress();
 				mExamInfoThread.cancel(true);
@@ -330,10 +358,12 @@ public class GradesList extends nActivity {
 	protected void onPause() {
 		super.onPause();
 		Log.d(TAG, "pause... try to kill running threads");
-		if (updateThread != null && updateThread.getStatus() != AsyncTask.Status.FINISHED) {
+		if (updateThread != null
+				&& updateThread.getStatus() != AsyncTask.Status.FINISHED) {
 			updateThread.cancel(true);
 		}
-		if (mExamInfoThread != null && mExamInfoThread.getStatus() != AsyncTask.Status.FINISHED) {
+		if (mExamInfoThread != null
+				&& mExamInfoThread.getStatus() != AsyncTask.Status.FINISHED) {
 			mExamInfoThread.cancel(true);
 		}
 	}
@@ -380,7 +410,8 @@ public class GradesList extends nActivity {
 
 			return true;
 		case R.id.view_menu_preferences:
-			Intent settingsActivity = new Intent(getBaseContext(), Preferences.class);
+			Intent settingsActivity = new Intent(getBaseContext(),
+					Preferences.class);
 			startActivity(settingsActivity);
 			// StaticSessionData.getSharedPrefs(this);
 			ACTUAL_FILTER = getDefaultListFilter();
@@ -498,7 +529,8 @@ public class GradesList extends nActivity {
 	 *            {@link String} Dialogtext
 	 */
 	private void createDialog(String title, String text) {
-		AlertDialog ad = new AlertDialog.Builder(this).setPositiveButton(this.getString(R.string.error_ok), null)
+		AlertDialog ad = new AlertDialog.Builder(this)
+				.setPositiveButton(this.getString(R.string.error_ok), null)
 				.setTitle(title).setMessage(text).create();
 		ad.show();
 	}
@@ -555,13 +587,15 @@ public class GradesList extends nActivity {
 				// ContentProvider öffnen
 				final ContentResolver resolver = getContentResolver();
 				// Cursor setzen
-				final Cursor cursor = resolver.query(ExamsUpdateCol.CONTENT_URI, null, null, null, null);
+				final Cursor cursor = resolver.query(
+						ExamsUpdateCol.CONTENT_URI, null, null, null, null);
 				startManagingCursor(cursor);
 
 				cursor.close();
 
 			} catch (Exception e) {
-				mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_ERROR));
+				mProgressHandle.sendMessage(mProgressHandle
+						.obtainMessage(HANDLER_MSG_ERROR));
 				// hideTitleProgress();
 				// createDialog(GradesList.this.getString(R.string.error),
 				// e.getMessage());
@@ -575,7 +609,8 @@ public class GradesList extends nActivity {
 		protected void onPostExecute(Void result) {
 			// Dem Handler bescheid sagen, dass die Daten nun
 			// verfügbar sind
-			mProgressHandle.sendMessage(mProgressHandle.obtainMessage(HANDLER_MSG_REFRESH));
+			mProgressHandle.sendMessage(mProgressHandle
+					.obtainMessage(HANDLER_MSG_REFRESH));
 			super.onPostExecute(result);
 		}
 
@@ -600,8 +635,9 @@ public class GradesList extends nActivity {
 				// FIXME check ob 4 strings übergeben wurden..
 
 				// String out = params[0][3];
-				examinfoCursor = resolver.query(ExamInfos.CONTENT_URI, null, null, new String[] { params[0][3],
-						params[0][4] }, null);
+				examinfoCursor = resolver
+						.query(ExamInfos.CONTENT_URI, null, null, new String[] {
+								params[0][3], params[0][4] }, null);
 				startManagingCursor(examinfoCursor);
 				examinfoCursor.moveToFirst();
 
@@ -628,7 +664,8 @@ public class GradesList extends nActivity {
 
 			} catch (Exception e) {
 				dismissDialog(DIALOG_PROGRESS);
-				createDialog(GradesList.this.getString(R.string.error), e.getMessage());
+				createDialog(GradesList.this.getString(R.string.error),
+						e.getMessage());
 				e.printStackTrace();
 			} finally {
 				stopManagingCursor(examinfoCursor);
@@ -641,8 +678,8 @@ public class GradesList extends nActivity {
 
 	public void fillSemesterHashMap() {
 		ContentResolver resolver = getContentResolver();
-		String sortOrder = StaticSessionData.sPreferences.getString(getString(R.string.Preference_DefaultSortOrder),
-				"DESC");
+		String sortOrder = StaticSessionData.sPreferences.getString(
+				getString(R.string.Preference_DefaultSortOrder), "DESC");
 		boolean incrementCounter = false;
 		if (sortOrder.equals("ASC")) {
 			sortOrder = "DESC";
@@ -650,7 +687,8 @@ public class GradesList extends nActivity {
 			sortOrder = "ASC";
 			incrementCounter = true;
 		}
-		Cursor cursor = resolver.query(ExamsCol.CONTENT_URI, null, null, null, "_id " + sortOrder);
+		Cursor cursor = resolver.query(ExamsCol.CONTENT_URI, null, null, null,
+				"_id " + sortOrder);
 		cursor.moveToFirst();
 		int count = 0;
 
@@ -658,11 +696,14 @@ public class GradesList extends nActivity {
 
 		while (!cursor.isAfterLast()) {
 			if (cursor.isFirst()) {
-				int dbIdOffset = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
+				int dbIdOffset = cursor.getInt(cursor
+						.getColumnIndex(BaseColumns._ID));
 				// Log.d(TAG, "db offset: " + dbIdOffset);
 				count = dbIdOffset;
 			}
-			semMap.put(cursor.getString(cursor.getColumnIndex(ExamsCol.SEMESTER)), count);
+			semMap.put(
+					cursor.getString(cursor.getColumnIndex(ExamsCol.SEMESTER)),
+					count);
 			cursor.moveToNext();
 			if (incrementCounter) {
 				count++;
@@ -681,12 +722,13 @@ public class GradesList extends nActivity {
 	 */
 	public class ExamDBAdapter extends SimpleCursorAdapter {
 
-		private Context context;
+		// private Context context;
 		private int layout;
 
-		public ExamDBAdapter(Context context, int layout, Cursor cursor, String[] from, int[] to) {
+		public ExamDBAdapter(Context context, int layout, Cursor cursor,
+				String[] from, int[] to) {
 			super(context, layout, cursor, from, to);
-			this.context = context;
+			// this.context = context;
 			this.layout = layout;
 			Log.d(TAG, "Create ExamAdapter");
 		}
@@ -724,7 +766,9 @@ public class GradesList extends nActivity {
 
 			if (exName != null) {
 				exName.setText(name);
-				if (isActualExam(sem) && StaticSessionData.sPreferences.getBoolean("highlightActualExamsPref", false)) {
+				if (isActualExam(sem)
+						&& StaticSessionData.sPreferences.getBoolean(
+								"highlightActualExamsPref", false)) {
 					exName.setShadowLayer(3, 0, 0, Color.GREEN);
 				} else {
 					exName.setShadowLayer(0, 0, 0, 0);
@@ -735,8 +779,11 @@ public class GradesList extends nActivity {
 					a = c.getInt(c.getColumnIndex(BaseColumns._ID));
 					b = semMap.get(sem);
 					// Log.d(TAG, "a:b - " + a + ":" + b);
-					TextView separator = (TextView) v.findViewById(R.id.examSeparator);
-					if (a == b && StaticSessionData.sPreferences.getBoolean("prefUseSeparator", true)) {
+					TextView separator = (TextView) v
+							.findViewById(R.id.examSeparator);
+					if (a == b
+							&& StaticSessionData.sPreferences.getBoolean(
+									"prefUseSeparator", true)) {
 
 						separator.setText(sem);
 						separator.setVisibility(TextView.VISIBLE);
@@ -750,10 +797,14 @@ public class GradesList extends nActivity {
 				exNr.setText(nr);
 			}
 			if (exSemester != null) {
-				exSemester.setText(getApplicationContext().getString(R.string.grades_view_semester) + sem);
+				exSemester.setText(getApplicationContext().getString(
+						R.string.grades_view_semester)
+						+ sem);
 			}
 			if (exAtt != null && att != 0) {
-				exAtt.setText(getApplicationContext().getString(R.string.grades_view_attempt) + att);
+				exAtt.setText(getApplicationContext().getString(
+						R.string.grades_view_attempt)
+						+ att);
 			}
 			if (exGrade != null) {
 				if (passed == 0) { // wenn nicht bestanden
@@ -802,7 +853,8 @@ public class GradesList extends nActivity {
 			}
 			// Log.d(TAG, "no FilterQueryProvider");
 			if (constraint.equals(FILTER_ALL)) {
-				return getContentResolver().query(ExamsCol.CONTENT_URI, null, null, null, sortOrder);
+				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
+						null, null, sortOrder);
 			} else if (constraint.equals(FILTER_ALL_FAILED)) {
 				// System.out.println("sort all failed");
 				StringBuilder buffer = null;
@@ -816,7 +868,8 @@ public class GradesList extends nActivity {
 				// Log.d(TAG, "buffer: " + buffer.toString());
 				// Log.d(TAG, "args: " + args[0]);
 				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
-						buffer == null ? null : buffer.toString(), args, sortOrder);
+						buffer == null ? null : buffer.toString(), args,
+						sortOrder);
 			} else if (constraint.equals(FILTER_ALL_PASSED)) {
 				// System.out.println("sort all failed");
 				StringBuilder buffer = null;
@@ -830,7 +883,8 @@ public class GradesList extends nActivity {
 				// Log.d(TAG, "buffer: " + buffer.toString());
 				// Log.d(TAG, "args: " + args[0]);
 				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
-						buffer == null ? null : buffer.toString(), args, sortOrder);
+						buffer == null ? null : buffer.toString(), args,
+						sortOrder);
 			} else if (constraint.equals(FILTER_ACTUAL)) {
 
 				StringBuilder buffer = null;
@@ -845,7 +899,8 @@ public class GradesList extends nActivity {
 				// Log.d(TAG, "buffer: " + buffer.toString());
 				// Log.d(TAG, "args: " + args[0]);
 				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
-						buffer == null ? null : buffer.toString(), args, sortOrder);
+						buffer == null ? null : buffer.toString(), args,
+						sortOrder);
 			} else if (constraint.equals(FILTER_ACTUAL_FAILED)) {
 
 				StringBuilder buffer = null;
@@ -862,7 +917,8 @@ public class GradesList extends nActivity {
 				// Log.d(TAG, "args: " + args[0]);
 
 				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
-						buffer == null ? null : buffer.toString(), args, sortOrder);
+						buffer == null ? null : buffer.toString(), args,
+						sortOrder);
 			} else if (constraint.equals(FILTER_ACTUAL_PASSED)) {
 
 				StringBuilder buffer = null;
@@ -879,7 +935,8 @@ public class GradesList extends nActivity {
 				// Log.d(TAG, "args: " + args[0]);
 
 				return getContentResolver().query(ExamsCol.CONTENT_URI, null,
-						buffer == null ? null : buffer.toString(), args, sortOrder);
+						buffer == null ? null : buffer.toString(), args,
+						sortOrder);
 			} else {
 				return null;
 			}

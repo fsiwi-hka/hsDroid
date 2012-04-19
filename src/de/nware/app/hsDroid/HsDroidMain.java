@@ -72,7 +72,7 @@ import de.nware.app.hsDroid.ui.nActivity;
  */
 public class HsDroidMain extends nActivity implements OnClickListener {
 
-	private final static String TAG = "hsDroid-main";
+	// private final static String TAG = "hsDroid-main";
 
 	private LoginThread mLoginThread = null;
 
@@ -101,7 +101,8 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 		// PreferenceManager.getDefaultSharedPreferences(this);
 		String savedUser = sPreferences.getString("UserSave", "");
 		String savedPass = sPreferences.getString("PassSave", "");
-		savePassword = sPreferences.getBoolean(getString(R.string.Preference_SaveLoginData), false);
+		savePassword = sPreferences.getBoolean(
+				getString(R.string.Preference_SaveLoginData), false);
 
 		mLoginCheckBox.setChecked(savePassword);
 
@@ -111,7 +112,8 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 
 		mTextfieldUsername.setText(savedUser);
 
-		final boolean autoLogin = sPreferences.getBoolean(getString(R.string.Preference_AutoLogin), false);
+		final boolean autoLogin = sPreferences.getBoolean(
+				getString(R.string.Preference_AutoLogin), false);
 
 		if (autoLogin && savePassword) {
 			doLogin();
@@ -119,24 +121,34 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 			showToast("Autologin nur mit gespeichertem Passwort möglich");
 		}
 
-		mLoginCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+		mLoginCheckBox
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				SharedPreferences.Editor editor = sPreferences.edit();
-				if (mLoginCheckBox.isChecked()) {
-					editor.putBoolean(getString(R.string.Preference_SaveLoginData), true);
-				} else {
-					editor.putBoolean(getString(R.string.Preference_SaveLoginData), false);
-					if (sPreferences.getBoolean(getString(R.string.Preference_AutoLogin), false)) {
-						editor.putBoolean(getString(R.string.Preference_AutoLogin), false);
-						showToast("Autologin wurde deaktiviert.");
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						SharedPreferences.Editor editor = sPreferences.edit();
+						if (mLoginCheckBox.isChecked()) {
+							editor.putBoolean(
+									getString(R.string.Preference_SaveLoginData),
+									true);
+						} else {
+							editor.putBoolean(
+									getString(R.string.Preference_SaveLoginData),
+									false);
+							if (sPreferences.getBoolean(
+									getString(R.string.Preference_AutoLogin),
+									false)) {
+								editor.putBoolean(
+										getString(R.string.Preference_AutoLogin),
+										false);
+								showToast("Autologin wurde deaktiviert.");
+							}
+
+						}
+						editor.commit();
 					}
-
-				}
-				editor.commit();
-			}
-		});
+				});
 
 		Button button = (Button) findViewById(R.id.login);
 
@@ -152,7 +164,8 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (event != null && event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+				if (event != null && event.getAction() == KeyEvent.ACTION_DOWN
+						&& keyCode == KeyEvent.KEYCODE_ENTER) {
 					onClick(v);
 					return true;
 				}
@@ -168,13 +181,15 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 		// (leerzeichen killen und Buchstaben klein,
 		// wegen leerzeichen bei android autovervollständigung beim tippen in
 		// der textbox...
-		String username = mTextfieldUsername.getText().toString().trim().toLowerCase();
+		String username = mTextfieldUsername.getText().toString().trim()
+				.toLowerCase();
 		// Password: nicht anzeigbare Zeichen entfernen
 		String password = mTextfieldPassword.getText().toString().trim();
 
 		// Prüfeung falls sich ein anderer user anmeldet. damit nicht das
 		// session cookie vom vorherigen user übernommen wird..
-		if (!username.equals("") && !username.equals(sPreferences.getString("UserSave", ""))) {
+		if (!username.equals("")
+				&& !username.equals(sPreferences.getString("UserSave", ""))) {
 			if (StaticSessionData.cookies != null) {
 				// StaticSessionData.cookies.clear();
 				StaticSessionData.cookies = null;
@@ -183,7 +198,8 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 
 		// prüfen ob Cookie Vorhanden und gültig ist..wenn ja, login
 		// überspringen
-		if (StaticSessionData.cookies != null && !StaticSessionData.cookies.isEmpty()
+		if (StaticSessionData.cookies != null
+				&& !StaticSessionData.cookies.isEmpty()
 				&& StaticSessionData.isCookieValid()) {
 			Log.d("hsDroidMain", "Cookie still valid!!");
 			mProgressHandle.sendEmptyMessage(LoginThread.MESSAGE_COMPLETE);
@@ -191,15 +207,18 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 		}
 
 		if (username.length() == 0) {
-			createDialog(getText(R.string.error), getText(R.string.error_name_missing));
+			createDialog(getText(R.string.error),
+					getText(R.string.error_name_missing));
 			return;
 		} else if (!username.matches("^[a-zA-Z]{4}(00|10){1}[0-9]{2}")) {
-			createDialog(getText(R.string.error), getText(R.string.error_name_incorrect));
+			createDialog(getText(R.string.error),
+					getText(R.string.error_name_incorrect));
 			return;
 		} else
 
 		if (password.length() == 0) {
-			createDialog(getText(R.string.error), getText(R.string.error_password_missing));
+			createDialog(getText(R.string.error),
+					getText(R.string.error_password_missing));
 			return;
 		} else {
 
@@ -209,11 +228,13 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 			SharedPreferences.Editor editor = sPreferences.edit();
 			if (mLoginCheckBox.isChecked()) {
 				editor.putString("PassSave", password);
-				editor.putBoolean(getString(R.string.Preference_SaveLoginData), true);
+				editor.putBoolean(getString(R.string.Preference_SaveLoginData),
+						true);
 			} else {
 				// editor.remove("UserSave");
 				editor.remove("PassSave");
-				editor.putBoolean(getString(R.string.Preference_SaveLoginData), false);
+				editor.putBoolean(getString(R.string.Preference_SaveLoginData),
+						false);
 			}
 			editor.putString("UserSave", username);
 			editor.commit(); // Very important
@@ -254,27 +275,38 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 				String errorMessage = msg.getData().getString("Message");
 
 				if (errorMessage.equals(LoginThread.ERROR_MSG_SITE_MAINTENANCE)) {
-					errorMessage = HsDroidMain.this.getString(R.string.error_site_down);
-				} else if (errorMessage.equals(LoginThread.ERROR_MSG_LOGIN_FAILED)) {
-					errorMessage = HsDroidMain.this.getString(R.string.error_login_failed);
-				} else if (errorMessage.equals(LoginThread.ERROR_MSG_COOKIE_MISSING)) {
-					errorMessage = HsDroidMain.this.getString(R.string.error_cookie_empty);
+					errorMessage = HsDroidMain.this
+							.getString(R.string.error_site_down);
+				} else if (errorMessage
+						.equals(LoginThread.ERROR_MSG_LOGIN_FAILED)) {
+					errorMessage = HsDroidMain.this
+							.getString(R.string.error_login_failed);
+				} else if (errorMessage
+						.equals(LoginThread.ERROR_MSG_COOKIE_MISSING)) {
+					errorMessage = HsDroidMain.this
+							.getString(R.string.error_cookie_empty);
 				}
 
-				createDialog(HsDroidMain.this.getString(R.string.error_couldnt_connect), errorMessage);
+				createDialog(
+						HsDroidMain.this
+								.getString(R.string.error_couldnt_connect),
+						errorMessage);
 
 				mLoginThread.stopThread();
 				mLoginThread.kill();
 				mLoginThread = null;
 				break;
 			case LoginThread.MESSAGE_PROGRESS_CONNECT:
-				mProgressDialog.setMessage(HsDroidMain.this.getString(R.string.progress_connect));
+				mProgressDialog.setMessage(HsDroidMain.this
+						.getString(R.string.progress_connect));
 				break;
 			case LoginThread.MESSAGE_PROGRESS_PARSE:
-				mProgressDialog.setMessage(HsDroidMain.this.getString(R.string.progress_parse));
+				mProgressDialog.setMessage(HsDroidMain.this
+						.getString(R.string.progress_parse));
 				break;
 			case LoginThread.MESSAGE_PROGRESS_COOKIE:
-				mProgressDialog.setMessage(HsDroidMain.this.getString(R.string.progress_cookie));
+				mProgressDialog.setMessage(HsDroidMain.this
+						.getString(R.string.progress_cookie));
 				break;
 			default:
 				Log.d("progressHandler Main", "unknown message: " + msg.what);
@@ -292,7 +324,8 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 		if (hasFocus) {
 			StaticSessionData.reloadSharedPrefs(this);
 
-			savePassword = sPreferences.getBoolean(getString(R.string.Preference_SaveLoginData), false);
+			savePassword = sPreferences.getBoolean(
+					getString(R.string.Preference_SaveLoginData), false);
 			mLoginCheckBox.setChecked(savePassword);
 		}
 	}
@@ -337,7 +370,8 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 
 			return true;
 		default:
-			System.out.println("id:" + item.getItemId() + " about: " + R.id.menu_about);
+			System.out.println("id:" + item.getItemId() + " about: "
+					+ R.id.menu_about);
 			return super.onOptionsItemSelected(item);
 		}
 
@@ -356,7 +390,8 @@ public class HsDroidMain extends nActivity implements OnClickListener {
 	 *            {@link String} dialog text
 	 */
 	private void createDialog(CharSequence title, CharSequence text) {
-		AlertDialog ad = new AlertDialog.Builder(this).setPositiveButton(getText(R.string.error_ok), null)
+		AlertDialog ad = new AlertDialog.Builder(this)
+				.setPositiveButton(getText(R.string.error_ok), null)
 				.setTitle(title).setMessage(text).create();
 		ad.show();
 	}

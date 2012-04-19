@@ -2,7 +2,6 @@ package de.nware.app.hsDroid.ui;
 
 import java.util.List;
 
-import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -82,9 +81,11 @@ public class Preferences extends PreferenceActivity {
 		case RESULT_OK:
 			switch (requestCode) {
 			case RET_DIRNAME:
-				SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+				SharedPreferences preferences = PreferenceManager
+						.getDefaultSharedPreferences(this);
 				SharedPreferences.Editor ed = preferences.edit();
-				ed.putString("downloadPathPref", data.getDataString().substring(7, data.getDataString().length()));
+				ed.putString("downloadPathPref", data.getDataString()
+						.substring(7, data.getDataString().length()));
 				ed.commit();
 
 				break;
@@ -123,7 +124,8 @@ public class Preferences extends PreferenceActivity {
 	public static boolean isIntentAvailable(Context context, String action) {
 		final PackageManager packageManager = context.getPackageManager();
 		final Intent intent = new Intent(action);
-		List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+		List<ResolveInfo> list = packageManager.queryIntentActivities(intent,
+				PackageManager.MATCH_DEFAULT_ONLY);
 		return list.size() > 0;
 	}
 
@@ -135,91 +137,103 @@ public class Preferences extends PreferenceActivity {
 		updateSummaries();
 
 		CheckBoxPreference saveLoginDataPref = (CheckBoxPreference) findPreference(getString(R.string.Preference_SaveLoginData));
-		saveLoginDataPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+		saveLoginDataPref
+				.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				CheckBoxPreference cbr = (CheckBoxPreference) preference;
-				Editor ed = preference.getEditor();
-				if ((Boolean) newValue == false) {
-					ed.remove(preference.getKey());
-					CheckBoxPreference autoLogin = (CheckBoxPreference) findPreference(getString(R.string.Preference_AutoLogin));
-					autoLogin.setChecked(false);
-					ed.putBoolean(getString(R.string.Preference_AutoLogin), false);
-					// Log.d(TAG, "autologin:" + newValue);
-				}
-				ed.putBoolean(preference.getKey(), (Boolean) newValue);
-				ed.commit();
-				// Log.d(TAG, "savePW:" + newValue);
-				cbr.setChecked((Boolean) newValue);
-				return (Boolean) newValue;
-			}
-		});
+					@Override
+					public boolean onPreferenceChange(Preference preference,
+							Object newValue) {
+						CheckBoxPreference cbr = (CheckBoxPreference) preference;
+						Editor ed = preference.getEditor();
+						if ((Boolean) newValue == false) {
+							ed.remove(preference.getKey());
+							CheckBoxPreference autoLogin = (CheckBoxPreference) findPreference(getString(R.string.Preference_AutoLogin));
+							autoLogin.setChecked(false);
+							ed.putBoolean(
+									getString(R.string.Preference_AutoLogin),
+									false);
+							// Log.d(TAG, "autologin:" + newValue);
+						}
+						ed.putBoolean(preference.getKey(), (Boolean) newValue);
+						ed.commit();
+						// Log.d(TAG, "savePW:" + newValue);
+						cbr.setChecked((Boolean) newValue);
+						return (Boolean) newValue;
+					}
+				});
 
 		Preference customPref = (Preference) findPreference(getString(R.string.Preference_HighlightColor));
-		customPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+		customPref
+				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-			public boolean onPreferenceClick(Preference preference) {
-				showToast("Implement Me :)");
-				// startColorPickerDialog();
-				return true;
-			}
+					public boolean onPreferenceClick(Preference preference) {
+						showToast("Implement Me :)");
+						// startColorPickerDialog();
+						return true;
+					}
 
-		});
+				});
 
 		// Datenbank Löschen
 		Preference clearDBPref = (Preference) findPreference("clearDBPref");
-		clearDBPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+		clearDBPref
+				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-			public boolean onPreferenceClick(Preference preference) {
-				showToast(getString(R.string.text_delDBCompleted));
-				clearDB();
-				return true;
-			}
+					public boolean onPreferenceClick(Preference preference) {
+						showToast(getString(R.string.text_delDBCompleted));
+						clearDB();
+						return true;
+					}
 
-		});
+				});
 
 		Preference selectFolderPref = (Preference) findPreference(getString(R.string.Preference_DownloadPath));
-		selectFolderPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			// TODO möglichkeit über AndExplorer.. etc..
-			// verzeichnis aufrufen
+		selectFolderPref
+				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+					// TODO möglichkeit über AndExplorer.. etc..
+					// verzeichnis aufrufen
 
-			public boolean onPreferenceClick(Preference preference) {
+					public boolean onPreferenceClick(Preference preference) {
 
-				// http://android-developers.blogspot.com/2009/01/can-i-use-this-intent.html
+						// http://android-developers.blogspot.com/2009/01/can-i-use-this-intent.html
 
-				if (isIntentAvailable(preference.getContext(), "org.openintents.action.PICK_DIRECTORY")) {
-					Intent dirIntent = new Intent("org.openintents.action.PICK_DIRECTORY");
-					startActivityForResult(dirIntent, RET_DIRNAME);
-				} else {
-					Intent intent = new Intent(getApplicationContext(), DirChooser.class);
-					startActivity(intent);
-				}
-				return true;
-			}
+						if (isIntentAvailable(preference.getContext(),
+								"org.openintents.action.PICK_DIRECTORY")) {
+							Intent dirIntent = new Intent(
+									"org.openintents.action.PICK_DIRECTORY");
+							startActivityForResult(dirIntent, RET_DIRNAME);
+						} else {
+							Intent intent = new Intent(getApplicationContext(),
+									DirChooser.class);
+							startActivity(intent);
+						}
+						return true;
+					}
 
-		});
+				});
 
 		Preference delCookiePref = (Preference) findPreference("delCookiePref");
-		delCookiePref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+		delCookiePref
+				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
-			public boolean onPreferenceClick(Preference preference) {
+					public boolean onPreferenceClick(Preference preference) {
 
-				if (StaticSessionData.cookies != null) {
-					// XXX .clear() geht nicht..
-					// java.lang.UnsupportedOperationException warum??
-					// StaticSessionData.cookies.clear();
-					StaticSessionData.cookies = null;
-					showToast("Cookie gelöscht");
-				} else {
-					Log.d(TAG, "Versuch nicht vorhandenes Cookie zu lösche. So geht das aber nich ;).");
-					showToast(getString(R.string.error_cookie_empty));
-				}
+						if (StaticSessionData.cookies != null) {
+							// XXX .clear() geht nicht..
+							// java.lang.UnsupportedOperationException warum??
+							// StaticSessionData.cookies.clear();
+							StaticSessionData.cookies = null;
+							showToast("Cookie gelöscht");
+						} else {
+							Log.d(TAG,
+									"Versuch nicht vorhandenes Cookie zu lösche. So geht das aber nich ;).");
+							showToast(getString(R.string.error_cookie_empty));
+						}
 
-				return true;
-			}
+						return true;
+					}
 
-		});
+				});
 
 		Preference delPref = (Preference) findPreference("delPref");
 		delPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -230,7 +244,8 @@ public class Preferences extends PreferenceActivity {
 				ed.commit();
 
 				// Defaults laden
-				StaticSessionData.resetSharedPreferences(getApplicationContext());
+				StaticSessionData
+						.resetSharedPreferences(getApplicationContext());
 
 				// Delete Cookie
 				StaticSessionData.cookies = null;
@@ -275,29 +290,32 @@ public class Preferences extends PreferenceActivity {
 			toast.setText(text);
 			toast.show();
 		} else {
-			toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+			toast = Toast.makeText(getApplicationContext(), text,
+					Toast.LENGTH_SHORT);
 			toast.show();
 		}
 	}
 
-	private void startColorPickerDialog() {
-		Dialog bla = new Dialog(this);
-		// TODO implement color picker
-		bla.setTitle("Implement Me");
-		bla.setCancelable(true);
-		bla.setCanceledOnTouchOutside(true);
-		// Log.d("prefs", "start dialog");
-		bla.show();
-		// Log.d("prefs", "stop dialog");
-
-	}
+	// private void startColorPickerDialog() {
+	// Dialog bla = new Dialog(this);
+	// // TODO implement color picker
+	// bla.setTitle("Implement Me");
+	// bla.setCancelable(true);
+	// bla.setCanceledOnTouchOutside(true);
+	// // Log.d("prefs", "start dialog");
+	// bla.show();
+	// // Log.d("prefs", "stop dialog");
+	//
+	// }
 
 	private void updateSummaries() {
 		Preference pref = (Preference) findPreference(getString(R.string.Preference_DownloadPath));
 		pref.setSummary(getString(R.string.text_path)
 				+ " "
-				+ pref.getSharedPreferences().getString(pref.getKey(),
-						Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS));
+				+ pref.getSharedPreferences().getString(
+						pref.getKey(),
+						Environment.getExternalStorageDirectory() + "/"
+								+ Environment.DIRECTORY_DOWNLOADS));
 	}
 
 	@Override
