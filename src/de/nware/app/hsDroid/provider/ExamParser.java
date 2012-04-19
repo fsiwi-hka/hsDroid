@@ -195,16 +195,19 @@ class ExamParser extends DefaultHandler {
 				}
 				break;
 			case 6:
-				// Log.d("Vermerk:", text);
-				notation += text;
-				break;
-			case 7:
 				// Log.d("Anerkannt:", text);
 				admitted += text;
 				break;
+			case 7:
+				// Log.d("Vermerk:", text);
+				notation += text;
+				break;
+
 			case 8:
 				// Log.d("Versuch:", text);
-				attempts = Integer.valueOf(text);
+				if (!text.isEmpty()) {
+					attempts = Integer.valueOf(text);
+				}
 				break;
 
 			default:
