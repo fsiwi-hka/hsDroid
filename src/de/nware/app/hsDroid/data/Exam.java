@@ -55,6 +55,7 @@ public class Exam implements Parcelable {
 	private String examDate = "";
 	private String grade = "";
 	private boolean passed = false;
+	private String admitted = "";
 	private String notation = "";
 	private int attempts = 0;
 	private String infoLink = "";
@@ -83,6 +84,8 @@ public class Exam implements Parcelable {
 	 *            Die erzielte Note
 	 * @param passed
 	 *            Bestanden Status
+	 * @param admitted
+	 *            Annerkannt
 	 * @param notation
 	 *            Vermerk zur Prüfung
 	 * @param attempts
@@ -90,7 +93,8 @@ public class Exam implements Parcelable {
 	 * @param infoID
 	 *            LinkID der Notenverteilung
 	 */
-	public Exam(String examNr, String examName, String semester, String examDate, String grade, boolean passed,
+	public Exam(String examNr, String examName, String semester,
+			String examDate, String grade, boolean passed, String admitted,
 			String notation, int attempts, int infoID, String studiengang) {
 		super();
 		this.examNr = examNr;
@@ -99,6 +103,7 @@ public class Exam implements Parcelable {
 		this.examDate = examDate;
 		this.grade = grade;
 		this.passed = passed;
+		this.admitted = admitted;
 		this.notation = notation;
 		this.attempts = attempts;
 		this.infoID = infoID;
@@ -127,6 +132,10 @@ public class Exam implements Parcelable {
 
 	public boolean isPassed() {
 		return passed;
+	}
+
+	public String getAdmitted() {
+		return admitted;
 	}
 
 	public String getNotation() {
@@ -159,6 +168,7 @@ public class Exam implements Parcelable {
 		dest.writeString(semester);
 		dest.writeString(grade);
 		dest.writeInt(passed ? 1 : 0);
+		dest.writeString(admitted);
 		dest.writeString(notation);
 		dest.writeInt(attempts);
 		dest.writeString(infoLink);
@@ -185,6 +195,7 @@ public class Exam implements Parcelable {
 		this.examDate = in.readString();
 		this.grade = in.readString();
 		this.passed = in.readInt() == 1 ? true : false;
+		this.admitted = in.readString();
 		this.notation = in.readString();
 		this.attempts = in.readInt();
 		this.infoLink = in.readString();

@@ -64,6 +64,7 @@ class ExamParser extends DefaultHandler {
 	private String examDate;
 	private String grade;
 	private boolean passed;
+	private String admitted;
 	private String notation;
 	private int attempts;
 	private int infoID;
@@ -82,6 +83,7 @@ class ExamParser extends DefaultHandler {
 		this.examDate = "";
 		this.grade = "";
 		this.passed = false;
+		this.admitted = "";
 		this.notation = "";
 		this.attempts = 0;
 		this.infoID = 0;
@@ -89,7 +91,8 @@ class ExamParser extends DefaultHandler {
 	}
 
 	@Override
-	public void startElement(String n, String l, String q, Attributes a) throws SAXException {
+	public void startElement(String n, String l, String q, Attributes a)
+			throws SAXException {
 		super.startElement(n, l, q, a);
 		// Log.d(TAG, l);
 		if (l == "tr") {
@@ -119,7 +122,8 @@ class ExamParser extends DefaultHandler {
 
 			String searchString = "labnr%3D";
 			int stringLength = infoLink.indexOf(searchString) + 8;
-			infoID = Integer.valueOf(infoLink.substring(stringLength, stringLength + 7));
+			infoID = Integer.valueOf(infoLink.substring(stringLength,
+					stringLength + 7));
 			// Log.d(TAG, "infoLink: " + infoLink);
 			// Log.d(TAG, "infoID: " + infoID);
 		}
@@ -131,8 +135,8 @@ class ExamParser extends DefaultHandler {
 		super.endElement(n, l, q);
 		if (l == "tr" && fetch == true) {
 			// Log.d(TAG, "infoID: " + infoID);
-			lecList.add(new Exam(examNr, examName, semester, examDate, grade, passed, notation, attempts, infoID,
-					studiengang));
+			lecList.add(new Exam(examNr, examName, semester, examDate, grade,
+					passed, admitted, notation, attempts, infoID, studiengang));
 
 			waitForTd = false;
 			fetch = false;
@@ -195,6 +199,10 @@ class ExamParser extends DefaultHandler {
 				notation += text;
 				break;
 			case 7:
+				// Log.d("Anerkannt:", text);
+				admitted += text;
+				break;
+			case 8:
 				// Log.d("Versuch:", text);
 				attempts = Integer.valueOf(text);
 				break;

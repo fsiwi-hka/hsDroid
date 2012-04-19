@@ -98,7 +98,7 @@ public class onlineService2Provider extends ContentProvider {
 	private static final String DATABASE_NAME = "hsdroid.db";
 
 	/** Die Datenbankversion. */
-	private static final int VERSION = 2;
+	private static final int VERSION = 3;
 
 	/** Die AUTHORITY. */
 	public static final String AUTHORITY = "de.nware.app.hsDroid.provider.onlineService2Provider";
@@ -121,16 +121,18 @@ public class onlineService2Provider extends ContentProvider {
 	private static HashMap<String, String> examsProjectionMap;
 
 	/** Die Konstante CERTIFICATIONS_COLUMNS. */
-	private static final String[] CERTIFICATIONS_COLUMNS = new String[] { BaseColumns._ID, CertificationsCol.TITLE,
-			CertificationsCol.LINK };
+	private static final String[] CERTIFICATIONS_COLUMNS = new String[] {
+			BaseColumns._ID, CertificationsCol.TITLE, CertificationsCol.LINK };
 
 	/** Die Konstante EXAMS_UPDATE_COLUMNS. */
-	private static final String[] EXAMS_UPDATE_COLUMNS = new String[] { BaseColumns._ID, ExamsUpdateCol.AMOUNT,
-			ExamsUpdateCol.NEWEXAMS };
+	private static final String[] EXAMS_UPDATE_COLUMNS = new String[] {
+			BaseColumns._ID, ExamsUpdateCol.AMOUNT, ExamsUpdateCol.NEWEXAMS };
 
 	/** Die Konstante EXAM_INFOS_COLUMNS. */
-	private static final String[] EXAM_INFOS_COLUMNS = new String[] { BaseColumns._ID, ExamInfos.SEHRGUT,
-			ExamInfos.GUT, ExamInfos.BEFRIEDIGEND, ExamInfos.AUSREICHEND, ExamInfos.NICHTAUSREICHEND, ExamInfos.AVERAGE };
+	private static final String[] EXAM_INFOS_COLUMNS = new String[] {
+			BaseColumns._ID, ExamInfos.SEHRGUT, ExamInfos.GUT,
+			ExamInfos.BEFRIEDIGEND, ExamInfos.AUSREICHEND,
+			ExamInfos.NICHTAUSREICHEND, ExamInfos.AVERAGE };
 
 	// HTTP gedöns
 	/** Die QIS Url. */
@@ -140,11 +142,14 @@ public class onlineService2Provider extends ContentProvider {
 	final String certificationURLTmpl = "%s?state=qissosreports&besch=%s&next=wait.vm&asi=%s";
 
 	/** Bescheinigungstypen. */
-	final String[] certificationType = { "stammdaten", "studbesch", "studbeschengl", "bafoeg", "kvv", "studienzeit" };
+	final String[] certificationType = { "stammdaten", "studbesch",
+			"studbeschengl", "bafoeg", "kvv", "studienzeit" };
 
 	/** Bescheinigungsname. */
-	final String[] certificationName = { "Datenkontrollblatt", "Immatrikulationsbescheinigung",
-			"Englische Immatrikulationsbescheinigung", "Bescheinigung nach § 9 BAföG", "KVV-Bescheinigung",
+	final String[] certificationName = { "Datenkontrollblatt",
+			"Immatrikulationsbescheinigung",
+			"Englische Immatrikulationsbescheinigung",
+			"Bescheinigung nach § 9 BAföG", "KVV-Bescheinigung",
 			"Studienzeitbescheinigung" };
 
 	/** Die Konstante USER_AGENT. */
@@ -180,7 +185,8 @@ public class onlineService2Provider extends ContentProvider {
 
 		public DatabaseHelper(Context context) {
 			super(context, DATABASE_NAME, null, VERSION);
-			mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+			mPreferences = PreferenceManager
+					.getDefaultSharedPreferences(context);
 
 			tablename = onlineService2Data.EXAMS_TABLE_NAME;
 			// tablename = username;
@@ -214,11 +220,16 @@ public class onlineService2Provider extends ContentProvider {
 
 			Log.d(TAG, "create table");
 
-			db.execSQL("CREATE TABLE " + tablename + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-					+ ExamsCol.SEMESTER + " VARCHAR(255)," + ExamsCol.PASSED + " INTEGER," + ExamsCol.EXAMNAME
-					+ " VARCHAR(255)," + ExamsCol.EXAMNR + " VARCHAR(255)," + ExamsCol.EXAMDATE + " VARCHAR(255),"
-					+ ExamsCol.NOTATION + " VARCHAR(255)," + ExamsCol.ATTEMPTS + " VARCHAR(255)," + ExamsCol.GRADE
-					+ " VARCHAR(255)," + ExamsCol.LINKID + " INTEGER," + ExamsCol.STUDIENGANG + " VARCHAR(255)" + ");");
+			db.execSQL("CREATE TABLE " + tablename + " (" + BaseColumns._ID
+					+ " INTEGER PRIMARY KEY AUTOINCREMENT," + ExamsCol.SEMESTER
+					+ " VARCHAR(255)," + ExamsCol.PASSED + " INTEGER,"
+					+ ExamsCol.EXAMNAME + " VARCHAR(255)," + ExamsCol.EXAMNR
+					+ " VARCHAR(255)," + ExamsCol.EXAMDATE + " VARCHAR(255),"
+					+ ExamsCol.ADMITTED + " VARCHAR(255)," + ExamsCol.NOTATION
+					+ " VARCHAR(255)," + ExamsCol.ATTEMPTS + " VARCHAR(255),"
+					+ ExamsCol.GRADE + " VARCHAR(255)," + ExamsCol.LINKID
+					+ " INTEGER," + ExamsCol.STUDIENGANG + " VARCHAR(255)"
+					+ ");");
 			Log.d(TAG, "create table done");
 		}
 
@@ -231,8 +242,8 @@ public class onlineService2Provider extends ContentProvider {
 		 */
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			Log.w(TAG, "Datenbank Upgrade von Version " + oldVersion + " zu " + newVersion
-					+ ". Alle alten Daten gehen verloren");
+			Log.w(TAG, "Datenbank Upgrade von Version " + oldVersion + " zu "
+					+ newVersion + ". Alle alten Daten gehen verloren");
 			db.execSQL("DROP TABLE IF EXISTS " + tablename);
 			onCreate(db);
 
@@ -246,22 +257,37 @@ public class onlineService2Provider extends ContentProvider {
 	static {
 		mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		mUriMatcher.addURI(AUTHORITY, "exams", EXAMS);
-		mUriMatcher.addURI(AUTHORITY, onlineService2Data.CERTIFICATIONS_NAME, CERTIFICATIONS);
-		mUriMatcher.addURI(AUTHORITY, onlineService2Data.EXAMS_UPDATE_NAME, EXAMS_UPDATE);
-		mUriMatcher.addURI(AUTHORITY, onlineService2Data.EXAM_INFOS_NAME, EXAMINFOS);
+		mUriMatcher.addURI(AUTHORITY, onlineService2Data.CERTIFICATIONS_NAME,
+				CERTIFICATIONS);
+		mUriMatcher.addURI(AUTHORITY, onlineService2Data.EXAMS_UPDATE_NAME,
+				EXAMS_UPDATE);
+		mUriMatcher.addURI(AUTHORITY, onlineService2Data.EXAM_INFOS_NAME,
+				EXAMINFOS);
 
 		examsProjectionMap = new HashMap<String, String>();
 		examsProjectionMap.put(BaseColumns._ID, BaseColumns._ID);
-		examsProjectionMap.put(onlineService2Data.ExamsCol.SEMESTER, onlineService2Data.ExamsCol.SEMESTER);
-		examsProjectionMap.put(onlineService2Data.ExamsCol.PASSED, onlineService2Data.ExamsCol.PASSED);
-		examsProjectionMap.put(onlineService2Data.ExamsCol.EXAMNAME, onlineService2Data.ExamsCol.EXAMNAME);
-		examsProjectionMap.put(onlineService2Data.ExamsCol.EXAMNR, onlineService2Data.ExamsCol.EXAMNR);
-		examsProjectionMap.put(onlineService2Data.ExamsCol.EXAMDATE, onlineService2Data.ExamsCol.EXAMDATE);
-		examsProjectionMap.put(onlineService2Data.ExamsCol.NOTATION, onlineService2Data.ExamsCol.NOTATION);
-		examsProjectionMap.put(onlineService2Data.ExamsCol.ATTEMPTS, onlineService2Data.ExamsCol.ATTEMPTS);
-		examsProjectionMap.put(onlineService2Data.ExamsCol.GRADE, onlineService2Data.ExamsCol.GRADE);
-		examsProjectionMap.put(onlineService2Data.ExamsCol.LINKID, onlineService2Data.ExamsCol.LINKID);
-		examsProjectionMap.put(onlineService2Data.ExamsCol.STUDIENGANG, onlineService2Data.ExamsCol.STUDIENGANG);
+		examsProjectionMap.put(onlineService2Data.ExamsCol.SEMESTER,
+				onlineService2Data.ExamsCol.SEMESTER);
+		examsProjectionMap.put(onlineService2Data.ExamsCol.PASSED,
+				onlineService2Data.ExamsCol.PASSED);
+		examsProjectionMap.put(onlineService2Data.ExamsCol.EXAMNAME,
+				onlineService2Data.ExamsCol.EXAMNAME);
+		examsProjectionMap.put(onlineService2Data.ExamsCol.EXAMNR,
+				onlineService2Data.ExamsCol.EXAMNR);
+		examsProjectionMap.put(onlineService2Data.ExamsCol.EXAMDATE,
+				onlineService2Data.ExamsCol.EXAMDATE);
+		examsProjectionMap.put(onlineService2Data.ExamsCol.ADMITTED,
+				onlineService2Data.ExamsCol.ADMITTED);
+		examsProjectionMap.put(onlineService2Data.ExamsCol.NOTATION,
+				onlineService2Data.ExamsCol.NOTATION);
+		examsProjectionMap.put(onlineService2Data.ExamsCol.ATTEMPTS,
+				onlineService2Data.ExamsCol.ATTEMPTS);
+		examsProjectionMap.put(onlineService2Data.ExamsCol.GRADE,
+				onlineService2Data.ExamsCol.GRADE);
+		examsProjectionMap.put(onlineService2Data.ExamsCol.LINKID,
+				onlineService2Data.ExamsCol.LINKID);
+		examsProjectionMap.put(onlineService2Data.ExamsCol.STUDIENGANG,
+				onlineService2Data.ExamsCol.STUDIENGANG);
 	}
 
 	/*
@@ -276,7 +302,8 @@ public class onlineService2Provider extends ContentProvider {
 		int count;
 		switch (mUriMatcher.match(uri)) {
 		case EXAMS:
-			count = db.delete(mOpenHelper.getTableName(), whereClause, whereArgs);
+			count = db.delete(mOpenHelper.getTableName(), whereClause,
+					whereArgs);
 			break;
 
 		default:
@@ -329,9 +356,11 @@ public class onlineService2Provider extends ContentProvider {
 			Log.d(TAG, "mOpenHelper NULL");
 		}
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-		long rowID = db.insert(mOpenHelper.getTableName(), ExamsCol.EXAMNAME, contentValues);
+		long rowID = db.insert(mOpenHelper.getTableName(), ExamsCol.EXAMNAME,
+				contentValues);
 		if (rowID > 0) {
-			Uri examsUri = ContentUris.withAppendedId(ExamsCol.CONTENT_URI, rowID);
+			Uri examsUri = ContentUris.withAppendedId(ExamsCol.CONTENT_URI,
+					rowID);
 			getContext().getContentResolver().notifyChange(examsUri, null); // Observer?
 			return examsUri;
 		}
@@ -346,7 +375,8 @@ public class onlineService2Provider extends ContentProvider {
 	@Override
 	public boolean onCreate() {
 		mOpenHelper = new DatabaseHelper(getContext());
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+		mPreferences = PreferenceManager
+				.getDefaultSharedPreferences(getContext());
 		return true;
 	}
 
@@ -358,7 +388,8 @@ public class onlineService2Provider extends ContentProvider {
 	 * java.lang.String)
 	 */
 	@Override
-	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+	public Cursor query(Uri uri, String[] projection, String selection,
+			String[] selectionArgs, String sortOrder) {
 
 		Cursor cursor = null;
 		switch (mUriMatcher.match(uri)) {
@@ -368,7 +399,8 @@ public class onlineService2Provider extends ContentProvider {
 			qb.setProjectionMap(examsProjectionMap);
 			SQLiteDatabase db = mOpenHelper.getReadableDatabase();
 			try {
-				cursor = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+				cursor = qb.query(db, projection, selection, selectionArgs,
+						null, null, sortOrder);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				Log.d(TAG, "SqlError: " + e.getMessage());
@@ -400,13 +432,16 @@ public class onlineService2Provider extends ContentProvider {
 	 *            der/die/das info id
 	 * @return Der/Die/das exam infos
 	 */
-	private Cursor getExamInfos(String infoID, String studiengang, boolean isSecondTry) {
+	private Cursor getExamInfos(String infoID, String studiengang,
+			boolean isSecondTry) {
 		// Log.d(TAG, "infoID:" + infoID + " asi:" + StaticSessionData.asiKey);
 		// String studiengang = "IB";
 		final String examInfoURL = urlBase
 				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=abschluss&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D"
-				+ mPreferences.getString("degreePref", "58") + "%2Cstgnr%3D1%7Cstudiengang%3Astg%3D" + studiengang
-				+ "%7CpruefungOnTop%3Alabnr%3D" + infoID + "&expand=0&asi=" + StaticSessionData.asiKey;
+				+ mPreferences.getString("degreePref", "58")
+				+ "%2Cstgnr%3D1%7Cstudiengang%3Astg%3D" + studiengang
+				+ "%7CpruefungOnTop%3Alabnr%3D" + infoID + "&expand=0&asi="
+				+ StaticSessionData.asiKey;
 
 		String response = getResponse(examInfoURL);
 
@@ -421,7 +456,8 @@ public class onlineService2Provider extends ContentProvider {
 			StringBuilder sb = new StringBuilder();
 			while ((line = rd.readLine()) != null) {
 
-				if (!record && line.contains("<table border=\"0\" align=\"left\"  width=\"60%\">")) {
+				if (!record
+						&& line.contains("<table border=\"0\" align=\"left\"  width=\"60%\">")) {
 					record = true;
 				}
 				if (record && line.contains("</table>")) {
@@ -444,7 +480,8 @@ public class onlineService2Provider extends ContentProvider {
 					// muss man sie ein bissel anpassen ;)
 					if (line.contains("<img")) {
 						// Log.d("examInfo parser", line);
-						line = line.substring(0, line.indexOf(">") + 1) + "</a>";
+						line = line.substring(0, line.indexOf(">") + 1)
+								+ "</a>";
 					}
 					sb.append(line);
 					// System.out.println("line: " + line);
@@ -459,9 +496,12 @@ public class onlineService2Provider extends ContentProvider {
 				Log.d(TAG, "examInfoParser Error: " + e.getMessage());
 				final String notenSpiegelURLTmpl = urlBase
 						+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=studiengang&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D"
-						+ mPreferences.getString("degreePref", "58") + "%2Cstgnr%3D1&expand=1&asi="
-						+ StaticSessionData.asiKey + "#auswahlBaum%7Cabschluss%3Aabschl%3D"
-						+ mPreferences.getString("degreePref", "58") + "%2Cstgnr%3D1";
+						+ mPreferences.getString("degreePref", "58")
+						+ "%2Cstgnr%3D1&expand=1&asi="
+						+ StaticSessionData.asiKey
+						+ "#auswahlBaum%7Cabschluss%3Aabschl%3D"
+						+ mPreferences.getString("degreePref", "58")
+						+ "%2Cstgnr%3D1";
 
 				getResponse(notenSpiegelURLTmpl);
 				if (!isSecondTry) {
@@ -494,8 +534,9 @@ public class onlineService2Provider extends ContentProvider {
 			System.out.println("content exam info: " + htmlContentString);
 			Xml.parse(htmlContentString, handler);
 			ExamInfo exInfos = handler.getExamInfos();
-			cursor.addRow(new Object[] { 0, exInfos.getSehrGutAmount(), exInfos.getGutAmount(),
-					exInfos.getBefriedigendAmount(), exInfos.getAusreichendAmount(),
+			cursor.addRow(new Object[] { 0, exInfos.getSehrGutAmount(),
+					exInfos.getGutAmount(), exInfos.getBefriedigendAmount(),
+					exInfos.getAusreichendAmount(),
 					exInfos.getNichtAusreichendAmount(), exInfos.getAverage() });
 		} catch (SAXException e) {
 			Log.e("read:SAXException:", e.getMessage());
@@ -515,8 +556,10 @@ public class onlineService2Provider extends ContentProvider {
 		final MatrixCursor cursor = new MatrixCursor(CERTIFICATIONS_COLUMNS);
 		int count = 0;
 		for (String certType : certificationType) {
-			String downloadUrl = String.format(certificationURLTmpl, urlBase, certType, StaticSessionData.asiKey);
-			cursor.addRow(new Object[] { count, certificationName[count], downloadUrl });
+			String downloadUrl = String.format(certificationURLTmpl, urlBase,
+					certType, StaticSessionData.asiKey);
+			cursor.addRow(new Object[] { count, certificationName[count],
+					downloadUrl });
 			count++;
 		}
 
@@ -531,12 +574,14 @@ public class onlineService2Provider extends ContentProvider {
 	 * android.content.ContentValues, java.lang.String, java.lang.String[])
 	 */
 	@Override
-	public int update(Uri uri, ContentValues values, String whereClause, String[] whereArgs) {
+	public int update(Uri uri, ContentValues values, String whereClause,
+			String[] whereArgs) {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		int count;
 		switch (mUriMatcher.match(uri)) {
 		case EXAMS:
-			count = db.update(mOpenHelper.getTableName(), values, whereClause, whereArgs);
+			count = db.update(mOpenHelper.getTableName(), values, whereClause,
+					whereArgs);
 			break;
 
 		default:
@@ -560,14 +605,18 @@ public class onlineService2Provider extends ContentProvider {
 		final HttpPost httpPost = new HttpPost(url);
 		httpPost.addHeader("User-Agent", USER_AGENT);
 		CookieSpecBase cookieSpecBase = new BrowserCompatSpec();
-		List<Header> cookieHeader = cookieSpecBase.formatCookies(StaticSessionData.cookies);
+		List<Header> cookieHeader = cookieSpecBase
+				.formatCookies(StaticSessionData.cookies);
 		httpPost.setHeader(cookieHeader.get(0));
 
 		// FIXME geht nicht als int Preference, wegen
 		// preferenceScreen/editText...
-		int connectionTimeoutMillis = Integer.valueOf(StaticSessionData.sPreferences.getString(
-				getContext().getString(R.string.Preference_ConnectionTimeout), "1500"));
-		HttpClient client = HttpClientFactory.getHttpClient(connectionTimeoutMillis);
+		int connectionTimeoutMillis = Integer
+				.valueOf(StaticSessionData.sPreferences.getString(getContext()
+						.getString(R.string.Preference_ConnectionTimeout),
+						"1500"));
+		HttpClient client = HttpClientFactory
+				.getHttpClient(connectionTimeoutMillis);
 		try {
 
 			final HttpResponse response = client.execute(httpPost);
@@ -577,7 +626,8 @@ public class onlineService2Provider extends ContentProvider {
 
 			if (status.getStatusCode() != HttpStatus.SC_OK) {
 				Log.d(TAG, "http status code: " + status.getStatusCode());
-				throw new RuntimeException("Ungültige Antwort vom Server: " + status.toString());
+				throw new RuntimeException("Ungültige Antwort vom Server: "
+						+ status.toString());
 			}
 
 			// Hole Content Stream
@@ -602,7 +652,8 @@ public class onlineService2Provider extends ContentProvider {
 
 		} catch (IOException e) {
 			Log.d(TAG, e.getMessage());
-			throw new RuntimeException("Verbindung fehlgeschlagen: " + e.getMessage(), e);
+			throw new RuntimeException("Verbindung fehlgeschlagen: "
+					+ e.getMessage(), e);
 		}
 
 	}
@@ -618,8 +669,10 @@ public class onlineService2Provider extends ContentProvider {
 	 */
 	public boolean examExists(String examnr, String examdate) {
 		SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
-		Cursor cursor = mDb.rawQuery("select 1 from " + mOpenHelper.getTableName() + " where "
-				+ onlineService2Data.ExamsCol.EXAMNR + "=? AND " + onlineService2Data.ExamsCol.EXAMDATE + "=?",
+		Cursor cursor = mDb.rawQuery(
+				"select 1 from " + mOpenHelper.getTableName() + " where "
+						+ onlineService2Data.ExamsCol.EXAMNR + "=? AND "
+						+ onlineService2Data.ExamsCol.EXAMDATE + "=?",
 				new String[] { examnr, examdate });
 		boolean exists = (cursor.getCount() > 0);
 		cursor.close();
@@ -638,8 +691,10 @@ public class onlineService2Provider extends ContentProvider {
 
 		final String notenSpiegelURLTmpl = urlBase
 				+ "?state=notenspiegelStudent&next=list.vm&nextdir=qispos/notenspiegel/student&createInfos=Y&struct=auswahlBaum&nodeID=auswahlBaum%7Cabschluss%3Aabschl%3D"
-				+ mPreferences.getString("degreePref", "58") + "%2Cstgnr%3D1&expand=1&asi=" + StaticSessionData.asiKey
-				+ "#auswahlBaum%7Cabschluss%3Aabschl%3D" + mPreferences.getString("degreePref", "58") + "%2Cstgnr%3D1";
+				+ mPreferences.getString("degreePref", "58")
+				+ "%2Cstgnr%3D1&expand=1&asi=" + StaticSessionData.asiKey
+				+ "#auswahlBaum%7Cabschluss%3Aabschl%3D"
+				+ mPreferences.getString("degreePref", "58") + "%2Cstgnr%3D1";
 		Log.d(TAG, "url: " + notenSpiegelURLTmpl);
 		String response = getResponse(notenSpiegelURLTmpl);
 
@@ -673,7 +728,8 @@ public class onlineService2Provider extends ContentProvider {
 					// muss man sie ein bissel anpassen ;)
 					if (line.contains("<img")) {
 						// Log.d("grade parser", line);
-						line = line.substring(0, line.indexOf(">") + 1) + "</a>";
+						line = line.substring(0, line.indexOf(">") + 1)
+								+ "</a>";
 					}
 					sb.append(line);
 					// System.out.println("line: " + line);
@@ -709,23 +765,36 @@ public class onlineService2Provider extends ContentProvider {
 
 			for (Exam iterable_element : handler.getExams()) {
 				// Log.d(TAG, "update: lid: " + iterable_element.getInfoID());
-				if (!examExists(iterable_element.getExamNr(), iterable_element.getExamDate())) {
+				if (!examExists(iterable_element.getExamNr(),
+						iterable_element.getExamDate())) {
 					counter[1]++;
 					// Log.d(TAG, "exam: insert " +
 					// iterable_element.getExamName() + " into DB");
 					ContentValues values = new ContentValues();
-					values.put(onlineService2Data.ExamsCol.SEMESTER, iterable_element.getSemester());
+					values.put(onlineService2Data.ExamsCol.SEMESTER,
+							iterable_element.getSemester());
 					// values.put(onlineService2Data.ExamsCol.PASSED,
 					// (iterable_element.isPassed() ? 1 : 0));
-					values.put(onlineService2Data.ExamsCol.PASSED, iterable_element.isPassed());
-					values.put(onlineService2Data.ExamsCol.EXAMNAME, iterable_element.getExamName());
-					values.put(onlineService2Data.ExamsCol.EXAMNR, iterable_element.getExamNr());
-					values.put(onlineService2Data.ExamsCol.EXAMDATE, iterable_element.getExamDate());
-					values.put(onlineService2Data.ExamsCol.NOTATION, iterable_element.getNotation());
-					values.put(onlineService2Data.ExamsCol.ATTEMPTS, iterable_element.getAttempts());
-					values.put(onlineService2Data.ExamsCol.GRADE, iterable_element.getGrade());
-					values.put(onlineService2Data.ExamsCol.LINKID, iterable_element.getInfoID());
-					values.put(onlineService2Data.ExamsCol.STUDIENGANG, iterable_element.getStudiengang());
+					values.put(onlineService2Data.ExamsCol.PASSED,
+							iterable_element.isPassed());
+					values.put(onlineService2Data.ExamsCol.EXAMNAME,
+							iterable_element.getExamName());
+					values.put(onlineService2Data.ExamsCol.EXAMNR,
+							iterable_element.getExamNr());
+					values.put(onlineService2Data.ExamsCol.EXAMDATE,
+							iterable_element.getExamDate());
+					values.put(onlineService2Data.ExamsCol.ADMITTED,
+							iterable_element.getAdmitted());
+					values.put(onlineService2Data.ExamsCol.NOTATION,
+							iterable_element.getNotation());
+					values.put(onlineService2Data.ExamsCol.ATTEMPTS,
+							iterable_element.getAttempts());
+					values.put(onlineService2Data.ExamsCol.GRADE,
+							iterable_element.getGrade());
+					values.put(onlineService2Data.ExamsCol.LINKID,
+							iterable_element.getInfoID());
+					values.put(onlineService2Data.ExamsCol.STUDIENGANG,
+							iterable_element.getStudiengang());
 					// Log.d(TAG, "insert..");
 					insert(onlineService2Data.ExamsCol.CONTENT_URI, values);
 				} else {
