@@ -10,7 +10,9 @@ heruntergeladen und z.B. per Email versendet werden.
 
 Changelog
 =========
-
+19.apr.2012 - v0.2.5
+	QIS Update, neue Spalte im Notenspiegel
+	
 15.feb.2012 - v0.2.4
 	fix für Notenverteilung bei anderen Studiengängen als IB
 	AutoUpdate beim start des Notenspiegels per default
