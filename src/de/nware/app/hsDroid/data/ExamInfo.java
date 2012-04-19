@@ -49,20 +49,23 @@ public class ExamInfo {
 	private String befriedigendAmount;
 	private String ausreichendAmount;
 	private String nichtAusreichendAmount;
+	private String attendees;
 	private String average;
 
 	// public ExamInfo(Exam exam) {
 	// this.exam = exam;
 	// }
 
-	public ExamInfo(String sehrGutAmount, String gutAmount, String befriedigendAmount, String ausreichendAmount,
-			String nichtAusreichendAmount, String average) {
+	public ExamInfo(String sehrGutAmount, String gutAmount,
+			String befriedigendAmount, String ausreichendAmount,
+			String nichtAusreichendAmount, String attendees, String average) {
 		super();
 		this.sehrGutAmount = sehrGutAmount;
 		this.gutAmount = gutAmount;
 		this.befriedigendAmount = befriedigendAmount;
 		this.ausreichendAmount = ausreichendAmount;
 		this.nichtAusreichendAmount = nichtAusreichendAmount;
+		this.attendees = attendees;
 		this.average = average;
 	}
 
@@ -84,6 +87,10 @@ public class ExamInfo {
 
 	public String getNichtAusreichendAmount() {
 		return nichtAusreichendAmount;
+	}
+
+	public String getAttendees() {
+		return attendees;
 	}
 
 	public String getAverage() {
@@ -108,6 +115,10 @@ public class ExamInfo {
 
 	public void setNichtAusreichendAmount(String nichtAusreichendAmount) {
 		this.nichtAusreichendAmount = nichtAusreichendAmount;
+	}
+
+	public void setAttendees(String attendees) {
+		this.attendees = attendees;
 	}
 
 	public void setAverage(String average) {

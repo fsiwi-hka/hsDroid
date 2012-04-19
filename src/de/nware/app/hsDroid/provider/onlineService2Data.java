@@ -84,6 +84,7 @@ public class onlineService2Data {
 		public static final String BEFRIEDIGEND = "b";
 		public static final String AUSREICHEND = "a";
 		public static final String NICHTAUSREICHEND = "na";
+		public static final String ATTENDEES = "att";
 		public static final String AVERAGE = "avg";
 	}
 

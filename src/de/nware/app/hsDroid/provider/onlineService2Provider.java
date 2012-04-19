@@ -132,7 +132,7 @@ public class onlineService2Provider extends ContentProvider {
 	private static final String[] EXAM_INFOS_COLUMNS = new String[] {
 			BaseColumns._ID, ExamInfos.SEHRGUT, ExamInfos.GUT,
 			ExamInfos.BEFRIEDIGEND, ExamInfos.AUSREICHEND,
-			ExamInfos.NICHTAUSREICHEND, ExamInfos.AVERAGE };
+			ExamInfos.NICHTAUSREICHEND, ExamInfos.ATTENDEES, ExamInfos.AVERAGE };
 
 	// HTTP gedöns
 	/** Die QIS Url. */
@@ -458,6 +458,7 @@ public class onlineService2Provider extends ContentProvider {
 			String line;
 			Boolean record = false;
 			StringBuilder sb = new StringBuilder();
+			boolean checkNextLineForTD = false;
 			while ((line = rd.readLine()) != null) {
 
 				if (!record
@@ -487,6 +488,25 @@ public class onlineService2Provider extends ContentProvider {
 						line = line.substring(0, line.indexOf(">") + 1)
 								+ "</a>";
 					}
+
+					// XXX workaround für die verkorxte notenverteilung..
+					// fehlende </td>s einfügen
+					if (checkNextLineForTD) {
+						// System.out.println("linecheck: [" + line + "]");
+						if (line.contains("</tr>")) {
+
+							line = "</td>" + line;
+							// System.out.println("linechecked: [" + line +
+							// "]");
+						}
+						checkNextLineForTD = false;
+					}
+					if (line.contains("<td class=\"tabelle1\" valign=\"top\" align=\"right\">")) {
+						if (!line.contains("</td>")) {
+							checkNextLineForTD = true;
+						}
+					}
+
 					sb.append(line);
 					// System.out.println("line: " + line);
 				}
@@ -541,7 +561,8 @@ public class onlineService2Provider extends ContentProvider {
 			cursor.addRow(new Object[] { 0, exInfos.getSehrGutAmount(),
 					exInfos.getGutAmount(), exInfos.getBefriedigendAmount(),
 					exInfos.getAusreichendAmount(),
-					exInfos.getNichtAusreichendAmount(), exInfos.getAverage() });
+					exInfos.getNichtAusreichendAmount(),
+					exInfos.getAttendees(), exInfos.getAverage() });
 		} catch (SAXException e) {
 			Log.e("read:SAXException:", e.getMessage());
 			e.printStackTrace();

@@ -79,7 +79,10 @@ public class ExamInfoParser extends DefaultHandler {
 	/** Der/Die/Das nicht ausreichend amount. */
 	private String nichtAusreichendAmount;
 
-	/** Der/Die/Das average. */
+	/** Anzahl der Teilnehmer. */
+	private String attendees;
+
+	/** Durchschnitt. */
 	private String average;
 
 	/** Der/Die/Das exam info. */
@@ -104,6 +107,7 @@ public class ExamInfoParser extends DefaultHandler {
 		this.ausreichendAmount = "";
 		this.befriedigendAmount = "";
 		this.nichtAusreichendAmount = "";
+		this.attendees = "";
 		this.average = "";
 	}
 
@@ -114,7 +118,8 @@ public class ExamInfoParser extends DefaultHandler {
 	 * java.lang.String, java.lang.String, org.xml.sax.Attributes)
 	 */
 	@Override
-	public void startElement(String n, String l, String q, Attributes a) throws SAXException {
+	public void startElement(String n, String l, String q, Attributes a)
+			throws SAXException {
 		super.startElement(n, l, q, a);
 		// Log.d("hska saxparser start l:", l);
 		if (l == "tr") {
@@ -169,7 +174,8 @@ public class ExamInfoParser extends DefaultHandler {
 			super.characters(ch, start, length);
 		} catch (SAXException e) {
 			e.printStackTrace();
-			throw new RuntimeException("error reading chars in parser. " + e.getMessage());
+			throw new RuntimeException("error reading chars in parser. "
+					+ e.getMessage());
 		}
 		String text = new String(ch, start, length);
 		// FIXME test
@@ -177,10 +183,15 @@ public class ExamInfoParser extends DefaultHandler {
 		if (fetch) {
 			switch (tdCount) {
 			case 0:
-				// Log.d("first:" + trCount + ":", text);
+				// Log.d("first: tr" + trCount + ":", text);
 				switch (trCount) {
+				case 9:
+					// Log.d("td0:tr9 att case 9: ", text);
+					attendees += text + ": ";
+					break;
 				case 10:
-					average += text;
+					// Log.d("td0:tr10 avg case 10: ", text);
+					average += text + ": ";
 					break;
 
 				default:
@@ -190,12 +201,14 @@ public class ExamInfoParser extends DefaultHandler {
 				break;
 			case 1:
 				// XXX +=text.. wegen zeilenumbrüchen im html code..
-				// Log.d("second:" + trCount + ":", text);
+				// Log.d("second: tr" + trCount + ":", text);
 				switch (trCount) {
 				case 4:
+					// Log.d("sg case 4: ", text);
 					sehrGutAmount += text;
 					break;
 				case 5:
+					// Log.d("g case 5: ", text);
 					gutAmount += text;
 					break;
 				case 6:
@@ -207,9 +220,13 @@ public class ExamInfoParser extends DefaultHandler {
 				case 8:
 					nichtAusreichendAmount += text;
 					break;
-				case 10:
-					average += text;
+				case 9:
+					// Log.d("att case 9: ", text);
+					attendees += text;
 					break;
+				case 10:
+					// Log.d("avg case 10: ", text);
+					average += text;
 				default:
 					break;
 				}
@@ -241,8 +258,8 @@ public class ExamInfoParser extends DefaultHandler {
 	 */
 	public void endDocument() throws SAXException {
 		super.endDocument();
-		examInfo = new ExamInfo(sehrGutAmount, gutAmount, befriedigendAmount, ausreichendAmount,
-				nichtAusreichendAmount, average);
+		examInfo = new ExamInfo(sehrGutAmount, gutAmount, befriedigendAmount,
+				ausreichendAmount, nichtAusreichendAmount, attendees, average);
 		// examInfo.setSehrGutAmount(sehrGutAmount);
 		// examInfo.setGutAmount(gutAmount);
 		// examInfo.setBefriedigendAmount(befriedigendAmount);

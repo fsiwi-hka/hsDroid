@@ -154,12 +154,21 @@
                     android:text="@string/testString" >
                 </TextView>
             </LinearLayout>
-
+			<TextView
+                android:id="@+id/examinfoAttendees"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/top"
+                android:layout_marginRight="@dimen/top"
+                android:text="@string/testString" >
+            </TextView>
             <TextView
                 android:id="@+id/examinfoAverage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/top"
+                android:layout_marginBottom="@dimen/top"
+                android:layout_marginRight="@dimen/top"
+                
                 android:text="@string/testString" >
             </TextView>
         </LinearLayout>

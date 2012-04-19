@@ -54,7 +54,8 @@ import de.nware.app.hsDroid.provider.onlineService2Data.ExamInfos;
  */
 public class ExamInfoDialog {
 
-	public ExamInfoDialog(Context context, String name, String nr, String sem, Cursor exInfoCursor) {
+	public ExamInfoDialog(Context context, String name, String nr, String sem,
+			Cursor exInfoCursor) {
 		final Dialog dialog = new Dialog(context);
 		dialog.setContentView(R.layout.exam_info_dialog);
 		dialog.setTitle("Notenverteilung");
@@ -62,43 +63,67 @@ public class ExamInfoDialog {
 		dialog.setCancelable(true);
 		dialog.setCanceledOnTouchOutside(true);
 
-		TextView aboutTitle = (TextView) dialog.findViewById(R.id.examinfo_title);
+		TextView aboutTitle = (TextView) dialog
+				.findViewById(R.id.examinfo_title);
 		aboutTitle.setText(name);
-		TextView aboutSubTitle = (TextView) dialog.findViewById(R.id.examinfo_SubTitle);
+		TextView aboutSubTitle = (TextView) dialog
+				.findViewById(R.id.examinfo_SubTitle);
 		aboutSubTitle.setText(nr + " - " + sem);
 
-		TextView titleSG = (TextView) dialog.findViewById(R.id.examInfoTextViewSG1);
+		TextView titleSG = (TextView) dialog
+				.findViewById(R.id.examInfoTextViewSG1);
 		titleSG.setText("(1,0 - 1,3)");
-		TextView gradeSG = (TextView) dialog.findViewById(R.id.examInfoTextViewSG2);
-		String sgText = exInfoCursor.getString(exInfoCursor.getColumnIndexOrThrow(ExamInfos.SEHRGUT));
+		TextView gradeSG = (TextView) dialog
+				.findViewById(R.id.examInfoTextViewSG2);
+		String sgText = exInfoCursor.getString(exInfoCursor
+				.getColumnIndexOrThrow(ExamInfos.SEHRGUT));
 		gradeSG.setText(sgText);
 
-		TextView titleG = (TextView) dialog.findViewById(R.id.examInfoTextViewG1);
+		TextView titleG = (TextView) dialog
+				.findViewById(R.id.examInfoTextViewG1);
 		titleG.setText("(1,7 - 2,3)");
-		TextView gradeG = (TextView) dialog.findViewById(R.id.examInfoTextViewG2);
-		String gText = exInfoCursor.getString(exInfoCursor.getColumnIndexOrThrow(ExamInfos.GUT));
+		TextView gradeG = (TextView) dialog
+				.findViewById(R.id.examInfoTextViewG2);
+		String gText = exInfoCursor.getString(exInfoCursor
+				.getColumnIndexOrThrow(ExamInfos.GUT));
 		gradeG.setText(gText);
 
-		TextView titleB = (TextView) dialog.findViewById(R.id.examInfoTextViewB1);
+		TextView titleB = (TextView) dialog
+				.findViewById(R.id.examInfoTextViewB1);
 		titleB.setText("(2,7 - 3,3)");
-		TextView gradeB = (TextView) dialog.findViewById(R.id.examInfoTextViewB2);
-		String bText = exInfoCursor.getString(exInfoCursor.getColumnIndexOrThrow(ExamInfos.BEFRIEDIGEND));
+		TextView gradeB = (TextView) dialog
+				.findViewById(R.id.examInfoTextViewB2);
+		String bText = exInfoCursor.getString(exInfoCursor
+				.getColumnIndexOrThrow(ExamInfos.BEFRIEDIGEND));
 		gradeB.setText(bText);
 
-		TextView titleA = (TextView) dialog.findViewById(R.id.examInfoTextViewA1);
+		TextView titleA = (TextView) dialog
+				.findViewById(R.id.examInfoTextViewA1);
 		titleA.setText("(3,7 - 4,0)");
-		TextView gradeA = (TextView) dialog.findViewById(R.id.examInfoTextViewA2);
-		String aText = exInfoCursor.getString(exInfoCursor.getColumnIndexOrThrow(ExamInfos.AUSREICHEND));
+		TextView gradeA = (TextView) dialog
+				.findViewById(R.id.examInfoTextViewA2);
+		String aText = exInfoCursor.getString(exInfoCursor
+				.getColumnIndexOrThrow(ExamInfos.AUSREICHEND));
 		gradeA.setText(aText);
 
-		TextView titleN = (TextView) dialog.findViewById(R.id.examInfoTextViewN1);
+		TextView titleN = (TextView) dialog
+				.findViewById(R.id.examInfoTextViewN1);
 		titleN.setText("(4,7 - 5,0)");
-		TextView gradeN = (TextView) dialog.findViewById(R.id.examInfoTextViewN2);
-		String naText = exInfoCursor.getString(exInfoCursor.getColumnIndexOrThrow(ExamInfos.NICHTAUSREICHEND));
+		TextView gradeN = (TextView) dialog
+				.findViewById(R.id.examInfoTextViewN2);
+		String naText = exInfoCursor.getString(exInfoCursor
+				.getColumnIndexOrThrow(ExamInfos.NICHTAUSREICHEND));
 		gradeN.setText(naText);
 
+		TextView attendees = (TextView) dialog
+				.findViewById(R.id.examinfoAttendees);
+		String attText = exInfoCursor.getString(exInfoCursor
+				.getColumnIndexOrThrow(ExamInfos.ATTENDEES));
+		attendees.setText(attText);
+
 		TextView average = (TextView) dialog.findViewById(R.id.examinfoAverage);
-		String avgText = exInfoCursor.getString(exInfoCursor.getColumnIndexOrThrow(ExamInfos.AVERAGE));
+		String avgText = exInfoCursor.getString(exInfoCursor
+				.getColumnIndexOrThrow(ExamInfos.AVERAGE));
 		average.setText(avgText);
 
 		Button button = (Button) dialog.findViewById(R.id.examinfo_cancel);
